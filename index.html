@@ -191,8 +191,13 @@
                 <button onclick="leaveRoom()" class="text-sm font-mono text-gray-400 hover:text-neon-pink flex items-center gap-2">
                     <i class="fa-solid fa-arrow-left"></i> KEMBALI
                 </button>
-                <div class="bg-neon-cyan/10 border border-neon-cyan text-neon-cyan px-4 py-1.5 rounded font-orbitron font-bold tracking-widest text-lg" id="display-room-code">
-                    ROOM: ----
+                <!-- Tombol Salin Room Code Baru -->
+                <div onclick="copyRoomCode()" class="bg-neon-card border border-neon-cyan hover:border-neon-pink text-neon-cyan hover:text-neon-pink px-4 py-2 rounded font-orbitron font-bold tracking-widest text-lg cursor-pointer transition flex items-center gap-3 shadow-neon-cyan" title="Klik untuk Salin Kode Room">
+                    <span>ROOM: <span id="display-room-code-text">----</span></span>
+                    <button class="bg-neon-cyan/20 hover:bg-neon-cyan/40 p-1.5 rounded text-xs transition flex items-center gap-1">
+                        <i class="fa-solid fa-copy" id="copy-icon"></i>
+                        <span id="copy-btn-text" class="text-[10px] font-mono">SALIN</span>
+                    </button>
                 </div>
             </div>
 
@@ -298,7 +303,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Anda
+        // Konfigurasi Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAZ6_ltMFDckhljGMHqgl6cGOflsBBSHmE",
           authDomain: "gamebaru.firebaseapp.com",
@@ -322,6 +327,24 @@
             unsubscribeRoom: null,
             activeGameInterval: null,
             audioEnabled: true
+        };
+
+        // Fungsi Salin Kode Room ke Clipboard
+        window.copyRoomCode = function() {
+            if (!window.appState.roomCode) return;
+            navigator.clipboard.writeText(window.appState.roomCode).then(() => {
+                const btnText = document.getElementById('copy-btn-text');
+                const icon = document.getElementById('copy-icon');
+                btnText.innerText = "DISALIN!";
+                icon.className = "fa-solid fa-check text-neon-green";
+                window.playSound('beep');
+                setTimeout(() => {
+                    btnText.innerText = "SALIN";
+                    icon.className = "fa-solid fa-copy";
+                }, 2000);
+            }).catch(err => {
+                alert("Kode Room: " + window.appState.roomCode);
+            });
         };
 
         // UI Handlers & Navigation
@@ -416,7 +439,7 @@
                 chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
                 gameState: {}
             }).then(() => {
-                document.getElementById('display-room-code').innerText = `ROOM: ${code}`;
+                document.getElementById('display-room-code-text').innerText = code;
                 document.getElementById('host-name-slot').innerText = window.appState.username;
                 document.getElementById('guest-name-slot').innerText = "Menunggu Lawan...";
                 document.getElementById('start-game-btn').classList.remove('hidden');
@@ -467,7 +490,7 @@
             window.appState.isHost = false;
             closeModal();
 
-            document.getElementById('display-room-code').innerText = `ROOM: ${code}`;
+            document.getElementById('display-room-code-text').innerText = code;
             document.getElementById('host-name-slot').innerText = data.host;
             document.getElementById('guest-name-slot').innerText = window.appState.username;
             window.appState.selectedGame = data.game;
@@ -569,7 +592,7 @@
             }
         }
 
-        // Game 1: Neon Pong Battle (Simplified Local/Online Loop)
+        // Game 1: Neon Pong Battle
         function runPongGame(ctx, canvas) {
             let p1Y = 160, p2Y = 160, ballX = 300, ballY = 200, dx = 3, dy = 2;
             let s1 = 0, s2 = 0;
@@ -689,8 +712,6 @@
 
         // Game 4: Memory Matrix Duel
         function runMemoryGame(ctx, canvas) {
-            let sequence = [Math.floor(Math.random() * 4)];
-            let playerStep = 0, score = 0;
             let colors = ['#ff007f', '#00f3ff', '#00ff66', '#ffc600'];
 
             function drawGrid(activeIdx = -1) {
