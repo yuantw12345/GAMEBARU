@@ -85,6 +85,13 @@
             border: 2px solid #ff007f;
             background: #0a0a12;
         }
+        /* Custom Game Card Active Glow */
+        .game-card-active {
+            border-color: #00f3ff !important;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.8) !important;
+            transform: scale(1.02);
+            background-color: #1a1a38 !important;
+        }
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a12; }
@@ -124,7 +131,7 @@
         <div id="home-screen" class="space-y-8 animate-fadeIn">
             <div class="text-center space-y-4">
                 <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK ARENA</h2>
-                <p class="text-gray-400 max-w-xl mx-auto text-lg">Mainkan game arcade klasik secara real-time bersama teman dari jarak jauh menggunakan Room Code online!</p>
+                <p class="text-gray-400 max-w-xl mx-auto text-lg">Pilih game di bawah lalu buat room untuk mabar online bersama teman!</p>
             </div>
 
             <!-- Profile & Quick Setup -->
@@ -132,7 +139,7 @@
                 <h3 class="font-orbitron text-neon-cyan text-center font-bold tracking-wide">IDENTITAS PLAYER</h3>
                 <div>
                     <label class="text-xs font-mono text-gray-400 block mb-1">NICKNAME ANDA</label>
-                    <input type="text" id="username-input" value="CyberRunner" class="w-full bg-neon-dark border border-neon-cyan/40 rounded px-3 py-2 text-white font-orbitron focus:outline-none focus:border-neon-pink">
+                    <input type="text" id="username-input" value="KINGNANONG" class="w-full bg-neon-dark border border-neon-cyan/40 rounded px-3 py-2 text-white font-orbitron focus:outline-none focus:border-neon-pink">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 pt-2">
@@ -146,41 +153,48 @@
             </div>
 
             <!-- Game Selection Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                <div onclick="selectGame('pong')" class="bg-neon-card border border-neon-cyan/30 hover:border-neon-cyan p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">MULTIPLAYER 1v1</span>
-                        <i class="fa-solid fa-table-tennis-paddle-ball text-2xl text-neon-cyan group-hover:scale-110 transition"></i>
+            <div>
+                <p class="text-center text-xs font-orbitron text-neon-cyan mb-3 tracking-widest uppercase">&mdash; PILIH GAME UNTUK DIMAINKAN &mdash;</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="card-pong" onclick="selectGame('pong')" class="bg-neon-card border border-neon-cyan/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg game-card-active relative">
+                        <span id="badge-pong" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow">TERPILIH</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">MULTIPLAYER 1v1</span>
+                            <i class="fa-solid fa-table-tennis-paddle-ball text-2xl text-neon-cyan"></i>
+                        </div>
+                        <h4 class="font-orbitron font-bold text-xl text-white">NEON PONG BATTLE</h4>
+                        <p class="text-sm text-gray-400 mt-1">Duel pantulan bola cepat real-time dengan kontrol dayung presisi.</p>
                     </div>
-                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-cyan transition">NEON PONG BATTLE</h4>
-                    <p class="text-sm text-gray-400 mt-1">Duel pantulan bola cepat real-time dengan kontrol dayung presisi.</p>
-                </div>
 
-                <div onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-pink/30 hover:border-neon-pink p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-mono bg-neon-pink/20 text-neon-pink px-2 py-1 rounded">TACTICAL 1v1</span>
-                        <i class="fa-solid fa-hashtag text-2xl text-neon-pink group-hover:scale-110 transition"></i>
+                    <div id="card-tictactoe" onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-pink/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
+                        <span id="badge-tictactoe" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono bg-neon-pink/20 text-neon-pink px-2 py-1 rounded">TACTICAL 1v1</span>
+                            <i class="fa-solid fa-hashtag text-2xl text-neon-pink"></i>
+                        </div>
+                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER TIC-TAC-TOE</h4>
+                        <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik berbalut estetika neon.</p>
                     </div>
-                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-pink transition">CYBER TIC-TAC-TOE</h4>
-                    <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik berbalut estetika neon.</p>
-                </div>
 
-                <div onclick="selectGame('race')" class="bg-neon-card border border-neon-green/30 hover:border-neon-green p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-mono bg-neon-green/20 text-neon-green px-2 py-1 rounded">SURVIVAL SCORE</span>
-                        <i class="fa-solid fa-car-tunnel text-2xl text-neon-green group-hover:scale-110 transition"></i>
+                    <div id="card-race" onclick="selectGame('race')" class="bg-neon-card border border-neon-green/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
+                        <span id="badge-race" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono bg-neon-green/20 text-neon-green px-2 py-1 rounded">SURVIVAL SCORE</span>
+                            <i class="fa-solid fa-car-tunnel text-2xl text-neon-green"></i>
+                        </div>
+                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER RACE SURVIVAL</h4>
+                        <p class="text-sm text-gray-400 mt-1">Hindari rintangan neon kecepatan tinggi bersama secara online.</p>
                     </div>
-                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-green transition">CYBER RACE SURVIVAL</h4>
-                    <p class="text-sm text-gray-400 mt-1">Hindari rintangan neon kecepatan tinggi bersama secara online.</p>
-                </div>
 
-                <div onclick="selectGame('memory')" class="bg-neon-card border border-neon-yellow/30 hover:border-neon-yellow p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-mono bg-neon-yellow/20 text-neon-yellow px-2 py-1 rounded">SPEED MEMORY</span>
-                        <i class="fa-solid fa-brain text-2xl text-neon-yellow group-hover:scale-110 transition"></i>
+                    <div id="card-memory" onclick="selectGame('memory')" class="bg-neon-card border border-neon-yellow/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
+                        <span id="badge-memory" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono bg-neon-yellow/20 text-neon-yellow px-2 py-1 rounded">SPEED MEMORY</span>
+                            <i class="fa-solid fa-brain text-2xl text-neon-yellow"></i>
+                        </div>
+                        <h4 class="font-orbitron font-bold text-xl text-white">MEMORY MATRIX DUEL</h4>
+                        <p class="text-sm text-gray-400 mt-1">Uji kecepatan daya ingat pola cahaya matriks grid secara bergantian.</p>
                     </div>
-                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-yellow transition">MEMORY MATRIX DUEL</h4>
-                    <p class="text-sm text-gray-400 mt-1">Uji kecepatan daya ingat pola cahaya matriks grid secara bergantian.</p>
                 </div>
             </div>
         </div>
@@ -202,7 +216,7 @@
 
             <div class="bg-neon-card cyber-border p-6 rounded-lg space-y-6">
                 <div class="text-center space-y-2">
-                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">CYBER GAME</h3>
+                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">NEON PONG BATTLE</h3>
                     <p class="text-xs text-gray-400">Undang teman Anda dengan membagikan Room Code di atas.</p>
                 </div>
 
@@ -319,7 +333,7 @@
         // Global State App
         window.FB = { db, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc };
         window.appState = {
-            username: "CyberRunner",
+            username: "KINGNANONG",
             roomCode: null,
             isHost: false,
             selectedGame: 'pong',
@@ -327,6 +341,33 @@
             activeGameInterval: null,
             audioEnabled: true
         };
+
+        // Pemilihan Game Visual Highlight
+        window.selectGame = function(gameKey) {
+            window.appState.selectedGame = gameKey;
+            
+            const games = ['pong', 'tictactoe', 'race', 'memory'];
+            games.forEach(g => {
+                const card = document.getElementById(`card-${g}`);
+                const badge = document.getElementById(`badge-${g}`);
+                if (g === gameKey) {
+                    card.classList.add('game-card-active');
+                    badge.classList.remove('hidden');
+                } else {
+                    card.classList.remove('game-card-active');
+                    badge.classList.add('hidden');
+                }
+            });
+
+            const names = {
+                'pong': 'NEON PONG BATTLE',
+                'tictactoe': 'CYBER TIC-TAC-TOE',
+                'race': 'CYBER RACE SURVIVAL',
+                'memory': 'MEMORY MATRIX DUEL'
+            };
+            document.getElementById('lobby-game-title').innerText = names[gameKey];
+            window.playSound('beep');
+        }
 
         // Salin Kode Room
         window.copyRoomCode = function() {
@@ -408,17 +449,6 @@
             } catch(e) {}
         }
 
-        window.selectGame = function(gameKey) {
-            window.appState.selectedGame = gameKey;
-            const names = {
-                'pong': 'NEON PONG BATTLE',
-                'tictactoe': 'CYBER TIC-TAC-TOE',
-                'race': 'CYBER RACE SURVIVAL',
-                'memory': 'MEMORY MATRIX DUEL'
-            };
-            document.getElementById('lobby-game-title').innerText = names[gameKey];
-        }
-
         // Room Creation & Joining
         window.createRoomModal = function() {
             const uInput = document.getElementById('username-input').value.trim();
@@ -429,7 +459,6 @@
             window.appState.roomCode = code;
             window.appState.isHost = true;
 
-            // Inisialisasi State Awal untuk Berbagai Game
             setDoc(doc(db, "rooms", code), {
                 host: window.appState.username,
                 guest: null,
@@ -438,10 +467,9 @@
                 chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
                 gameState: {
                     p1Y: 160, p2Y: 160, ballX: 300, ballY: 200, dx: 3, dy: 2, s1: 0, s2: 0,
-                    board: ['', '', '', '', '', '', '', '', ''],
-                    turn: 'X',
+                    board: ['', '', '', '', '', '', '', '', ''], turn: 'X',
                     car1X: 200, car2X: 360, obstacles: [],
-                    memoryStep: 0, activeTile: -1, memoryScore: 0
+                    activeIdx: -1, scoreP1: 0, scoreP2: 0
                 }
             }).then(() => {
                 document.getElementById('display-room-code-text').innerText = code;
@@ -452,7 +480,7 @@
                 showScreen('room-screen');
                 listenToRoom(code);
             }).catch(err => {
-                alert("Gagal membuat room. Cek Firestore Database Anda!");
+                alert("Gagal membuat room!");
                 console.error(err);
             });
         }
@@ -499,8 +527,7 @@
             document.getElementById('host-name-slot').innerText = data.host;
             document.getElementById('guest-name-slot').innerText = window.appState.username;
             window.appState.selectedGame = data.game;
-            selectGame(data.game);
-
+            
             document.getElementById('start-game-btn').classList.add('hidden');
             document.getElementById('waiting-host-text').classList.remove('hidden');
             showScreen('room-screen');
@@ -582,15 +609,10 @@
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
 
-            if(gameKey === 'pong') {
-                runPongGame(ctx, canvas);
-            } else if(gameKey === 'tictactoe') {
-                runTicTacToeGame(ctx, canvas);
-            } else if(gameKey === 'race') {
-                runRaceGame(ctx, canvas);
-            } else if(gameKey === 'memory') {
-                runMemoryGame(ctx, canvas);
-            }
+            if(gameKey === 'pong') runPongGame(ctx, canvas);
+            else if(gameKey === 'tictactoe') runTicTacToeGame(ctx, canvas);
+            else if(gameKey === 'race') runRaceGame(ctx, canvas);
+            else if(gameKey === 'memory') runMemoryGame(ctx, canvas);
         }
 
         // ================= 1. PONG BATTLE =================
@@ -600,7 +622,7 @@
             let s1 = 0, s2 = 0;
             const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+            onSnapshot(roomRef, (docSnap) => {
                 if(!docSnap.exists()) return;
                 const state = docSnap.data().gameState;
                 if(state) {
@@ -617,8 +639,7 @@
             });
 
             window.appState.activeGameInterval = setInterval(() => {
-                ctx.fillStyle = '#0a0a12';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 if(window.appState.isHost) {
                     ballX += dx; ballY += dy;
@@ -661,10 +682,8 @@
                 if(e.key === 'ArrowDown' || e.key === 's') moveLocalPaddle(25);
             };
 
-            const btnUp = document.getElementById('btn-up');
-            const btnDown = document.getElementById('btn-down');
-            if(btnUp) btnUp.onclick = () => moveLocalPaddle(-30);
-            if(btnDown) btnDown.onclick = () => moveLocalPaddle(30);
+            document.getElementById('btn-up').onclick = () => moveLocalPaddle(-30);
+            document.getElementById('btn-down').onclick = () => moveLocalPaddle(30);
         }
 
         // ================= 2. TIC-TAC-TOE =================
@@ -673,7 +692,7 @@
             let turn = 'X';
             const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+            onSnapshot(roomRef, (docSnap) => {
                 if(!docSnap.exists()) return;
                 const state = docSnap.data().gameState;
                 if(state && state.board) {
@@ -702,15 +721,15 @@
                         ctx.fillText(val, x, y);
                     }
                 });
-                document.getElementById('score-p1').innerText = turn === 'X' ? 'Giliran X' : '-';
-                document.getElementById('score-p2').innerText = turn === 'O' ? 'Giliran O' : '-';
+                document.getElementById('score-p1').innerText = turn === 'X' ? 'GILIRAN X' : '-';
+                document.getElementById('score-p2').innerText = turn === 'O' ? 'GILIRAN O' : '-';
             }
 
             drawBoard();
 
             canvas.onclick = async (e) => {
                 const mySymbol = window.appState.isHost ? 'X' : 'O';
-                if(turn !== mySymbol) return; // Bukan giliran Anda
+                if(turn !== mySymbol) return;
 
                 let rect = canvas.getBoundingClientRect();
                 let x = e.clientX - rect.left;
@@ -736,7 +755,7 @@
             let car1X = 200, car2X = 360, obstacles = [], score = 0;
             const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+            onSnapshot(roomRef, (docSnap) => {
                 if(!docSnap.exists()) return;
                 const state = docSnap.data().gameState;
                 if(state) {
@@ -755,9 +774,7 @@
 
                 if(window.appState.isHost) {
                     score++;
-                    if(Math.random() < 0.04) {
-                        obstacles.push({x: Math.random() * (canvas.width - 80), y: -50, w: 40, h: 40});
-                    }
+                    if(Math.random() < 0.04) obstacles.push({x: Math.random() * (canvas.width - 80), y: -50, w: 40, h: 40});
                     obstacles.forEach(obs => obs.y += 4);
                     obstacles = obstacles.filter(o => o.y < canvas.height);
 
@@ -771,17 +788,11 @@
                 document.getElementById('score-p1').innerText = score;
                 document.getElementById('score-p2').innerText = window.appState.isHost ? 'HOST' : 'GUEST';
 
-                // Render obstacles
                 ctx.fillStyle = '#ff007f';
                 obstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.w, obs.h));
 
-                // Render Car 1 (Host - Pink)
-                ctx.fillStyle = '#ff007f';
-                ctx.fillRect(car1X, 330, 35, 50);
-
-                // Render Car 2 (Guest - Cyan)
-                ctx.fillStyle = '#00f3ff';
-                ctx.fillRect(car2X, 330, 35, 50);
+                ctx.fillStyle = '#ff007f'; ctx.fillRect(car1X, 330, 35, 50);
+                ctx.fillStyle = '#00f3ff'; ctx.fillRect(car2X, 330, 35, 50);
             }, 1000 / 30);
 
             function moveCar(delta) {
@@ -799,10 +810,8 @@
                 if(e.key === 'ArrowRight' || e.key === 'd') moveCar(25);
             };
 
-            const btnUp = document.getElementById('btn-up');
-            const btnDown = document.getElementById('btn-down');
-            if(btnUp) btnUp.onclick = () => moveCar(-30);
-            if(btnDown) btnDown.onclick = () => moveCar(30);
+            document.getElementById('btn-up').onclick = () => moveCar(-30);
+            document.getElementById('btn-down').onclick = () => moveCar(30);
         }
 
         // ================= 4. MEMORY MATRIX DUEL =================
@@ -812,7 +821,7 @@
             const coords = [{x: 180, y: 80}, {x: 320, y: 80}, {x: 180, y: 220}, {x: 320, y: 220}];
             const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+            onSnapshot(roomRef, (docSnap) => {
                 if(!docSnap.exists()) return;
                 const state = docSnap.data().gameState;
                 if(state) {
