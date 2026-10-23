@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUAN GAMING - YUAN Online Multiplayer</title>
+    <title>NEON ARCADE - Cyberpunk Online Multiplayer</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -101,7 +101,7 @@
                     <i class="fa-solid fa-gamepad text-neon-dark text-xl font-bold"></i>
                 </div>
                 <div>
-                    <h1 class="font-orbitron font-black text-xl tracking-wider glow-text-cyan">YUAN GAMING</h1>
+                    <h1 class="font-orbitron font-black text-xl tracking-wider glow-text-cyan">NEON ARCADE</h1>
                     <p class="text-xs text-neon-pink tracking-widest font-mono">ONLINE MULTIPLAYER HUB</p>
                 </div>
             </div>
@@ -123,7 +123,7 @@
         <!-- 1. HOME SCREEN -->
         <div id="home-screen" class="space-y-8 animate-fadeIn">
             <div class="text-center space-y-4">
-                <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">YUAN GAMING ARENA</h2>
+                <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK ARENA</h2>
                 <p class="text-gray-400 max-w-xl mx-auto text-lg">Mainkan game arcade klasik secara real-time bersama teman dari jarak jauh menggunakan Room Code online!</p>
             </div>
 
@@ -171,7 +171,7 @@
                         <i class="fa-solid fa-car-tunnel text-2xl text-neon-green group-hover:scale-110 transition"></i>
                     </div>
                     <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-green transition">CYBER RACE SURVIVAL</h4>
-                    <p class="text-sm text-gray-400 mt-1">Hindari rintangan neon kecepatan tinggi dan raih skor tertinggi online.</p>
+                    <p class="text-sm text-gray-400 mt-1">Hindari rintangan neon kecepatan tinggi bersama secara online.</p>
                 </div>
 
                 <div onclick="selectGame('memory')" class="bg-neon-card border border-neon-yellow/30 hover:border-neon-yellow p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
@@ -191,7 +191,6 @@
                 <button onclick="leaveRoom()" class="text-sm font-mono text-gray-400 hover:text-neon-pink flex items-center gap-2">
                     <i class="fa-solid fa-arrow-left"></i> KEMBALI
                 </button>
-                <!-- Tombol Salin Room Code Baru -->
                 <div onclick="copyRoomCode()" class="bg-neon-card border border-neon-cyan hover:border-neon-pink text-neon-cyan hover:text-neon-pink px-4 py-2 rounded font-orbitron font-bold tracking-widest text-lg cursor-pointer transition flex items-center gap-3 shadow-neon-cyan" title="Klik untuk Salin Kode Room">
                     <span>ROOM: <span id="display-room-code-text">----</span></span>
                     <button class="bg-neon-cyan/20 hover:bg-neon-cyan/40 p-1.5 rounded text-xs transition flex items-center gap-1">
@@ -266,12 +265,12 @@
                 <!-- Touch Controller D-Pad for Mobile -->
                 <div id="mobile-controls" class="w-full flex justify-between items-center px-6 py-3 mt-2 bg-neon-dark/80 rounded border border-neon-cyan/20">
                     <div class="flex gap-2">
-                        <button id="btn-left" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
-                        <button id="btn-right" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
+                        <button id="btn-up" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button id="btn-down" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-down"></i></button>
                     </div>
                     <div class="text-right">
                         <span class="text-[10px] font-mono text-gray-400 block">KONTROL HP</span>
-                        <span class="text-xs font-orbitron text-neon-pink">PAD / TOUCH</span>
+                        <span class="text-xs font-orbitron text-neon-pink">ATAS / BAWAH</span>
                     </div>
                 </div>
             </div>
@@ -281,7 +280,7 @@
 
     <!-- FOOTER -->
     <footer class="text-center py-4 text-xs font-mono text-gray-500 border-t border-neon-cyan/10">
-        YUAN GAMING MULTIPLAYER &bull; POWERED BY FIREBASE REAL-TIME ENGINE
+        NEON ARCADE MULTIPLAYER &bull; POWERED BY FIREBASE REAL-TIME ENGINE
     </footer>
 
     <!-- MODAL JOIN / CREATE -->
@@ -303,7 +302,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase
+        // Konfigurasi Firebase Anda
         const firebaseConfig = {
           apiKey: "AIzaSyAZ6_ltMFDckhljGMHqgl6cGOflsBBSHmE",
           authDomain: "gamebaru.firebaseapp.com",
@@ -329,7 +328,7 @@
             audioEnabled: true
         };
 
-        // Fungsi Salin Kode Room ke Clipboard
+        // Salin Kode Room
         window.copyRoomCode = function() {
             if (!window.appState.roomCode) return;
             navigator.clipboard.writeText(window.appState.roomCode).then(() => {
@@ -347,7 +346,7 @@
             });
         };
 
-        // UI Handlers & Navigation
+        // Navigation
         window.showScreen = function(screenId) {
             ['home-screen', 'room-screen', 'game-arena-screen'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
@@ -420,7 +419,7 @@
             document.getElementById('lobby-game-title').innerText = names[gameKey];
         }
 
-        // Room Creation & Joining Logic
+        // Room Creation & Joining
         window.createRoomModal = function() {
             const uInput = document.getElementById('username-input').value.trim();
             if(uInput) window.appState.username = uInput;
@@ -430,14 +429,20 @@
             window.appState.roomCode = code;
             window.appState.isHost = true;
 
-            // Save Room to Firestore
+            // Inisialisasi State Awal untuk Berbagai Game
             setDoc(doc(db, "rooms", code), {
                 host: window.appState.username,
                 guest: null,
                 game: window.appState.selectedGame,
                 status: 'waiting',
                 chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
-                gameState: {}
+                gameState: {
+                    p1Y: 160, p2Y: 160, ballX: 300, ballY: 200, dx: 3, dy: 2, s1: 0, s2: 0,
+                    board: ['', '', '', '', '', '', '', '', ''],
+                    turn: 'X',
+                    car1X: 200, car2X: 360, obstacles: [],
+                    memoryStep: 0, activeTile: -1, memoryScore: 0
+                }
             }).then(() => {
                 document.getElementById('display-room-code-text').innerText = code;
                 document.getElementById('host-name-slot').innerText = window.appState.username;
@@ -447,7 +452,7 @@
                 showScreen('room-screen');
                 listenToRoom(code);
             }).catch(err => {
-                alert("Gagal membuat room. Pastikan Firestore database sudah diaktifkan di test mode!");
+                alert("Gagal membuat room. Cek Firestore Database Anda!");
                 console.error(err);
             });
         }
@@ -512,18 +517,15 @@
                 if(!docSnap.exists()) return;
                 const data = docSnap.data();
 
-                // Update Slots
                 if(data.host) document.getElementById('host-name-slot').innerText = data.host;
                 if(data.guest) document.getElementById('guest-name-slot').innerText = data.guest;
 
-                // Update Chat Box
                 if(data.chat) {
                     const chatBox = document.getElementById('chat-messages');
                     chatBox.innerHTML = data.chat.map(c => `<div class="truncate"><span class="text-neon-cyan font-bold">[${c.sender}]:</span> ${c.text}</div>`).join('');
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }
 
-                // Check Game Start Trigger
                 if(data.status === 'playing' && document.getElementById('game-arena-screen').classList.contains('hidden')) {
                     launchActiveGame(data.game);
                 }
@@ -572,7 +574,6 @@
             showScreen('room-screen');
         }
 
-        // Active Game Launcher & Logic Simulator
         window.launchActiveGame = function(gameKey) {
             showScreen('game-arena-screen');
             document.getElementById('active-game-name').innerText = gameKey.toUpperCase() + " BATTLE";
@@ -592,51 +593,97 @@
             }
         }
 
-        // Game 1: Neon Pong Battle
+        // ================= 1. PONG BATTLE =================
         function runPongGame(ctx, canvas) {
-            let p1Y = 160, p2Y = 160, ballX = 300, ballY = 200, dx = 3, dy = 2;
+            let localP1Y = 160, localP2Y = 160;
+            let ballX = 300, ballY = 200, dx = 3, dy = 2;
             let s1 = 0, s2 = 0;
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
+
+            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+                if(!docSnap.exists()) return;
+                const state = docSnap.data().gameState;
+                if(state) {
+                    if(!window.appState.isHost) {
+                        localP1Y = state.p1Y;
+                        ballX = state.ballX;
+                        ballY = state.ballY;
+                        s1 = state.s1;
+                        s2 = state.s2;
+                    } else {
+                        localP2Y = state.p2Y;
+                    }
+                }
+            });
 
             window.appState.activeGameInterval = setInterval(() => {
                 ctx.fillStyle = '#0a0a12';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Ball movement
-                ballX += dx; ballY += dy;
-                if(ballY <= 0 || ballY >= canvas.height) { dy *= -1; playSound('beep'); }
-                if(ballX <= 20 && ballY >= p1Y && ballY <= p1Y + 80) { dx *= -1; playSound('hit'); }
-                if(ballX >= canvas.width - 25 && ballY >= p2Y && ballY <= p2Y + 80) { dx *= -1; playSound('hit'); }
+                if(window.appState.isHost) {
+                    ballX += dx; ballY += dy;
+                    if(ballY <= 0 || ballY >= canvas.height) { dy *= -1; playSound('beep'); }
+                    if(ballX <= 20 && ballY >= localP1Y && ballY <= localP1Y + 80) { dx *= -1; playSound('hit'); }
+                    if(ballX >= canvas.width - 25 && ballY >= localP2Y && ballY <= localP2Y + 80) { dx *= -1; playSound('hit'); }
 
-                if(ballX < 0) { s2++; ballX = 300; ballY = 200; playSound('win'); }
-                if(ballX > canvas.width) { s1++; ballX = 300; ballY = 200; playSound('win'); }
+                    if(ballX < 0) { s2++; ballX = 300; ballY = 200; playSound('win'); }
+                    if(ballX > canvas.width) { s1++; ballX = 300; ballY = 200; playSound('win'); }
+
+                    updateDoc(roomRef, {
+                        "gameState.p1Y": localP1Y,
+                        "gameState.ballX": ballX,
+                        "gameState.ballY": ballY,
+                        "gameState.s1": s1,
+                        "gameState.s2": s2
+                    });
+                }
 
                 document.getElementById('score-p1').innerText = s1;
                 document.getElementById('score-p2').innerText = s2;
 
-                // Draw paddles & ball
-                ctx.fillStyle = '#ff007f'; ctx.fillRect(10, p1Y, 10, 80);
-                ctx.fillStyle = '#00f3ff'; ctx.fillRect(canvas.width - 20, p2Y, 10, 80);
+                ctx.fillStyle = '#ff007f'; ctx.fillRect(10, localP1Y, 10, 80);
+                ctx.fillStyle = '#00f3ff'; ctx.fillRect(canvas.width - 20, localP2Y, 10, 80);
                 ctx.fillStyle = '#00ff66'; ctx.beginPath(); ctx.arc(ballX, ballY, 8, 0, Math.PI * 2); ctx.fill();
-            }, 1000 / 60);
+            }, 1000 / 30);
 
-            // Controls
+            function moveLocalPaddle(delta) {
+                if(window.appState.isHost) {
+                    localP1Y = Math.max(0, Math.min(canvas.height - 80, localP1Y + delta));
+                    updateDoc(roomRef, { "gameState.p1Y": localP1Y });
+                } else {
+                    localP2Y = Math.max(0, Math.min(canvas.height - 80, localP2Y + delta));
+                    updateDoc(roomRef, { "gameState.p2Y": localP2Y });
+                }
+            }
+
             window.onkeydown = (e) => {
-                if(e.key === 'ArrowUp') p2Y = Math.max(0, p2Y - 20);
-                if(e.key === 'ArrowDown') p2Y = Math.min(canvas.height - 80, p2Y + 20);
-                if(e.key === 'w') p1Y = Math.max(0, p1Y - 20);
-                if(e.key === 's') p1Y = Math.min(canvas.height - 80, p1Y + 20);
+                if(e.key === 'ArrowUp' || e.key === 'w') moveLocalPaddle(-25);
+                if(e.key === 'ArrowDown' || e.key === 's') moveLocalPaddle(25);
             };
-            document.getElementById('btn-left').onmousedown = () => p1Y = Math.max(0, p1Y - 30);
-            document.getElementById('btn-right').onmousedown = () => p1Y = Math.min(canvas.height - 80, p1Y + 30);
+
+            const btnUp = document.getElementById('btn-up');
+            const btnDown = document.getElementById('btn-down');
+            if(btnUp) btnUp.onclick = () => moveLocalPaddle(-30);
+            if(btnDown) btnDown.onclick = () => moveLocalPaddle(30);
         }
 
-        // Game 2: Cyber Tic-Tac-Toe
+        // ================= 2. TIC-TAC-TOE =================
         function runTicTacToeGame(ctx, canvas) {
             let board = ['', '', '', '', '', '', '', '', ''];
             let turn = 'X';
-            let gameOver = false;
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            function draw() {
+            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+                if(!docSnap.exists()) return;
+                const state = docSnap.data().gameState;
+                if(state && state.board) {
+                    board = state.board;
+                    turn = state.turn || 'X';
+                    drawBoard();
+                }
+            });
+
+            function drawBoard() {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.strokeStyle = '#00f3ff'; ctx.lineWidth = 4;
                 ctx.beginPath();
@@ -647,86 +694,172 @@
                 ctx.stroke();
 
                 board.forEach((val, i) => {
-                    let x = (i % 3) * 133 + 130;
-                    let y = Math.floor(i / 3) * 100 + 100;
+                    let x = (i % 3) * 133 + 135;
+                    let y = Math.floor(i / 3) * 100 + 115;
                     if(val) {
                         ctx.fillStyle = val === 'X' ? '#ff007f' : '#00f3ff';
                         ctx.font = 'bold 50px Orbitron';
                         ctx.fillText(val, x, y);
                     }
                 });
+                document.getElementById('score-p1').innerText = turn === 'X' ? 'Giliran X' : '-';
+                document.getElementById('score-p2').innerText = turn === 'O' ? 'Giliran O' : '-';
             }
 
-            draw();
-            canvas.onclick = (e) => {
-                if(gameOver) return;
+            drawBoard();
+
+            canvas.onclick = async (e) => {
+                const mySymbol = window.appState.isHost ? 'X' : 'O';
+                if(turn !== mySymbol) return; // Bukan giliran Anda
+
                 let rect = canvas.getBoundingClientRect();
                 let x = e.clientX - rect.left;
                 let y = e.clientY - rect.top;
                 let col = Math.floor((x - 100) / 133);
                 let row = Math.floor((y - 50) / 100);
                 let idx = row * 3 + col;
+
                 if(idx >= 0 && idx < 9 && board[idx] === '') {
-                    board[idx] = turn;
+                    board[idx] = mySymbol;
                     playSound('beep');
-                    turn = turn === 'X' ? 'O' : 'X';
-                    draw();
+                    let nextTurn = mySymbol === 'X' ? 'O' : 'X';
+                    await updateDoc(roomRef, {
+                        "gameState.board": board,
+                        "gameState.turn": nextTurn
+                    });
                 }
             };
         }
 
-        // Game 3: Cyber Race Survival
+        // ================= 3. RACE SURVIVAL =================
         function runRaceGame(ctx, canvas) {
-            let carX = 280, obstacles = [], score = 0;
+            let car1X = 200, car2X = 360, obstacles = [], score = 0;
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
+
+            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+                if(!docSnap.exists()) return;
+                const state = docSnap.data().gameState;
+                if(state) {
+                    if(window.appState.isHost) {
+                        car2X = state.car2X !== undefined ? state.car2X : car2X;
+                    } else {
+                        car1X = state.car1X !== undefined ? state.car1X : car1X;
+                        obstacles = state.obstacles || [];
+                        score = state.score || 0;
+                    }
+                }
+            });
+
             window.appState.activeGameInterval = setInterval(() => {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                score++;
-                document.getElementById('score-p1').innerText = score;
 
-                if(Math.random() < 0.05) {
-                    obstacles.push({x: Math.random() * (canvas.width - 40), y: -50, w: 40, h: 40});
+                if(window.appState.isHost) {
+                    score++;
+                    if(Math.random() < 0.04) {
+                        obstacles.push({x: Math.random() * (canvas.width - 80), y: -50, w: 40, h: 40});
+                    }
+                    obstacles.forEach(obs => obs.y += 4);
+                    obstacles = obstacles.filter(o => o.y < canvas.height);
+
+                    updateDoc(roomRef, {
+                        "gameState.obstacles": obstacles,
+                        "gameState.score": score,
+                        "gameState.car1X": car1X
+                    });
                 }
 
-                ctx.fillStyle = '#ff007f';
-                obstacles.forEach(obs => {
-                    obs.y += 4;
-                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-                    if(obs.y > 350 && obs.x < carX + 40 && obs.x + 40 > carX) {
-                        playSound('win');
-                        score = 0;
-                    }
-                });
-                obstacles = obstacles.filter(o => o.y < canvas.height);
+                document.getElementById('score-p1').innerText = score;
+                document.getElementById('score-p2').innerText = window.appState.isHost ? 'HOST' : 'GUEST';
 
+                // Render obstacles
+                ctx.fillStyle = '#ff007f';
+                obstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.w, obs.h));
+
+                // Render Car 1 (Host - Pink)
+                ctx.fillStyle = '#ff007f';
+                ctx.fillRect(car1X, 330, 35, 50);
+
+                // Render Car 2 (Guest - Cyan)
                 ctx.fillStyle = '#00f3ff';
-                ctx.fillRect(carX, 330, 40, 50);
-            }, 1000 / 60);
+                ctx.fillRect(car2X, 330, 35, 50);
+            }, 1000 / 30);
+
+            function moveCar(delta) {
+                if(window.appState.isHost) {
+                    car1X = Math.max(50, Math.min(canvas.width - 90, car1X + delta));
+                    updateDoc(roomRef, { "gameState.car1X": car1X });
+                } else {
+                    car2X = Math.max(50, Math.min(canvas.width - 90, car2X + delta));
+                    updateDoc(roomRef, { "gameState.car2X": car2X });
+                }
+            }
 
             window.onkeydown = (e) => {
-                if(e.key === 'ArrowLeft') carX = Math.max(50, carX - 25);
-                if(e.key === 'ArrowRight') carX = Math.min(canvas.width - 90, carX + 25);
+                if(e.key === 'ArrowLeft' || e.key === 'a') moveCar(-25);
+                if(e.key === 'ArrowRight' || e.key === 'd') moveCar(25);
             };
-            document.getElementById('btn-left').onmousedown = () => carX = Math.max(50, carX - 30);
-            document.getElementById('btn-right').onmousedown = () => carX = Math.min(canvas.width - 90, carX + 30);
+
+            const btnUp = document.getElementById('btn-up');
+            const btnDown = document.getElementById('btn-down');
+            if(btnUp) btnUp.onclick = () => moveCar(-30);
+            if(btnDown) btnDown.onclick = () => moveCar(30);
         }
 
-        // Game 4: Memory Matrix Duel
+        // ================= 4. MEMORY MATRIX DUEL =================
         function runMemoryGame(ctx, canvas) {
-            let colors = ['#ff007f', '#00f3ff', '#00ff66', '#ffc600'];
+            let activeIdx = -1, scoreP1 = 0, scoreP2 = 0;
+            const colors = ['#ff007f', '#00f3ff', '#00ff66', '#ffc600'];
+            const coords = [{x: 180, y: 80}, {x: 320, y: 80}, {x: 180, y: 220}, {x: 320, y: 220}];
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            function drawGrid(activeIdx = -1) {
+            const unsubscribeGame = onSnapshot(roomRef, (docSnap) => {
+                if(!docSnap.exists()) return;
+                const state = docSnap.data().gameState;
+                if(state) {
+                    activeIdx = state.activeIdx !== undefined ? state.activeIdx : -1;
+                    scoreP1 = state.scoreP1 || 0;
+                    scoreP2 = state.scoreP2 || 0;
+                    drawGrid();
+                }
+            });
+
+            function drawGrid() {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                let coords = [{x: 180, y: 80}, {x: 320, y: 80}, {x: 180, y: 220}, {x: 320, y: 220}];
                 coords.forEach((c, i) => {
                     ctx.fillStyle = i === activeIdx ? '#ffffff' : colors[i];
                     ctx.fillRect(c.x, c.y, 100, 100);
                 });
+                document.getElementById('score-p1').innerText = scoreP1;
+                document.getElementById('score-p2').innerText = scoreP2;
             }
 
-            drawGrid();
-            window.appState.activeGameInterval = setInterval(() => {
-                drawGrid();
-            }, 1000);
+            if(window.appState.isHost) {
+                setInterval(() => {
+                    let randIdx = Math.floor(Math.random() * 4);
+                    updateDoc(roomRef, { "gameState.activeIdx": randIdx });
+                }, 1500);
+            }
+
+            canvas.onclick = async (e) => {
+                let rect = canvas.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
+
+                coords.forEach(async (c, i) => {
+                    if(x >= c.x && x <= c.x + 100 && y >= c.y && y <= c.y + 100) {
+                        playSound('beep');
+                        if(i === activeIdx) {
+                            if(window.appState.isHost) {
+                                scoreP1++;
+                                await updateDoc(roomRef, { "gameState.scoreP1": scoreP1 });
+                            } else {
+                                scoreP2++;
+                                await updateDoc(roomRef, { "gameState.scoreP2": scoreP2 });
+                            }
+                        }
+                    }
+                });
+            };
         }
     </script>
 </body>
