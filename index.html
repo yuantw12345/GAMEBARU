@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON ARCADE - Cyberpunk Game Hub</title>
+    <title>NEON ARCADE - Cyberpunk Online Multiplayer</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-
+    
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -21,7 +22,7 @@
                             cyan: '#00f3ff',
                             purple: '#b000ff',
                             green: '#00ff66',
-                            yellow: '#ffe600',
+                            yellow: '#ffc600',
                             dark: '#0a0a12',
                             card: '#121225'
                         }
@@ -29,1199 +30,683 @@
                     fontFamily: {
                         orbitron: ['Orbitron', 'sans-serif'],
                         rajdhani: ['Rajdhani', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'neon-pink': '0 0 15px rgba(255, 0, 127, 0.6)',
+                        'neon-cyan': '0 0 15px rgba(0, 243, 255, 0.6)',
+                        'neon-purple': '0 0 15px rgba(176, 0, 255, 0.6)',
+                        'neon-green': '0 0 15px rgba(0, 255, 102, 0.6)'
                     }
                 }
             }
         }
     </script>
-
     <style>
         body {
-            background-color: #05050a;
+            background-color: #0a0a12;
             color: #e2e8f0;
             font-family: 'Rajdhani', sans-serif;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(255, 0, 127, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(0, 243, 255, 0.08) 0%, transparent 40%),
-                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+            overflow-x: hidden;
+            user-select: none;
         }
-
-        /* Neon Glow Utility Effects */
-        .glow-pink { text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f; }
-        .glow-cyan { text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff; }
-        .box-glow-pink { box-shadow: 0 0 15px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.2); }
-        .box-glow-cyan { box-shadow: 0 0 15px rgba(0, 243, 255, 0.4), inset 0 0 15px rgba(0, 243, 255, 0.2); }
-        
-        .border-gradient {
-            border: 1px solid transparent;
-            background: linear-gradient(#121225, #121225) padding-box,
-                        linear-gradient(135deg, #ff007f, #00f3ff) border-box;
+        .cyber-grid {
+            background-image: linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
-
-        /* Glassmorphism */
-        .glass-panel {
-            background: rgba(18, 18, 37, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .glow-text-cyan {
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.4);
         }
-
+        .glow-text-pink {
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.7), 0 0 20px rgba(255, 0, 127, 0.4);
+        }
+        .cyber-border {
+            position: relative;
+            border: 2px solid #00f3ff;
+            box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.2), 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+        .cyber-border::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ff007f;
+            background: #0a0a12;
+        }
+        .cyber-border::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            right: -6px;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ff007f;
+            background: #0a0a12;
+        }
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a12; }
-        ::-webkit-scrollbar-thumb { background: #1e1e38; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ff007f; }
-
-        canvas {
-            touch-action: none;
-        }
+        ::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-neon-pink selection:text-white pb-10">
+<body class="cyber-grid min-h-screen flex flex-col justify-between">
 
-    <!-- TOP HEADER / NAVBAR -->
-    <header class="sticky top-0 z-40 glass-panel border-b border-gray-800 px-4 lg:px-8 py-3 mb-6">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            
-            <!-- Logo -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('games')">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-neon-pink to-neon-cyan flex items-center justify-center text-black font-black text-xl shadow-lg shadow-neon-pink/30">
-                    <i class="fa-solid font-orbitron">N</i>
+    <!-- HEADER / NAVBAR -->
+    <header class="border-b border-neon-cyan/30 bg-neon-dark/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('home-screen')">
+                <div class="w-10 h-10 rounded bg-gradient-to-br from-neon-pink to-neon-cyan flex items-center justify-center shadow-neon-cyan animate-pulse">
+                    <i class="fa-solid fa-gamepad text-neon-dark text-xl font-bold"></i>
                 </div>
                 <div>
-                    <h1 class="font-orbitron font-black text-2xl tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-neon-pink via-neon-purple to-neon-cyan glow-pink">
-                        NEON<span class="text-white">ARCADE</span>
-                    </h1>
-                    <p class="text-xs text-gray-400 -mt-1 font-mono tracking-widest">CYBERPUNK GAMING HUB</p>
+                    <h1 class="font-orbitron font-black text-xl tracking-wider glow-text-cyan">NEON ARCADE</h1>
+                    <p class="text-xs text-neon-pink tracking-widest font-mono">ONLINE MULTIPLAYER HUB</p>
                 </div>
             </div>
-
-            <!-- Profile Summary HUD -->
-            <div class="flex items-center space-x-6 bg-black/40 px-4 py-1.5 rounded-full border border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=NeonRider" alt="Avatar" class="w-9 h-9 rounded-full bg-neon-purple/20 border border-neon-cyan p-0.5">
-                        <span class="absolute -bottom-1 -right-1 bg-neon-pink text-black text-[10px] font-bold px-1.5 rounded-full font-orbitron" id="userLevel">Lv.1</span>
-                    </div>
-                    <div>
-                        <div class="text-sm font-bold text-white leading-none font-orbitron" id="userName">CyberPlayer</div>
-                        <div class="text-xs text-neon-cyan flex items-center gap-1 mt-0.5 font-mono">
-                            <i class="fa-solid fa-coins text-neon-yellow"></i>
-                            <span id="userCoins">0</span> PTS
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="toggleAudio()" id="audioBtn" class="text-gray-400 hover:text-neon-cyan transition-colors px-2 py-1">
-                    <i class="fa-solid fa-volume-high text-lg"></i>
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleAudio()" id="audio-btn" class="px-3 py-1.5 rounded border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-volume-high" id="audio-icon"></i> <span class="hidden sm:inline">SFX: ON</span>
                 </button>
+                <div class="flex items-center gap-2 bg-neon-card border border-neon-purple/40 px-3 py-1.5 rounded-full text-sm">
+                    <i class="fa-solid fa-wifi text-neon-green animate-pulse" id="connection-status-icon"></i>
+                    <span id="player-display-name" class="font-orbitron text-xs text-neon-cyan">GUEST</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 lg:px-8 flex-grow w-full">
-        
-        <!-- NAVIGATION TABS & FILTER -->
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-            <!-- Main Tabs -->
-            <div class="flex bg-black/50 p-1 rounded-xl border border-gray-800 w-full md:w-auto">
-                <button onclick="switchTab('games')" id="tab-games" class="tab-btn px-6 py-2.5 rounded-lg text-sm font-orbitron font-bold transition-all duration-300 bg-gradient-to-r from-neon-pink to-neon-purple text-white shadow-lg shadow-neon-pink/20 flex-1 md:flex-none flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-gamepad"></i> Katalog Game
-                </button>
-                <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="tab-btn px-6 py-2.5 rounded-lg text-sm font-orbitron font-bold transition-all duration-300 text-gray-400 hover:text-white flex-1 md:flex-none flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-trophy"></i> Leaderboard
-                </button>
-                <button onclick="switchTab('achievements')" id="tab-achievements" class="tab-btn px-6 py-2.5 rounded-lg text-sm font-orbitron font-bold transition-all duration-300 text-gray-400 hover:text-white flex-1 md:flex-none flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-award"></i> Achievements
-                </button>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow flex flex-col justify-center">
+
+        <!-- 1. HOME SCREEN -->
+        <div id="home-screen" class="space-y-8 animate-fadeIn">
+            <div class="text-center space-y-4">
+                <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK ARENA</h2>
+                <p class="text-gray-400 max-w-xl mx-auto text-lg">Mainkan game arcade klasik secara real-time bersama teman dari jarak jauh menggunakan Room Code online!</p>
             </div>
 
-            <!-- Game Category Filter (Visible only in Games Tab) -->
-            <div id="categoryFilter" class="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                <button onclick="filterCategory('all')" class="cat-btn bg-neon-cyan/10 border border-neon-cyan text-neon-cyan px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap active-cat">Semua</button>
-                <button onclick="filterCategory('arcade')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap">Arcade</button>
-                <button onclick="filterCategory('action')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap">Action</button>
-                <button onclick="filterCategory('puzzle')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap">Puzzle</button>
-                <button onclick="filterCategory('casual')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap">Casual</button>
+            <!-- Profile & Quick Setup -->
+            <div class="max-w-md mx-auto bg-neon-card/90 cyber-border p-6 rounded-lg space-y-4 shadow-neon-cyan">
+                <h3 class="font-orbitron text-neon-cyan text-center font-bold tracking-wide">IDENTITAS PLAYER</h3>
+                <div>
+                    <label class="text-xs font-mono text-gray-400 block mb-1">NICKNAME ANDA</label>
+                    <input type="text" id="username-input" value="CyberRunner" class="w-full bg-neon-dark border border-neon-cyan/40 rounded px-3 py-2 text-white font-orbitron focus:outline-none focus:border-neon-pink">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <button onclick="createRoomModal()" class="w-full py-3 bg-gradient-to-r from-neon-pink to-neon-purple text-white font-orbitron font-bold rounded shadow-neon-pink hover:opacity-90 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> BUAT ROOM
+                    </button>
+                    <button onclick="joinRoomModal()" class="w-full py-3 bg-gradient-to-r from-neon-cyan to-blue-600 text-neon-dark font-orbitron font-bold rounded shadow-neon-cyan hover:opacity-90 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> GABUNG ROOM
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Selection Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <div onclick="selectGame('pong')" class="bg-neon-card border border-neon-cyan/30 hover:border-neon-cyan p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">MULTIPLAYER 1v1</span>
+                        <i class="fa-solid fa-table-tennis-paddle-ball text-2xl text-neon-cyan group-hover:scale-110 transition"></i>
+                    </div>
+                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-cyan transition">NEON PONG BATTLE</h4>
+                    <p class="text-sm text-gray-400 mt-1">Duel pantulan bola cepat real-time dengan kontrol dayung presisi.</p>
+                </div>
+
+                <div onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-pink/30 hover:border-neon-pink p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono bg-neon-pink/20 text-neon-pink px-2 py-1 rounded">TACTICAL 1v1</span>
+                        <i class="fa-solid fa-hashtag text-2xl text-neon-pink group-hover:scale-110 transition"></i>
+                    </div>
+                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-pink transition">CYBER TIC-TAC-TOE</h4>
+                    <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik berbalut estetika neon.</p>
+                </div>
+
+                <div onclick="selectGame('race')" class="bg-neon-card border border-neon-green/30 hover:border-neon-green p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono bg-neon-green/20 text-neon-green px-2 py-1 rounded">SURVIVAL SCORE</span>
+                        <i class="fa-solid fa-car-tunnel text-2xl text-neon-green group-hover:scale-110 transition"></i>
+                    </div>
+                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-green transition">CYBER RACE SURVIVAL</h4>
+                    <p class="text-sm text-gray-400 mt-1">Hindari rintangan neon kecepatan tinggi dan raih skor tertinggi online.</p>
+                </div>
+
+                <div onclick="selectGame('memory')" class="bg-neon-card border border-neon-yellow/30 hover:border-neon-yellow p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono bg-neon-yellow/20 text-neon-yellow px-2 py-1 rounded">SPEED MEMORY</span>
+                        <i class="fa-solid fa-brain text-2xl text-neon-yellow group-hover:scale-110 transition"></i>
+                    </div>
+                    <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-yellow transition">MEMORY MATRIX DUEL</h4>
+                    <p class="text-sm text-gray-400 mt-1">Uji kecepatan daya ingat pola cahaya matriks grid secara bergantian.</p>
+                </div>
             </div>
         </div>
 
-        <!-- SECTION 1: CATALOG GAMES HUB -->
-        <section id="sec-games" class="tab-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <!-- Game Card 1: Neon Snake -->
-            <div class="game-card group glass-panel rounded-2xl overflow-hidden border border-gray-800 hover:border-neon-pink transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between" data-category="arcade">
-                <div class="relative h-48 overflow-hidden bg-black/60 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                    <i class="fa-solid fa-staff-snake text-7xl text-neon-pink/40 group-hover:scale-125 group-hover:text-neon-pink transition-all duration-500"></i>
-                    <span class="absolute top-3 right-3 z-20 bg-neon-pink/20 border border-neon-pink text-neon-pink text-[10px] font-mono px-2 py-0.5 rounded-full font-bold">ARCADE</span>
-                </div>
-                <div class="p-5 z-20 flex-grow flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-pink transition-colors">Neon Snake</h3>
-                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Ular cyber klasik modern dengan efek partikel, speed power-up, dan tantangan tinggi.</p>
-                    </div>
-                    <div class="mt-6">
-                        <div class="flex items-center justify-between text-xs text-gray-400 mb-3 font-mono">
-                            <span>High Score:</span>
-                            <span class="text-neon-cyan font-bold" id="hs-snake">0</span>
-                        </div>
-                        <button onclick="launchGame('snake')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-neon-pink to-neon-purple text-white font-orbitron font-bold text-sm tracking-wider hover:brightness-125 transition-all shadow-lg shadow-neon-pink/20 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-play text-xs"></i> PLAY NOW
-                        </button>
-                    </div>
+        <!-- 2. ROOM LOBBY SCREEN -->
+        <div id="room-screen" class="hidden space-y-6 animate-fadeIn max-w-xl mx-auto w-full">
+            <div class="flex items-center justify-between">
+                <button onclick="leaveRoom()" class="text-sm font-mono text-gray-400 hover:text-neon-pink flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> KEMBALI
+                </button>
+                <div class="bg-neon-cyan/10 border border-neon-cyan text-neon-cyan px-4 py-1.5 rounded font-orbitron font-bold tracking-widest text-lg" id="display-room-code">
+                    ROOM: ----
                 </div>
             </div>
 
-            <!-- Game Card 2: Space Defender -->
-            <div class="game-card group glass-panel rounded-2xl overflow-hidden border border-gray-800 hover:border-neon-cyan transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between" data-category="action">
-                <div class="relative h-48 overflow-hidden bg-black/60 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                    <i class="fa-solid fa-shuttle-space text-7xl text-neon-cyan/40 group-hover:scale-125 group-hover:text-neon-cyan transition-all duration-500"></i>
-                    <span class="absolute top-3 right-3 z-20 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan text-[10px] font-mono px-2 py-0.5 rounded-full font-bold">ACTION</span>
+            <div class="bg-neon-card cyber-border p-6 rounded-lg space-y-6">
+                <div class="text-center space-y-2">
+                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">CYBER GAME</h3>
+                    <p class="text-xs text-gray-400">Undang teman Anda dengan membagikan Room Code di atas.</p>
                 </div>
-                <div class="p-5 z-20 flex-grow flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-cyan transition-colors">Space Defender</h3>
-                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Retro Space Shooter. Hancurkan invasi alien cyber, bertahan hidup dan raih combo score!</p>
+
+                <!-- Player Slots -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-neon-dark border border-neon-pink/50 p-4 rounded text-center space-y-2">
+                        <i class="fa-solid fa-user-astronaut text-3xl text-neon-pink"></i>
+                        <div class="font-orbitron font-bold text-white text-sm truncate" id="host-name-slot">Host (Waiting...)</div>
+                        <span class="text-[10px] font-mono bg-neon-pink/20 text-neon-pink px-2 py-0.5 rounded">PLAYER 1 (HOST)</span>
                     </div>
-                    <div class="mt-6">
-                        <div class="flex items-center justify-between text-xs text-gray-400 mb-3 font-mono">
-                            <span>High Score:</span>
-                            <span class="text-neon-cyan font-bold" id="hs-space">0</span>
-                        </div>
-                        <button onclick="launchGame('space')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-blue-600 text-white font-orbitron font-bold text-sm tracking-wider hover:brightness-125 transition-all shadow-lg shadow-neon-cyan/20 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-play text-xs"></i> PLAY NOW
-                        </button>
+                    <div class="bg-neon-dark border border-neon-cyan/50 p-4 rounded text-center space-y-2">
+                        <i class="fa-solid fa-user-secret text-3xl text-neon-cyan"></i>
+                        <div class="font-orbitron font-bold text-white text-sm truncate" id="guest-name-slot">Menunggu Lawan...</div>
+                        <span class="text-[10px] font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-0.5 rounded">PLAYER 2 (GUEST)</span>
                     </div>
+                </div>
+
+                <!-- Chat Room -->
+                <div class="border border-neon-purple/40 rounded bg-neon-dark/60 p-3 space-y-2">
+                    <div class="text-xs font-mono text-neon-purple flex items-center justify-between">
+                        <span><i class="fa-solid fa-comments"></i> ROOM CHAT</span>
+                        <span id="chat-status" class="text-gray-500">Connected</span>
+                    </div>
+                    <div id="chat-messages" class="h-28 overflow-y-auto space-y-1.5 text-xs font-mono pr-2">
+                        <div class="text-gray-500 italic">Selamat datang di room chat! Sapa lawanmu di sini...</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-grow bg-neon-dark border border-neon-cyan/30 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neon-cyan" onkeypress="handleChatKey(event)">
+                        <button onclick="sendChatMessage()" class="bg-neon-cyan text-neon-dark px-3 py-1.5 rounded font-bold text-xs hover:opacity-90">KIRIM</button>
+                    </div>
+                </div>
+
+                <div id="room-action-area" class="text-center">
+                    <button id="start-game-btn" onclick="startGameSession()" class="w-full py-3 bg-gradient-to-r from-neon-green to-emerald-600 text-neon-dark font-orbitron font-bold rounded shadow-neon-green hover:opacity-90 transition hidden">
+                        MULAI PERTANDINGAN
+                    </button>
+                    <p id="waiting-host-text" class="text-xs font-mono text-neon-yellow animate-pulse">Menunggu Host memulai permainan...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. GAME ARENA SCREEN -->
+        <div id="game-arena-screen" class="hidden space-y-4 animate-fadeIn">
+            <div class="flex items-center justify-between bg-neon-card px-4 py-2 rounded border border-neon-cyan/30">
+                <div class="flex items-center gap-3">
+                    <button onclick="quitActiveGame()" class="text-xs font-mono text-red-400 hover:text-red-300 border border-red-500/30 px-2.5 py-1 rounded">KELUAR</button>
+                    <span id="active-game-name" class="font-orbitron font-bold text-neon-cyan text-sm">GAME ARENA</span>
+                </div>
+                <div id="game-score-board" class="font-orbitron text-sm font-bold text-white flex gap-4">
+                    <span>P1: <span id="score-p1" class="text-neon-pink">0</span></span>
+                    <span>VS</span>
+                    <span>P2: <span id="score-p2" class="text-neon-cyan">0</span></span>
                 </div>
             </div>
 
-            <!-- Game Card 3: Cyber Memory -->
-            <div class="game-card group glass-panel rounded-2xl overflow-hidden border border-gray-800 hover:border-neon-purple transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between" data-category="puzzle">
-                <div class="relative h-48 overflow-hidden bg-black/60 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                    <i class="fa-solid fa-brain text-7xl text-neon-purple/40 group-hover:scale-125 group-hover:text-neon-purple transition-all duration-500"></i>
-                    <span class="absolute top-3 right-3 z-20 bg-neon-purple/20 border border-neon-purple text-neon-purple text-[10px] font-mono px-2 py-0.5 rounded-full font-bold">PUZZLE</span>
-                </div>
-                <div class="p-5 z-20 flex-grow flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-purple transition-colors">Cyber Memory</h3>
-                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Uji ingatan Anda. Cocokkan kartu simbol neon dalam waktu sesingkat mungkin.</p>
+            <!-- Game Canvas Container -->
+            <div class="relative bg-neon-card cyber-border rounded-lg overflow-hidden flex flex-col items-center justify-center p-2" style="min-height: 400px;">
+                <canvas id="game-canvas" width="600" height="400" class="max-w-full bg-neon-dark rounded shadow-2xl"></canvas>
+                
+                <!-- Touch Controller D-Pad for Mobile -->
+                <div id="mobile-controls" class="w-full flex justify-between items-center px-6 py-3 mt-2 bg-neon-dark/80 rounded border border-neon-cyan/20">
+                    <div class="flex gap-2">
+                        <button id="btn-left" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
+                        <button id="btn-right" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
                     </div>
-                    <div class="mt-6">
-                        <div class="flex items-center justify-between text-xs text-gray-400 mb-3 font-mono">
-                            <span>Best Time:</span>
-                            <span class="text-neon-cyan font-bold" id="hs-memory">--s</span>
-                        </div>
-                        <button onclick="launchGame('memory')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-neon-purple to-pink-600 text-white font-orbitron font-bold text-sm tracking-wider hover:brightness-125 transition-all shadow-lg shadow-neon-purple/20 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-play text-xs"></i> PLAY NOW
-                        </button>
+                    <div class="text-right">
+                        <span class="text-[10px] font-mono text-gray-400 block">KONTROL HP</span>
+                        <span class="text-xs font-orbitron text-neon-pink">PAD / TOUCH</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Game Card 4: Color Tap Reflex -->
-            <div class="game-card group glass-panel rounded-2xl overflow-hidden border border-gray-800 hover:border-neon-green transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between" data-category="casual">
-                <div class="relative h-48 overflow-hidden bg-black/60 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-gradient-to-t from-neon-card to-transparent z-10"></div>
-                    <i class="fa-solid fa-bolt text-7xl text-neon-green/40 group-hover:scale-125 group-hover:text-neon-green transition-all duration-500"></i>
-                    <span class="absolute top-3 right-3 z-20 bg-neon-green/20 border border-neon-green text-neon-green text-[10px] font-mono px-2 py-0.5 rounded-full font-bold">CASUAL</span>
-                </div>
-                <div class="p-5 z-20 flex-grow flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-orbitron font-bold text-xl text-white group-hover:text-neon-green transition-colors">Color Tap Reflex</h3>
-                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Tes kecepatan refleks! Tekan warna neon yang tepat sebelum waktu habis.</p>
-                    </div>
-                    <div class="mt-6">
-                        <div class="flex items-center justify-between text-xs text-gray-400 mb-3 font-mono">
-                            <span>High Score:</span>
-                            <span class="text-neon-cyan font-bold" id="hs-reflex">0</span>
-                        </div>
-                        <button onclick="launchGame('reflex')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-neon-green to-emerald-600 text-white font-orbitron font-bold text-sm tracking-wider hover:brightness-125 transition-all shadow-lg shadow-neon-green/20 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-play text-xs"></i> PLAY NOW
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- SECTION 2: LEADERBOARD -->
-        <section id="sec-leaderboard" class="tab-content hidden max-w-4xl mx-auto">
-            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-gray-800">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="font-orbitron font-bold text-2xl text-white flex items-center gap-3">
-                            <i class="fa-solid fa-trophy text-neon-yellow"></i> GLOBAL LEADERBOARD
-                        </h2>
-                        <p class="text-gray-400 text-sm mt-1">Peringkat skor tertinggi lokal yang tercatat di peramban Anda.</p>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-gray-800 text-xs font-mono text-gray-400 uppercase">
-                                <th class="py-3 px-4">Peringkat</th>
-                                <th class="py-3 px-4">Game</th>
-                                <th class="py-3 px-4">Pemain</th>
-                                <th class="py-3 px-4 text-right">Skor Terbaik</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardTableBody" class="divide-y divide-gray-800/50 font-mono text-sm">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 3: ACHIEVEMENTS -->
-        <section id="sec-achievements" class="tab-content hidden max-w-4xl mx-auto">
-            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-gray-800">
-                <div class="mb-6">
-                    <h2 class="font-orbitron font-bold text-2xl text-white flex items-center gap-3">
-                        <i class="fa-solid fa-award text-neon-pink"></i> SYSTEM ACHIEVEMENTS
-                    </h2>
-                    <p class="text-gray-400 text-sm mt-1">Buka semua pencapaian untuk mendapatkan poin bonus & tingkatkan Level Profil.</p>
-                </div>
-
-                <div id="achievementsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-        </section>
+        </div>
 
     </main>
 
     <!-- FOOTER -->
-    <footer class="mt-12 text-center text-xs text-gray-600 font-mono">
-        <p>&copy; 2026 NEON ARCADE PLATFORM &bull; ALL RIGHTS RESERVED &bull; BUILT WITH VANILLA JS & TAILWIND</p>
+    <footer class="text-center py-4 text-xs font-mono text-gray-500 border-t border-neon-cyan/10">
+        NEON ARCADE MULTIPLAYER &bull; POWERED BY FIREBASE REAL-TIME ENGINE
     </footer>
 
-    <!-- GAME ARENA PLAY MODAL OVERLAY -->
-    <div id="gameModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex flex-col items-center justify-between p-2 sm:p-4">
-        
-        <!-- Modal Top Bar HUD -->
-        <div class="w-full max-w-4xl flex items-center justify-between bg-black/60 px-4 py-2 rounded-xl border border-gray-800 mb-2">
-            <div class="flex items-center space-x-3">
-                <span id="modalGameTitle" class="font-orbitron font-bold text-lg text-neon-cyan">GAME TITLE</span>
+    <!-- MODAL JOIN / CREATE -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
+        <div class="bg-neon-card cyber-border p-6 rounded-lg max-w-sm w-full space-y-4">
+            <h3 id="modal-title" class="font-orbitron font-bold text-lg text-neon-cyan">JUDUL MODAL</h3>
+            <div id="modal-body" class="space-y-3">
+                <!-- Dynamic Content -->
             </div>
-            
-            <div class="flex items-center space-x-6 font-mono text-sm">
-                <div>SKOR: <span id="hudScore" class="text-neon-yellow font-bold text-base">0</span></div>
-                <div>LIVES/INFO: <span id="hudExtra" class="text-neon-pink font-bold text-base">-</span></div>
-            </div>
-
-            <div class="flex items-center space-x-2">
-                <button onclick="togglePauseGame()" id="pauseBtn" class="p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs font-mono">
-                    <i class="fa-solid fa-pause"></i>
-                </button>
-                <button onclick="closeGameModal()" class="p-2 bg-neon-pink/20 hover:bg-neon-pink text-white rounded-lg text-xs font-mono transition-colors">
-                    <i class="fa-solid fa-xmark text-base"></i>
-                </button>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-800 text-gray-300 text-xs font-mono hover:bg-gray-700">BATAL</button>
+                <button id="modal-confirm-btn" onclick="" class="px-4 py-2 rounded bg-neon-cyan text-neon-dark font-bold text-xs font-orbitron hover:opacity-90">PROSES</button>
             </div>
         </div>
-
-        <!-- Canvas Game Container -->
-        <div class="relative w-full max-w-4xl flex-grow flex items-center justify-center overflow-hidden rounded-xl bg-black border border-gray-800">
-            <!-- Game Canvas -->
-            <canvas id="gameCanvas" class="w-full h-full object-contain"></canvas>
-
-            <!-- Overlay Pause / Game Over Menu -->
-            <div id="canvasOverlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20 hidden">
-                <h2 id="overlayTitle" class="font-orbitron text-3xl font-black text-neon-pink mb-2">GAME OVER</h2>
-                <p id="overlayDesc" class="text-gray-300 font-mono text-sm mb-6">Skor Akhir Anda: 0</p>
-                <div class="flex space-x-4">
-                    <button onclick="restartCurrentGame()" class="px-6 py-2.5 rounded-xl bg-neon-cyan text-black font-orbitron font-bold text-sm hover:brightness-125 transition-all">
-                        <i class="fa-solid fa-rotate-right mr-1"></i> COBA LAGI
-                    </button>
-                    <button onclick="closeGameModal()" class="px-6 py-2.5 rounded-xl bg-gray-800 text-white font-orbitron font-bold text-sm hover:bg-gray-700 transition-all">
-                        KELUAR
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile / Touch On-Screen Controls HUD -->
-        <div id="touchControls" class="w-full max-w-4xl mt-2 flex items-center justify-between px-4 py-2 bg-black/40 rounded-xl border border-gray-800/80 md:hidden">
-            <!-- Left D-PAD -->
-            <div class="grid grid-cols-3 gap-1 w-32 h-28">
-                <div></div>
-                <button id="btnUp" class="bg-gray-800/80 text-neon-cyan active:bg-neon-cyan active:text-black rounded flex items-center justify-center text-lg"><i class="fa-solid fa-caret-up"></i></button>
-                <div></div>
-                <button id="btnLeft" class="bg-gray-800/80 text-neon-cyan active:bg-neon-cyan active:text-black rounded flex items-center justify-center text-lg"><i class="fa-solid fa-caret-left"></i></button>
-                <button id="btnDown" class="bg-gray-800/80 text-neon-cyan active:bg-neon-cyan active:text-black rounded flex items-center justify-center text-lg"><i class="fa-solid fa-caret-down"></i></button>
-                <button id="btnRight" class="bg-gray-800/80 text-neon-cyan active:bg-neon-cyan active:text-black rounded flex items-center justify-center text-lg"><i class="fa-solid fa-caret-right"></i></button>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex items-center space-x-3">
-                <button id="btnAction" class="w-16 h-16 rounded-full bg-neon-pink/30 border border-neon-pink text-neon-pink font-orbitron font-bold active:bg-neon-pink active:text-black flex items-center justify-center text-sm shadow-lg shadow-neon-pink/30">
-                    ACTION
-                </button>
-            </div>
-        </div>
-
     </div>
 
-    <!-- AUDIO & PLATFORM LOGIC -->
-    <script>
-        /* ==========================================================================
-           1. SOUND SYNTHESIZER (Web Audio API - No External Files Required)
-           ========================================================================== */
-        class SoundEffects {
-            constructor() {
-                this.ctx = null;
-                this.enabled = true;
-            }
+    <!-- FIREBASE SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-            }
-
-            playBeep(freq = 440, type = 'sine', duration = 0.1, vol = 0.1) {
-                if (!this.enabled) return;
-                this.init();
-                try {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = type;
-                    osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
-                } catch(e){}
-            }
-
-            playScoreSound() {
-                this.playBeep(587.33, 'square', 0.1, 0.08);
-                setTimeout(() => this.playBeep(880, 'square', 0.15, 0.08), 80);
-            }
-
-            playExplosion() {
-                this.playBeep(120, 'sawtooth', 0.2, 0.15);
-                setTimeout(() => this.playBeep(60, 'sawtooth', 0.25, 0.15), 50);
-            }
-
-            playClick() {
-                this.playBeep(300, 'triangle', 0.05, 0.05);
-            }
-        }
-
-        const SFX = new SoundEffects();
-
-        function toggleAudio() {
-            SFX.enabled = !SFX.enabled;
-            const btn = document.getElementById('audioBtn');
-            btn.innerHTML = SFX.enabled ? 
-                '<i class="fa-solid fa-volume-high text-lg"></i>' : 
-                '<i class="fa-solid fa-volume-xmark text-lg text-gray-600"></i>';
-        }
-
-        /* ==========================================================================
-           2. PLAYER PROFILE & LOCAL STORAGE MANAGEMENT
-           ========================================================================== */
-        let player = {
-            name: 'CyberPlayer',
-            coins: 0,
-            level: 1,
-            highScores: { snake: 0, space: 0, memory: 999, reflex: 0 },
-            unlockedAchievements: []
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+          apiKey: "AIzaSyAZ6_ltMFDckhljGMHqgl6cGOflsBBSHmE",
+          authDomain: "gamebaru.firebaseapp.com",
+          projectId: "gamebaru",
+          storageBucket: "gamebaru.firebasestorage.app",
+          messagingSenderId: "738946940533",
+          appId: "1:738946940533:web:a7dd259b26cf5c6ac4023c",
+          measurementId: "G-R7T4VYTN2N"
         };
 
-        const ACHIEVEMENTS_DATA = [
-            { id: 'first_game', name: 'First Blood', desc: 'Mainkan game pertamamu', reward: 50, icon: 'fa-play' },
-            { id: 'snake_100', name: 'Snake Master', desc: 'Raih skor > 100 di Neon Snake', reward: 100, icon: 'fa-staff-snake' },
-            { id: 'space_200', name: 'Galactic Hero', desc: 'Raih skor > 200 di Space Defender', reward: 150, icon: 'fa-shuttle-space' },
-            { id: 'memory_win', name: 'Brainiac', desc: 'Selesaikan Cyber Memory', reward: 100, icon: 'fa-brain' },
-            { id: 'reflex_20', name: 'Lightning Reflex', desc: 'Capai skor > 20 di Color Tap', reward: 100, icon: 'fa-bolt' }
-        ];
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        function loadPlayerData() {
-            const saved = localStorage.getItem('neon_arcade_player');
-            if (saved) {
-                player = { ...player, ...JSON.parse(saved) };
-            }
-            updateProfileUI();
-            updateHighScoresUI();
-            renderAchievements();
-            renderLeaderboard();
+        // Global State App
+        window.FB = { db, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc };
+        window.appState = {
+            username: "CyberRunner",
+            roomCode: null,
+            isHost: false,
+            selectedGame: 'pong',
+            unsubscribeRoom: null,
+            activeGameInterval: null,
+            audioEnabled: true
+        };
+
+        // UI Handlers & Navigation
+        window.showScreen = function(screenId) {
+            ['home-screen', 'room-screen', 'game-arena-screen'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
         }
 
-        function savePlayerData() {
-            localStorage.setItem('neon_arcade_player', JSON.stringify(player));
-            updateProfileUI();
-        }
-
-        function addScoreAndCoins(gameKey, score) {
-            // Update Coins & Experience
-            player.coins += score;
-            player.level = Math.floor(player.coins / 300) + 1;
-
-            // Check High Score
-            if (gameKey === 'memory') {
-                if (score < player.highScores.memory || player.highScores.memory === 0) {
-                    player.highScores.memory = score;
-                }
+        window.toggleAudio = function() {
+            window.appState.audioEnabled = !window.appState.audioEnabled;
+            const btn = document.getElementById('audio-btn');
+            const icon = document.getElementById('audio-icon');
+            if(window.appState.audioEnabled) {
+                icon.className = "fa-solid fa-volume-high";
+                btn.classList.remove('text-red-400', 'border-red-500/50');
+                btn.classList.add('text-neon-cyan', 'border-neon-cyan/50');
             } else {
-                if (score > (player.highScores[gameKey] || 0)) {
-                    player.highScores[gameKey] = score;
-                }
-            }
-
-            // Trigger Achievement Checks
-            unlockAchievement('first_game');
-            if (gameKey === 'snake' && score >= 100) unlockAchievement('snake_100');
-            if (gameKey === 'space' && score >= 200) unlockAchievement('space_200');
-            if (gameKey === 'memory') unlockAchievement('memory_win');
-            if (gameKey === 'reflex' && score >= 20) unlockAchievement('reflex_20');
-
-            savePlayerData();
-            updateHighScoresUI();
-            renderLeaderboard();
-        }
-
-        function unlockAchievement(id) {
-            if (!player.unlockedAchievements.includes(id)) {
-                player.unlockedAchievements.push(id);
-                const ach = ACHIEVEMENTS_DATA.find(a => a.id === id);
-                if (ach) {
-                    player.coins += ach.reward;
-                    showNotification(`Achievement Unlocked: ${ach.name}! (+${ach.reward} PTS)`);
-                }
-                savePlayerData();
-                renderAchievements();
+                icon.className = "fa-solid fa-volume-xmark";
+                btn.classList.remove('text-neon-cyan', 'border-neon-cyan/50');
+                btn.classList.add('text-red-400', 'border-red-500/50');
             }
         }
 
-        function updateProfileUI() {
-            document.getElementById('userName').innerText = player.name;
-            document.getElementById('userCoins').innerText = player.coins;
-            document.getElementById('userLevel').innerText = `Lv.${player.level}`;
-        }
+        // Web Audio Synthesizer
+        window.playSound = function(type) {
+            if(!window.appState.audioEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
 
-        function updateHighScoresUI() {
-            document.getElementById('hs-snake').innerText = player.highScores.snake || 0;
-            document.getElementById('hs-space').innerText = player.highScores.space || 0;
-            document.getElementById('hs-memory').innerText = player.highScores.memory < 999 ? player.highScores.memory + 's' : '--s';
-            document.getElementById('hs-reflex').innerText = player.highScores.reflex || 0;
-        }
-
-        function showNotification(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-5 right-5 z-50 glass-panel border border-neon-cyan px-4 py-3 rounded-xl text-white font-mono text-sm flex items-center gap-3 shadow-xl glow-cyan animate-bounce';
-            toast.innerHTML = `<i class="fa-solid fa-circle-check text-neon-green text-lg"></i> <span>${msg}</span>`;
-            document.body.appendChild(toast);
-            SFX.playScoreSound();
-            setTimeout(() => toast.remove(), 4000);
-        }
-
-        /* ==========================================================================
-           3. NAVIGATION & UI TABS
-           ========================================================================== */
-        function switchTab(tabId) {
-            SFX.playClick();
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-gradient-to-r', 'from-neon-pink', 'to-neon-purple', 'text-white', 'shadow-lg');
-                el.classList.add('text-gray-400');
-            });
-
-            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.add('bg-gradient-to-r', 'from-neon-pink', 'to-neon-purple', 'text-white', 'shadow-lg');
-            activeBtn.classList.remove('text-gray-400');
-
-            const filterContainer = document.getElementById('categoryFilter');
-            if (tabId === 'games') {
-                filterContainer.classList.remove('hidden');
-            } else {
-                filterContainer.classList.add('hidden');
-            }
-        }
-
-        function filterCategory(cat) {
-            SFX.playClick();
-            const cards = document.querySelectorAll('.game-card');
-            cards.forEach(card => {
-                if (cat === 'all' || card.dataset.category === cat) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
+                if(type === 'beep') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.1);
+                } else if(type === 'hit') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(150, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.1);
+                } else if(type === 'win') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    osc.frequency.setValueAtTime(500, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(700, ctx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
                 }
-            });
-
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.className = 'cat-btn bg-gray-900 border border-gray-800 text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap';
-            });
-            event.target.className = 'cat-btn bg-neon-cyan/10 border border-neon-cyan text-neon-cyan px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap active-cat';
+            } catch(e) {}
         }
 
-        function renderLeaderboard() {
-            const tbody = document.getElementById('leaderboardTableBody');
-            tbody.innerHTML = '';
-
-            const games = [
-                { name: 'Neon Snake', key: 'snake', unit: 'pts' },
-                { name: 'Space Defender', key: 'space', unit: 'pts' },
-                { name: 'Cyber Memory', key: 'memory', unit: 's', isTime: true },
-                { name: 'Color Tap Reflex', key: 'reflex', unit: 'pts' }
-            ];
-
-            games.forEach((g, idx) => {
-                let scoreVal = player.highScores[g.key] || 0;
-                if (g.isTime) {
-                    scoreVal = scoreVal < 999 ? `${scoreVal} detik` : 'Belum Ada';
-                } else {
-                    scoreVal = `${scoreVal} PTS`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-white/5 transition-colors';
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-bold text-neon-pink">#${idx + 1}</td>
-                    <td class="py-3 px-4 text-white font-orbitron">${g.name}</td>
-                    <td class="py-3 px-4 text-gray-300">${player.name}</td>
-                    <td class="py-3 px-4 text-right text-neon-cyan font-bold">${scoreVal}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+        window.selectGame = function(gameKey) {
+            window.appState.selectedGame = gameKey;
+            const names = {
+                'pong': 'NEON PONG BATTLE',
+                'tictactoe': 'CYBER TIC-TAC-TOE',
+                'race': 'CYBER RACE SURVIVAL',
+                'memory': 'MEMORY MATRIX DUEL'
+            };
+            document.getElementById('lobby-game-title').innerText = names[gameKey];
         }
 
-        function renderAchievements() {
-            const grid = document.getElementById('achievementsGrid');
-            grid.innerHTML = '';
+        // Room Creation & Joining Logic
+        window.createRoomModal = function() {
+            const uInput = document.getElementById('username-input').value.trim();
+            if(uInput) window.appState.username = uInput;
+            document.getElementById('player-display-name').innerText = window.appState.username;
 
-            ACHIEVEMENTS_DATA.forEach(ach => {
-                const isUnlocked = player.unlockedAchievements.includes(ach.id);
-                const card = document.createElement('div');
-                card.className = `p-4 rounded-xl border flex items-center space-x-4 transition-all ${
-                    isUnlocked 
-                    ? 'bg-neon-pink/10 border-neon-pink text-white' 
-                    : 'bg-black/30 border-gray-800 text-gray-500 opacity-60'
-                }`;
-                card.innerHTML = `
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xl ${
-                        isUnlocked ? 'bg-neon-pink text-black' : 'bg-gray-800 text-gray-600'
-                    }">
-                        <i class="fa-solid ${ach.icon}"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex items-center justify-between">
-                            <h4 class="font-orbitron font-bold text-sm ${isUnlocked ? 'text-neon-pink' : 'text-gray-400'}">${ach.name}</h4>
-                            <span class="text-xs font-mono text-neon-yellow">+${ach.reward} PTS</span>
-                        </div>
-                        <p class="text-xs text-gray-400 mt-1">${ach.desc}</p>
-                    </div>
-                `;
-                grid.appendChild(card);
+            const code = Math.random().toString(36).substring(2, 7).toUpperCase();
+            window.appState.roomCode = code;
+            window.appState.isHost = true;
+
+            // Save Room to Firestore
+            setDoc(doc(db, "rooms", code), {
+                host: window.appState.username,
+                guest: null,
+                game: window.appState.selectedGame,
+                status: 'waiting',
+                chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
+                gameState: {}
+            }).then(() => {
+                document.getElementById('display-room-code').innerText = `ROOM: ${code}`;
+                document.getElementById('host-name-slot').innerText = window.appState.username;
+                document.getElementById('guest-name-slot').innerText = "Menunggu Lawan...";
+                document.getElementById('start-game-btn').classList.remove('hidden');
+                document.getElementById('waiting-host-text').classList.add('hidden');
+                showScreen('room-screen');
+                listenToRoom(code);
+            }).catch(err => {
+                alert("Gagal membuat room. Pastikan Firestore database sudah diaktifkan di test mode!");
+                console.error(err);
             });
         }
 
-        /* ==========================================================================
-           4. GAME ARENA ENGINE & OVERLAY CONTROLLER
-           ========================================================================== */
-        let activeGame = null;
-        let gameLoopId = null;
-        let isPaused = false;
-        let canvas, ctx;
+        window.joinRoomModal = function() {
+            const uInput = document.getElementById('username-input').value.trim();
+            if(uInput) window.appState.username = uInput;
+            document.getElementById('player-display-name').innerText = window.appState.username;
 
-        function launchGame(gameKey) {
-            SFX.playClick();
-            activeGame = gameKey;
-            isPaused = false;
-            
-            const modal = document.getElementById('gameModal');
-            const overlay = document.getElementById('canvasOverlay');
-            overlay.classList.add('hidden');
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').innerText = "GABUNG ROOM ONLINE";
+            document.getElementById('modal-body').innerHTML = `
+                <label class="text-xs font-mono text-gray-400 block mb-1">MASUKKAN KODE ROOM (5 DIGIT)</label>
+                <input type="text" id="join-code-input" placeholder="Cth: A3F92" class="w-full bg-neon-dark border border-neon-cyan/40 rounded px-3 py-2 text-white font-orbitron uppercase focus:outline-none focus:border-neon-cyan">
+            `;
+            document.getElementById('modal-confirm-btn').setAttribute('onclick', 'confirmJoinRoom()');
             modal.classList.remove('hidden');
-
-            canvas = document.getElementById('gameCanvas');
-            ctx = canvas.getContext('2d');
-            
-            // Adjust canvas resolution internal
-            canvas.width = 800;
-            canvas.height = 600;
-
-            const titleMap = {
-                snake: 'NEON SNAKE',
-                space: 'SPACE DEFENDER',
-                memory: 'CYBER MEMORY',
-                reflex: 'COLOR TAP REFLEX'
-            };
-            document.getElementById('modalGameTitle').innerText = titleMap[gameKey];
-
-            setupTouchControls();
-
-            if (gameKey === 'snake') initSnakeGame();
-            if (gameKey === 'space') initSpaceGame();
-            if (gameKey === 'memory') initMemoryGame();
-            if (gameKey === 'reflex') initReflexGame();
         }
 
-        function closeGameModal() {
-            SFX.playClick();
-            if (gameLoopId) cancelAnimationFrame(gameLoopId);
-            if (window.gameInterval) clearInterval(window.gameInterval);
-            document.getElementById('gameModal').classList.add('hidden');
-            activeGame = null;
-        }
+        window.confirmJoinRoom = async function() {
+            const codeInput = document.getElementById('join-code-input');
+            if(!codeInput) return;
+            const code = codeInput.value.trim().toUpperCase();
+            if(!code) return alert("Masukkan kode room!");
 
-        function togglePauseGame() {
-            SFX.playClick();
-            isPaused = !isPaused;
-            document.getElementById('pauseBtn').innerHTML = isPaused ? 
-                '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
-        }
-
-        function showGameOver(score, customText = '') {
-            SFX.playExplosion();
-            const overlay = document.getElementById('canvasOverlay');
-            document.getElementById('overlayTitle').innerText = 'GAME OVER';
-            document.getElementById('overlayDesc').innerText = customText || `Skor Akhir Anda: ${score}`;
-            overlay.classList.remove('hidden');
-
-            if (activeGame) {
-                addScoreAndCoins(activeGame, score);
-            }
-        }
-
-        function restartCurrentGame() {
-            SFX.playClick();
-            document.getElementById('canvasOverlay').classList.add('hidden');
-            if (activeGame) launchGame(activeGame);
-        }
-
-        /* Setup Touch / D-Pad Button Handlers */
-        function setupTouchControls() {
-            const bindBtn = (id, key) => {
-                const btn = document.getElementById(id);
-                if (!btn) return;
-                const trigger = (e) => {
-                    e.preventDefault();
-                    window.dispatchEvent(new KeyboardEvent('keydown', { key: key }));
-                };
-                btn.ontouchstart = trigger;
-                btn.onmousedown = trigger;
-            };
-
-            bindBtn('btnUp', 'ArrowUp');
-            bindBtn('btnDown', 'ArrowDown');
-            bindBtn('btnLeft', 'ArrowLeft');
-            bindBtn('btnRight', 'ArrowRight');
-            bindBtn('btnAction', ' ');
-        }
-
-
-        /* ==========================================================================
-           5. GAME 1: NEON SNAKE
-           ========================================================================== */
-        let snake, snakeFood, snakeDir, snakeScore, snakeSpeed;
-
-        function initSnakeGame() {
-            snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
-            snakeDir = {x: 1, y: 0};
-            snakeScore = 0;
-            snakeSpeed = 100; // ms
-            spawnSnakeFood();
-
-            document.getElementById('hudScore').innerText = snakeScore;
-            document.getElementById('hudExtra').innerText = 'SPEED: 1x';
-
-            if (window.gameInterval) clearInterval(window.gameInterval);
-            
-            window.onkeydown = (e) => {
-                if (activeGame !== 'snake') return;
-                if (e.key === 'ArrowUp' && snakeDir.y === 0) snakeDir = {x: 0, y: -1};
-                if (e.key === 'ArrowDown' && snakeDir.y === 0) snakeDir = {x: 0, y: 1};
-                if (e.key === 'ArrowLeft' && snakeDir.x === 0) snakeDir = {x: -1, y: 0};
-                if (e.key === 'ArrowRight' && snakeDir.x === 0) snakeDir = {x: 1, y: 0};
-            };
-
-            let lastTime = 0;
-            function gameStep(timestamp) {
-                if (activeGame !== 'snake') return;
-                if (!lastTime) lastTime = timestamp;
-                
-                if (timestamp - lastTime > snakeSpeed) {
-                    if (!isPaused) updateSnake();
-                    lastTime = timestamp;
-                }
-                drawSnake();
-                gameLoopId = requestAnimationFrame(gameStep);
-            }
-            gameLoopId = requestAnimationFrame(gameStep);
-        }
-
-        function spawnSnakeFood() {
-            snakeFood = {
-                x: Math.floor(Math.random() * 38) + 1,
-                y: Math.floor(Math.random() * 28) + 1
-            };
-        }
-
-        function updateSnake() {
-            const head = {x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y};
-
-            // Wall Collision
-            if (head.x < 0 || head.x >= 40 || head.y < 0 || head.y >= 30) {
-                showGameOver(snakeScore);
+            const roomRef = doc(db, "rooms", code);
+            const snap = await getDoc(roomRef);
+            if(!snap.exists()) {
+                alert("Room tidak ditemukan!");
                 return;
             }
 
-            // Self Collision
-            for (let segment of snake) {
-                if (head.x === segment.x && head.y === segment.y) {
-                    showGameOver(snakeScore);
-                    return;
-                }
-            }
-
-            snake.unshift(head);
-
-            // Eat Food
-            if (head.x === snakeFood.x && head.y === snakeFood.y) {
-                snakeScore += 10;
-                SFX.playScoreSound();
-                document.getElementById('hudScore').innerText = snakeScore;
-                spawnSnakeFood();
-                if (snakeScore % 50 === 0 && snakeSpeed > 40) {
-                    snakeSpeed -= 10;
-                    document.getElementById('hudExtra').innerText = `SPEED: ${(100/snakeSpeed).toFixed(1)}x`;
-                }
-            } else {
-                snake.pop();
-            }
-        }
-
-        function drawSnake() {
-            ctx.fillStyle = '#0a0a12';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Grid
-            ctx.strokeStyle = '#121225';
-            ctx.lineWidth = 1;
-            const gridSize = 20;
-            for(let x=0; x<canvas.width; x+=gridSize) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for(let y=0; y<canvas.height; y+=gridSize) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-
-            // Draw Food
-            ctx.fillStyle = '#00f3ff';
-            ctx.shadowColor = '#00f3ff';
-            ctx.shadowBlur = 15;
-            ctx.beginPath();
-            ctx.arc(snakeFood.x * gridSize + 10, snakeFood.y * gridSize + 10, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Draw Snake
-            snake.forEach((seg, i) => {
-                ctx.fillStyle = i === 0 ? '#ff007f' : '#b000ff';
-                ctx.shadowColor = i === 0 ? '#ff007f' : '#b000ff';
-                ctx.shadowBlur = i === 0 ? 15 : 5;
-                ctx.fillRect(seg.x * gridSize + 1, seg.y * gridSize + 1, gridSize - 2, gridSize - 2);
-            });
-            ctx.shadowBlur = 0;
-        }
-
-        /* ==========================================================================
-           6. GAME 2: SPACE DEFENDER
-           ========================================================================== */
-        let playerShip, bullets, enemies, spaceScore, spaceLives;
-
-        function initSpaceGame() {
-            playerShip = { x: 375, y: 520, w: 50, h: 30, speed: 7 };
-            bullets = [];
-            enemies = [];
-            spaceScore = 0;
-            spaceLives = 3;
-
-            document.getElementById('hudScore').innerText = spaceScore;
-            document.getElementById('hudExtra').innerText = 'HP: ❤️❤️❤️';
-
-            const keys = {};
-            window.onkeydown = (e) => { keys[e.key] = true; };
-            window.onkeyup = (e) => { keys[e.key] = false; };
-
-            let lastShoot = 0;
-
-            function spaceLoop(timestamp) {
-                if (activeGame !== 'space') return;
-
-                if (!isPaused) {
-                    // Player Movement
-                    if ((keys['ArrowLeft'] || keys['a']) && playerShip.x > 0) playerShip.x -= playerShip.speed;
-                    if ((keys['ArrowRight'] || keys['d']) && playerShip.x < canvas.width - playerShip.w) playerShip.x += playerShip.speed;
-                    
-                    // Shoot Bullet
-                    if ((keys[' '] || keys['ArrowUp']) && timestamp - lastShoot > 250) {
-                        bullets.push({ x: playerShip.x + playerShip.w / 2 - 3, y: playerShip.y, w: 6, h: 15, speed: 9 });
-                        SFX.playBeep(800, 'square', 0.05, 0.05);
-                        lastShoot = timestamp;
-                    }
-
-                    // Spawn Enemies
-                    if (Math.random() < 0.03) {
-                        enemies.push({
-                            x: Math.random() * (canvas.width - 40),
-                            y: -40,
-                            w: 40,
-                            h: 30,
-                            speed: 2 + Math.random() * 2
-                        });
-                    }
-
-                    // Update Bullets
-                    bullets.forEach((b, bi) => {
-                        b.y -= b.speed;
-                        if (b.y < -10) bullets.splice(bi, 1);
-                    });
-
-                    // Update Enemies & Collision
-                    enemies.forEach((e, ei) => {
-                        e.y += e.speed;
-
-                        // Enemy reached bottom
-                        if (e.y > canvas.height) {
-                            enemies.splice(ei, 1);
-                            spaceLives--;
-                            updateSpaceHP();
-                        }
-
-                        // Bullet Collision
-                        bullets.forEach((b, bi) => {
-                            if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
-                                enemies.splice(ei, 1);
-                                bullets.splice(bi, 1);
-                                spaceScore += 15;
-                                SFX.playScoreSound();
-                                document.getElementById('hudScore').innerText = spaceScore;
-                            }
-                        });
-                    });
-
-                    if (spaceLives <= 0) {
-                        showGameOver(spaceScore);
-                        return;
-                    }
-                }
-
-                drawSpace();
-                gameLoopId = requestAnimationFrame(spaceLoop);
-            }
-
-            gameLoopId = requestAnimationFrame(spaceLoop);
-        }
-
-        function updateSpaceHP() {
-            let hpStr = '';
-            for (let i = 0; i < spaceLives; i++) hpStr += '❤️';
-            document.getElementById('hudExtra').innerText = `HP: ${hpStr || 'DEAD'}`;
-            SFX.playBeep(150, 'sawtooth', 0.2, 0.1);
-        }
-
-        function drawSpace() {
-            ctx.fillStyle = '#05050a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Player Ship
-            ctx.fillStyle = '#00f3ff';
-            ctx.shadowColor = '#00f3ff';
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.moveTo(playerShip.x + playerShip.w / 2, playerShip.y);
-            ctx.lineTo(playerShip.x, playerShip.y + playerShip.h);
-            ctx.lineTo(playerShip.x + playerShip.w, playerShip.y + playerShip.h);
-            ctx.closePath();
-            ctx.fill();
-
-            // Draw Bullets
-            ctx.fillStyle = '#ffe600';
-            ctx.shadowColor = '#ffe600';
-            ctx.shadowBlur = 8;
-            bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
-
-            // Draw Enemies
-            ctx.fillStyle = '#ff007f';
-            ctx.shadowColor = '#ff007f';
-            ctx.shadowBlur = 12;
-            enemies.forEach(e => {
-                ctx.fillRect(e.x, e.y, e.w, e.h);
+            const data = snap.data();
+            await updateDoc(roomRef, {
+                guest: window.appState.username,
+                chat: [...data.chat, {sender: 'System', text: `${window.appState.username} bergabung ke room!`}]
             });
 
-            ctx.shadowBlur = 0;
+            window.appState.roomCode = code;
+            window.appState.isHost = false;
+            closeModal();
+
+            document.getElementById('display-room-code').innerText = `ROOM: ${code}`;
+            document.getElementById('host-name-slot').innerText = data.host;
+            document.getElementById('guest-name-slot').innerText = window.appState.username;
+            window.appState.selectedGame = data.game;
+            selectGame(data.game);
+
+            document.getElementById('start-game-btn').classList.add('hidden');
+            document.getElementById('waiting-host-text').classList.remove('hidden');
+            showScreen('room-screen');
+            listenToRoom(code);
         }
 
-        /* ==========================================================================
-           7. GAME 3: CYBER MEMORY
-           ========================================================================== */
-        let memoryCards, flippedCards, matchedPairs, memoryTime, memoryTimer;
+        window.closeModal = function() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
 
-        function initMemoryGame() {
-            const icons = ['fa-ghost', 'fa-robot', 'fa-gamepad', 'fa-bolt', 'fa-microchip', 'fa-satellite', 'fa-headset', 'fa-atom'];
-            const deck = [...icons, ...icons].sort(() => Math.random() - 0.5);
+        window.listenToRoom = function(code) {
+            if(window.appState.unsubscribeRoom) window.appState.unsubscribeRoom();
+            window.appState.unsubscribeRoom = onSnapshot(doc(db, "rooms", code), (docSnap) => {
+                if(!docSnap.exists()) return;
+                const data = docSnap.data();
 
-            memoryCards = deck.map((icon, idx) => ({ id: idx, icon: icon, flipped: false, matched: false }));
-            flippedCards = [];
-            matchedPairs = 0;
-            memoryTime = 0;
+                // Update Slots
+                if(data.host) document.getElementById('host-name-slot').innerText = data.host;
+                if(data.guest) document.getElementById('guest-name-slot').innerText = data.guest;
 
-            document.getElementById('hudScore').innerText = '0s';
-            document.getElementById('hudExtra').innerText = 'PAIRS: 0/8';
-
-            if (window.gameInterval) clearInterval(window.gameInterval);
-            window.gameInterval = setInterval(() => {
-                if (!isPaused && activeGame === 'memory') {
-                    memoryTime++;
-                    document.getElementById('hudScore').innerText = `${memoryTime}s`;
+                // Update Chat Box
+                if(data.chat) {
+                    const chatBox = document.getElementById('chat-messages');
+                    chatBox.innerHTML = data.chat.map(c => `<div class="truncate"><span class="text-neon-cyan font-bold">[${c.sender}]:</span> ${c.text}</div>`).join('');
+                    chatBox.scrollTop = chatBox.scrollHeight;
                 }
-            }, 1000);
 
-            // Setup Canvas Click Listener
-            canvas.onclick = (e) => {
-                if (activeGame !== 'memory' || isPaused || flippedCards.length >= 2) return;
+                // Check Game Start Trigger
+                if(data.status === 'playing' && document.getElementById('game-arena-screen').classList.contains('hidden')) {
+                    launchActiveGame(data.game);
+                }
+            });
+        }
 
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const clickX = (e.clientX - rect.left) * scaleX;
-                const clickY = (e.clientY - rect.top) * scaleY;
+        window.sendChatMessage = async function() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text || !window.appState.roomCode) return;
 
-                // Card Layout Math (4x4 Grid)
-                const cols = 4, rows = 4;
-                const cardW = 120, cardH = 120, gap = 20;
-                const startX = (canvas.width - (cols * cardW + (cols - 1) * gap)) / 2;
-                const startY = (canvas.height - (rows * cardH + (rows - 1) * gap)) / 2;
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
+            const snap = await getDoc(roomRef);
+            if(snap.exists()) {
+                const data = snap.data();
+                await updateDoc(roomRef, {
+                    chat: [...data.chat, {sender: window.appState.username, text: text}]
+                });
+                input.value = '';
+            }
+        }
 
-                memoryCards.forEach((card, i) => {
-                    const c = i % cols;
-                    const r = Math.floor(i / cols);
-                    const x = startX + c * (cardW + gap);
-                    const y = startY + r * (cardH + gap);
+        window.handleChatKey = function(e) {
+            if(e.key === 'Enter') sendChatMessage();
+        }
 
-                    if (clickX >= x && clickX <= x + cardW && clickY >= y && clickY <= y + cardH) {
-                        if (!card.flipped && !card.matched) {
-                            SFX.playClick();
-                            card.flipped = true;
-                            flippedCards.push(card);
+        window.startGameSession = async function() {
+            if(!window.appState.isHost || !window.appState.roomCode) return;
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
+            await updateDoc(roomRef, { status: 'playing' });
+            launchActiveGame(window.appState.selectedGame);
+        }
 
-                            if (flippedCards.length === 2) {
-                                checkMemoryMatch();
-                            }
-                        }
+        window.leaveRoom = async function() {
+            if(window.appState.unsubscribeRoom) window.appState.unsubscribeRoom();
+            if(window.appState.roomCode && window.appState.isHost) {
+                await deleteDoc(doc(db, "rooms", window.appState.roomCode));
+            }
+            window.appState.roomCode = null;
+            if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
+            showScreen('home-screen');
+        }
+
+        window.quitActiveGame = function() {
+            if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
+            showScreen('room-screen');
+        }
+
+        // Active Game Launcher & Logic Simulator
+        window.launchActiveGame = function(gameKey) {
+            showScreen('game-arena-screen');
+            document.getElementById('active-game-name').innerText = gameKey.toUpperCase() + " BATTLE";
+            if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
+
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+
+            if(gameKey === 'pong') {
+                runPongGame(ctx, canvas);
+            } else if(gameKey === 'tictactoe') {
+                runTicTacToeGame(ctx, canvas);
+            } else if(gameKey === 'race') {
+                runRaceGame(ctx, canvas);
+            } else if(gameKey === 'memory') {
+                runMemoryGame(ctx, canvas);
+            }
+        }
+
+        // Game 1: Neon Pong Battle (Simplified Local/Online Loop)
+        function runPongGame(ctx, canvas) {
+            let p1Y = 160, p2Y = 160, ballX = 300, ballY = 200, dx = 3, dy = 2;
+            let s1 = 0, s2 = 0;
+
+            window.appState.activeGameInterval = setInterval(() => {
+                ctx.fillStyle = '#0a0a12';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Ball movement
+                ballX += dx; ballY += dy;
+                if(ballY <= 0 || ballY >= canvas.height) { dy *= -1; playSound('beep'); }
+                if(ballX <= 20 && ballY >= p1Y && ballY <= p1Y + 80) { dx *= -1; playSound('hit'); }
+                if(ballX >= canvas.width - 25 && ballY >= p2Y && ballY <= p2Y + 80) { dx *= -1; playSound('hit'); }
+
+                if(ballX < 0) { s2++; ballX = 300; ballY = 200; playSound('win'); }
+                if(ballX > canvas.width) { s1++; ballX = 300; ballY = 200; playSound('win'); }
+
+                document.getElementById('score-p1').innerText = s1;
+                document.getElementById('score-p2').innerText = s2;
+
+                // Draw paddles & ball
+                ctx.fillStyle = '#ff007f'; ctx.fillRect(10, p1Y, 10, 80);
+                ctx.fillStyle = '#00f3ff'; ctx.fillRect(canvas.width - 20, p2Y, 10, 80);
+                ctx.fillStyle = '#00ff66'; ctx.beginPath(); ctx.arc(ballX, ballY, 8, 0, Math.PI * 2); ctx.fill();
+            }, 1000 / 60);
+
+            // Controls
+            window.onkeydown = (e) => {
+                if(e.key === 'ArrowUp') p2Y = Math.max(0, p2Y - 20);
+                if(e.key === 'ArrowDown') p2Y = Math.min(canvas.height - 80, p2Y + 20);
+                if(e.key === 'w') p1Y = Math.max(0, p1Y - 20);
+                if(e.key === 's') p1Y = Math.min(canvas.height - 80, p1Y + 20);
+            };
+            document.getElementById('btn-left').onmousedown = () => p1Y = Math.max(0, p1Y - 30);
+            document.getElementById('btn-right').onmousedown = () => p1Y = Math.min(canvas.height - 80, p1Y + 30);
+        }
+
+        // Game 2: Cyber Tic-Tac-Toe
+        function runTicTacToeGame(ctx, canvas) {
+            let board = ['', '', '', '', '', '', '', '', ''];
+            let turn = 'X';
+            let gameOver = false;
+
+            function draw() {
+                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#00f3ff'; ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(200, 50); ctx.lineTo(200, 350);
+                ctx.moveTo(400, 50); ctx.lineTo(400, 350);
+                ctx.moveTo(100, 150); ctx.lineTo(500, 150);
+                ctx.moveTo(100, 250); ctx.lineTo(500, 250);
+                ctx.stroke();
+
+                board.forEach((val, i) => {
+                    let x = (i % 3) * 133 + 130;
+                    let y = Math.floor(i / 3) * 100 + 100;
+                    if(val) {
+                        ctx.fillStyle = val === 'X' ? '#ff007f' : '#00f3ff';
+                        ctx.font = 'bold 50px Orbitron';
+                        ctx.fillText(val, x, y);
                     }
                 });
-            };
-
-            drawMemory();
-        }
-
-        function checkMemoryMatch() {
-            const [c1, c2] = flippedCards;
-            if (c1.icon === c2.icon) {
-                c1.matched = true;
-                c2.matched = true;
-                flippedCards = [];
-                matchedPairs++;
-                SFX.playScoreSound();
-                document.getElementById('hudExtra').innerText = `PAIRS: ${matchedPairs}/8`;
-
-                if (matchedPairs === 8) {
-                    clearInterval(window.gameInterval);
-                    showGameOver(memoryTime, `Selamat! Selesai dalam ${memoryTime} detik!`);
-                }
-            } else {
-                setTimeout(() => {
-                    c1.flipped = false;
-                    c2.flipped = false;
-                    flippedCards = [];
-                }, 800);
             }
-        }
 
-        function drawMemory() {
-            if (activeGame !== 'memory') return;
-
-            ctx.fillStyle = '#0a0a12';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const cols = 4, rows = 4;
-            const cardW = 120, cardH = 120, gap = 20;
-            const startX = (canvas.width - (cols * cardW + (cols - 1) * gap)) / 2;
-            const startY = (canvas.height - (rows * cardH + (rows - 1) * gap)) / 2;
-
-            memoryCards.forEach((card, i) => {
-                const c = i % cols;
-                const r = Math.floor(i / cols);
-                const x = startX + c * (cardW + gap);
-                const y = startY + r * (cardH + gap);
-
-                ctx.save();
-                if (card.flipped || card.matched) {
-                    ctx.fillStyle = '#121225';
-                    ctx.strokeStyle = '#00f3ff';
-                    ctx.lineWidth = 2;
-                    ctx.fillRect(x, y, cardW, cardH);
-                    ctx.strokeRect(x, y, cardW, cardH);
-
-                    // Render Icon Label text alternative on canvas
-                    ctx.fillStyle = '#ff007f';
-                    ctx.font = 'bold 20px Orbitron';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(card.icon.replace('fa-', '').toUpperCase(), x + cardW / 2, y + cardH / 2);
-                } else {
-                    ctx.fillStyle = '#1e1e38';
-                    ctx.strokeStyle = '#b000ff';
-                    ctx.lineWidth = 2;
-                    ctx.fillRect(x, y, cardW, cardH);
-                    ctx.strokeRect(x, y, cardW, cardH);
-
-                    ctx.fillStyle = '#b000ff';
-                    ctx.font = '24px FontAwesome';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('?', x + cardW / 2, y + cardH / 2);
-                }
-                ctx.restore();
-            });
-
-            gameLoopId = requestAnimationFrame(drawMemory);
-        }
-
-        /* ==========================================================================
-           8. GAME 4: COLOR TAP REFLEX
-           ========================================================================== */
-        let reflexScore, reflexTargetColor, reflexTimeLeft, reflexTimer;
-        const NEON_COLORS = [
-            { name: 'PINK', hex: '#ff007f' },
-            { name: 'CYAN', hex: '#00f3ff' },
-            { name: 'PURPLE', hex: '#b000ff' },
-            { name: 'YELLOW', hex: '#ffe600' }
-        ];
-
-        function initReflexGame() {
-            reflexScore = 0;
-            reflexTimeLeft = 30; // 30s match
-
-            document.getElementById('hudScore').innerText = reflexScore;
-            document.getElementById('hudExtra').innerText = `TIME: ${reflexTimeLeft}s`;
-
-            pickNextReflexColor();
-
-            if (window.gameInterval) clearInterval(window.gameInterval);
-            window.gameInterval = setInterval(() => {
-                if (!isPaused && activeGame === 'reflex') {
-                    reflexTimeLeft--;
-                    document.getElementById('hudExtra').innerText = `TIME: ${reflexTimeLeft}s`;
-                    if (reflexTimeLeft <= 0) {
-                        clearInterval(window.gameInterval);
-                        showGameOver(reflexScore);
-                    }
-                }
-            }, 1000);
-
+            draw();
             canvas.onclick = (e) => {
-                if (activeGame !== 'reflex' || isPaused) return;
+                if(gameOver) return;
+                let rect = canvas.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
+                let col = Math.floor((x - 100) / 133);
+                let row = Math.floor((y - 50) / 100);
+                let idx = row * 3 + col;
+                if(idx >= 0 && idx < 9 && board[idx] === '') {
+                    board[idx] = turn;
+                    playSound('beep');
+                    turn = turn === 'X' ? 'O' : 'X';
+                    draw();
+                }
+            };
+        }
 
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const clickX = (e.clientX - rect.left) * scaleX;
-                const clickY = (e.clientY - rect.top) * scaleY;
+        // Game 3: Cyber Race Survival
+        function runRaceGame(ctx, canvas) {
+            let carX = 280, obstacles = [], score = 0;
+            window.appState.activeGameInterval = setInterval(() => {
+                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                score++;
+                document.getElementById('score-p1').innerText = score;
 
-                // 2x2 Buttons Grid Layout
-                const buttons = [
-                    { ...NEON_COLORS[0], x: 180, y: 220, w: 200, h: 120 },
-                    { ...NEON_COLORS[1], x: 420, y: 220, w: 200, h: 120 },
-                    { ...NEON_COLORS[2], x: 180, y: 360, w: 200, h: 120 },
-                    { ...NEON_COLORS[3], x: 420, y: 360, w: 200, h: 120 }
-                ];
+                if(Math.random() < 0.05) {
+                    obstacles.push({x: Math.random() * (canvas.width - 40), y: -50, w: 40, h: 40});
+                }
 
-                buttons.forEach(btn => {
-                    if (clickX >= btn.x && clickX <= btn.x + btn.w && clickY >= btn.y && clickY <= btn.y + btn.h) {
-                        if (btn.name === reflexTargetColor.name) {
-                            reflexScore += 10;
-                            SFX.playScoreSound();
-                            document.getElementById('hudScore').innerText = reflexScore;
-                            pickNextReflexColor();
-                        } else {
-                            SFX.playBeep(150, 'sawtooth', 0.15, 0.1);
-                            reflexScore = Math.max(0, reflexScore - 5);
-                            document.getElementById('hudScore').innerText = reflexScore;
-                        }
+                ctx.fillStyle = '#ff007f';
+                obstacles.forEach(obs => {
+                    obs.y += 4;
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    if(obs.y > 350 && obs.x < carX + 40 && obs.x + 40 > carX) {
+                        playSound('win');
+                        score = 0;
                     }
                 });
+                obstacles = obstacles.filter(o => o.y < canvas.height);
+
+                ctx.fillStyle = '#00f3ff';
+                ctx.fillRect(carX, 330, 40, 50);
+            }, 1000 / 60);
+
+            window.onkeydown = (e) => {
+                if(e.key === 'ArrowLeft') carX = Math.max(50, carX - 25);
+                if(e.key === 'ArrowRight') carX = Math.min(canvas.width - 90, carX + 25);
             };
-
-            drawReflex();
+            document.getElementById('btn-left').onmousedown = () => carX = Math.max(50, carX - 30);
+            document.getElementById('btn-right').onmousedown = () => carX = Math.min(canvas.width - 90, carX + 30);
         }
 
-        function pickNextReflexColor() {
-            reflexTargetColor = NEON_COLORS[Math.floor(Math.random() * NEON_COLORS.length)];
+        // Game 4: Memory Matrix Duel
+        function runMemoryGame(ctx, canvas) {
+            let sequence = [Math.floor(Math.random() * 4)];
+            let playerStep = 0, score = 0;
+            let colors = ['#ff007f', '#00f3ff', '#00ff66', '#ffc600'];
+
+            function drawGrid(activeIdx = -1) {
+                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                let coords = [{x: 180, y: 80}, {x: 320, y: 80}, {x: 180, y: 220}, {x: 320, y: 220}];
+                coords.forEach((c, i) => {
+                    ctx.fillStyle = i === activeIdx ? '#ffffff' : colors[i];
+                    ctx.fillRect(c.x, c.y, 100, 100);
+                });
+            }
+
+            drawGrid();
+            window.appState.activeGameInterval = setInterval(() => {
+                drawGrid();
+            }, 1000);
         }
-
-        function drawReflex() {
-            if (activeGame !== 'reflex') return;
-
-            ctx.fillStyle = '#0a0a12';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Target Text Display
-            ctx.textAlign = 'center';
-            ctx.font = '20px Orbitron';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('TEKAN WARNA BERIKUT:', canvas.width / 2, 100);
-
-            ctx.font = '900 48px Orbitron';
-            ctx.fillStyle = reflexTargetColor.hex;
-            ctx.shadowColor = reflexTargetColor.hex;
-            ctx.shadowBlur = 20;
-            ctx.fillText(reflexTargetColor.name, canvas.width / 2, 160);
-            ctx.shadowBlur = 0;
-
-            // 4 Color Buttons
-            const buttons = [
-                { ...NEON_COLORS[0], x: 180, y: 220, w: 200, h: 120 },
-                { ...NEON_COLORS[1], x: 420, y: 220, w: 200, h: 120 },
-                { ...NEON_COLORS[2], x: 180, y: 360, w: 200, h: 120 },
-                { ...NEON_COLORS[3], x: 420, y: 360, w: 200, h: 120 }
-            ];
-
-            buttons.forEach(btn => {
-                ctx.fillStyle = btn.hex;
-                ctx.shadowColor = btn.hex;
-                ctx.shadowBlur = 10;
-                ctx.fillRect(btn.x, btn.y, btn.w, btn.h);
-                
-                ctx.fillStyle = '#000000';
-                ctx.font = 'bold 20px Orbitron';
-                ctx.fillText(btn.name, btn.x + btn.w / 2, btn.y + btn.h / 2 + 6);
-            });
-            ctx.shadowBlur = 0;
-
-            gameLoopId = requestAnimationFrame(drawReflex);
-        }
-
-        /* ==========================================================================
-           9. INITIALIZATION ON PAGE LOAD
-           ========================================================================== */
-        window.onload = () => {
-            loadPlayerData();
-        };
     </script>
 </body>
 </html>
