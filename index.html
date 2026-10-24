@@ -1,753 +1,407 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON ARCADE 3D - Cyberpunk Online Multiplayer</title>
-    <!-- Tailwind CSS -->
+    <title>YANSUO888 - Official iGaming Lobby & Game Demo</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
+    <!-- FontAwesome Icon CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Three.js CDN untuk Render Grafis 3D -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        neon: {
-                            pink: '#ff007f',
-                            cyan: '#00f3ff',
-                            purple: '#b000ff',
-                            green: '#00ff66',
-                            yellow: '#ffc600',
-                            dark: '#0a0a12',
-                            card: '#121225'
-                        }
-                    },
-                    fontFamily: {
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        rajdhani: ['Rajdhani', 'sans-serif']
-                    },
-                    boxShadow: {
-                        'neon-pink': '0 0 15px rgba(255, 0, 127, 0.6)',
-                        'neon-cyan': '0 0 15px rgba(0, 243, 255, 0.6)',
-                        'neon-purple': '0 0 15px rgba(176, 0, 255, 0.6)',
-                        'neon-green': '0 0 15px rgba(0, 255, 102, 0.6)'
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0a0a12;
-            color: #e2e8f0;
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
+        * {
+            font-family: 'Outfit', sans-serif;
             user-select: none;
         }
-        .cyber-grid {
-            background-image: linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
+        body {
+            background-color: #080c14;
+            color: #f1f5f9;
         }
-        .glow-text-cyan {
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.4);
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .glow-text-pink {
-            text-shadow: 0 0 10px rgba(255, 0, 127, 0.7), 0 0 20px rgba(255, 0, 127, 0.4);
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .cyber-border {
-            position: relative;
-            border: 2px solid #00f3ff;
-            box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.2), 0 0 15px rgba(0, 243, 255, 0.2);
+        .game-card:hover .game-overlay {
+            opacity: 1;
         }
-        .cyber-border::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #ff007f;
-            background: #0a0a12;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        .cyber-border::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            right: -6px;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #ff007f;
-            background: #0a0a12;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-        .game-card-active {
-            border-color: #00f3ff !important;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.8) !important;
-            transform: scale(1.02);
-            background-color: #1a1a38 !important;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0a12; }
-        ::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 3px; }
     </style>
 </head>
-<body class="cyber-grid min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar overflow-x-hidden">
 
-    <!-- HEADER / NAVBAR -->
-    <header class="border-b border-neon-cyan/30 bg-neon-dark/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('home-screen')">
-                <div class="w-10 h-10 rounded bg-gradient-to-br from-neon-pink to-neon-cyan flex items-center justify-center shadow-neon-cyan animate-pulse">
-                    <i class="fa-solid fa-cube text-neon-dark text-xl font-bold"></i>
-                </div>
-                <div>
-                    <h1 class="font-orbitron font-black text-xl tracking-wider glow-text-cyan">NEON ARCADE</h1>
-                    <p class="text-xs text-neon-pink tracking-widest font-mono">3D MULTIPLAYER HUB</p>
-                </div>
+    <!-- Top Announcement Bar -->
+    <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-400 text-xs py-1.5 px-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 overflow-hidden">
+                <span class="bg-amber-500 text-black px-2 py-0.5 rounded font-black text-[10px] tracking-wider">LATEST WIN</span>
+                <marquee class="w-64 md:w-96 text-slate-300">
+                    <span class="text-amber-400 font-bold">User***89</span> menang <span class="text-emerald-400 font-bold">Rp 12.500.000</span> di Gates of Olympus! &bull; <span class="text-amber-400 font-bold">Rizky***21</span> menang <span class="text-emerald-400 font-bold">Rp 8.200.000</span> di Mahjong Ways 2!
+                </marquee>
             </div>
-            <div class="flex items-center space-x-4">
-                <button onclick="toggleAudio()" id="audio-btn" class="px-3 py-1.5 rounded border border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/10 transition text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-volume-high" id="audio-icon"></i> <span class="hidden sm:inline">SFX: ON</span>
-                </button>
-                <div class="flex items-center gap-2 bg-neon-card border border-neon-purple/40 px-3 py-1.5 rounded-full text-sm">
-                    <i class="fa-solid fa-wifi text-neon-green animate-pulse" id="connection-status-icon"></i>
-                    <span id="player-display-name" class="font-orbitron text-xs text-neon-cyan">KINGNANONG</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow flex flex-col justify-center">
-
-        <!-- 1. HOME SCREEN -->
-        <div id="home-screen" class="space-y-8 animate-fadeIn">
-            <div class="text-center space-y-4">
-                <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK 3D ARENA</h2>
-                <p class="text-gray-400 max-w-xl mx-auto text-lg">Pilih mode game 3D atau 2D di bawah lalu buat room mabar online!</p>
-            </div>
-
-            <!-- Profile & Quick Setup -->
-            <div class="max-w-md mx-auto bg-neon-card/90 cyber-border p-6 rounded-lg space-y-4 shadow-neon-cyan">
-                <h3 class="font-orbitron text-neon-cyan text-center font-bold tracking-wide">IDENTITAS PLAYER</h3>
-                <div>
-                    <label class="text-xs font-mono text-gray-400 block mb-1">NICKNAME ANDA</label>
-                    <input type="text" id="username-input" value="KINGNANONG" class="w-full bg-neon-dark border border-neon-cyan/40 rounded px-3 py-2 text-white font-orbitron focus:outline-none focus:border-neon-pink">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 pt-2">
-                    <button onclick="createRoomModal()" class="w-full py-3 bg-gradient-to-r from-neon-pink to-neon-purple text-white font-orbitron font-bold rounded shadow-neon-pink hover:opacity-90 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-plus-circle"></i> BUAT ROOM
-                    </button>
-                    <button onclick="joinRoomModal()" class="w-full py-3 bg-gradient-to-r from-neon-cyan to-blue-600 text-neon-dark font-orbitron font-bold rounded shadow-neon-cyan hover:opacity-90 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-right-to-bracket"></i> GABUNG ROOM
-                    </button>
-                </div>
-            </div>
-
-            <!-- Game Selection Cards -->
-            <div>
-                <p class="text-center text-xs font-orbitron text-neon-cyan mb-3 tracking-widest uppercase">&mdash; PILIH GAME (TERMASUK GAME 3D) &mdash;</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- 3D Runner Game -->
-                    <div id="card-runner3d" onclick="selectGame('runner3d')" class="bg-neon-card border border-neon-pink/50 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg game-card-active relative">
-                        <span id="badge-runner3d" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow">TERPILIH</span>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-pink/25 text-neon-pink px-2 py-1 rounded">WEBGL 3D ACTION</span>
-                            <i class="fa-solid fa-cube text-2xl text-neon-pink animate-bounce"></i>
-                        </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER 3D CUBE RUNNER</h4>
-                        <p class="text-sm text-gray-400 mt-1">Game 3D penuh menggunakan Three.js! Hindari kubus rintangan neon berkecepatan tinggi.</p>
-                    </div>
-
-                    <!-- Air Hockey -->
-                    <div id="card-airhockey" onclick="selectGame('airhockey')" class="bg-neon-card border border-neon-cyan/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
-                        <span id="badge-airhockey" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">FAST ARCADE 1v1</span>
-                            <i class="fa-solid fa-hockey-puck text-2xl text-neon-cyan"></i>
-                        </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">NEON AIR HOCKEY</h4>
-                        <p class="text-sm text-gray-400 mt-1">Duel meja es futuristik dengan pantulan fisik dinamis 2D.</p>
-                    </div>
-
-                    <!-- Cyber Snake -->
-                    <div id="card-snake" onclick="selectGame('snake')" class="bg-neon-card border border-neon-green/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
-                        <span id="badge-snake" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-green/20 text-neon-green px-2 py-1 rounded">SURVIVAL DUEL</span>
-                            <i class="fa-solid fa-worm text-2xl text-neon-green"></i>
-                        </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER SNAKE BATTLE</h4>
-                        <p class="text-sm text-gray-400 mt-1">Uji kelincahan ular neon kompetitif 1v1 memburu energi.</p>
-                    </div>
-
-                    <!-- Tic-Tac-Toe -->
-                    <div id="card-tictactoe" onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-yellow/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
-                        <span id="badge-tictactoe" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-yellow/20 text-neon-yellow px-2 py-1 rounded">TACTICAL 1v1</span>
-                            <i class="fa-solid fa-hashtag text-2xl text-neon-yellow"></i>
-                        </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER TIC-TAC-TOE</h4>
-                        <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik estetika neon.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. ROOM LOBBY SCREEN -->
-        <div id="room-screen" class="hidden space-y-6 animate-fadeIn max-w-xl mx-auto w-full">
-            <div class="flex items-center justify-between">
-                <button onclick="leaveRoom()" class="text-sm font-mono text-gray-400 hover:text-neon-pink flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-left"></i> KEMBALI
-                </button>
-                <div onclick="copyRoomCode()" class="bg-neon-card border border-neon-cyan hover:border-neon-pink text-neon-cyan hover:text-neon-pink px-4 py-2 rounded font-orbitron font-bold tracking-widest text-lg cursor-pointer transition flex items-center gap-3 shadow-neon-cyan" title="Klik untuk Salin Kode Room">
-                    <span>ROOM: <span id="display-room-code-text">----</span></span>
-                    <button class="bg-neon-cyan/20 hover:bg-neon-cyan/40 p-1.5 rounded text-xs transition flex items-center gap-1">
-                        <i class="fa-solid fa-copy" id="copy-icon"></i>
-                        <span id="copy-btn-text" class="text-[10px] font-mono">SALIN</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-neon-card cyber-border p-6 rounded-lg space-y-6">
-                <div class="text-center space-y-2">
-                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">CYBER 3D CUBE RUNNER</h3>
-                    <p class="text-xs text-gray-400">Undang teman Anda dengan membagikan Room Code di atas.</p>
-                </div>
-
-                <!-- Player Slots -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-neon-dark border border-neon-pink/50 p-4 rounded text-center space-y-2">
-                        <i class="fa-solid fa-user-astronaut text-3xl text-neon-pink"></i>
-                        <div class="font-orbitron font-bold text-white text-sm truncate" id="host-name-slot">Host (Waiting...)</div>
-                        <span class="text-[10px] font-mono bg-neon-pink/20 text-neon-pink px-2 py-0.5 rounded">PLAYER 1 (HOST)</span>
-                    </div>
-                    <div class="bg-neon-dark border border-neon-cyan/50 p-4 rounded text-center space-y-2">
-                        <i class="fa-solid fa-user-secret text-3xl text-neon-cyan"></i>
-                        <div class="font-orbitron font-bold text-white text-sm truncate" id="guest-name-slot">Menunggu Lawan...</div>
-                        <span class="text-[10px] font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-0.5 rounded">PLAYER 2 (GUEST)</span>
-                    </div>
-                </div>
-
-                <!-- Chat Room -->
-                <div class="border border-neon-purple/40 rounded bg-neon-dark/60 p-3 space-y-2">
-                    <div class="text-xs font-mono text-neon-purple flex items-center justify-between">
-                        <span><i class="fa-solid fa-comments"></i> ROOM CHAT</span>
-                        <span id="chat-status" class="text-gray-500">Connected</span>
-                    </div>
-                    <div id="chat-messages" class="h-28 overflow-y-auto space-y-1.5 text-xs font-mono pr-2">
-                        <div class="text-gray-500 italic">Selamat datang di room chat! Sapa lawanmu di sini...</div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-grow bg-neon-dark border border-neon-cyan/30 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neon-cyan" onkeypress="handleChatKey(event)">
-                        <button onclick="sendChatMessage()" class="bg-neon-cyan text-neon-dark px-3 py-1.5 rounded font-bold text-xs hover:opacity-90">KIRIM</button>
-                    </div>
-                </div>
-
-                <div id="room-action-area" class="text-center">
-                    <button id="start-game-btn" onclick="startGameSession()" class="w-full py-3 bg-gradient-to-r from-neon-green to-emerald-600 text-neon-dark font-orbitron font-bold rounded shadow-neon-green hover:opacity-90 transition hidden">
-                        MULAI PERTANDINGAN 3D
-                    </button>
-                    <p id="waiting-host-text" class="text-xs font-mono text-neon-yellow animate-pulse">Menunggu Host memulai permainan...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. GAME ARENA SCREEN -->
-        <div id="game-arena-screen" class="hidden space-y-4 animate-fadeIn">
-            <div class="flex items-center justify-between bg-neon-card px-4 py-2 rounded border border-neon-cyan/30">
-                <div class="flex items-center gap-3">
-                    <button onclick="quitActiveGame()" class="text-xs font-mono text-red-400 hover:text-red-300 border border-red-500/30 px-2.5 py-1 rounded">KELUAR</button>
-                    <span id="active-game-name" class="font-orbitron font-bold text-neon-cyan text-sm">3D ARENA</span>
-                </div>
-                <div id="game-score-board" class="font-orbitron text-sm font-bold text-white flex gap-4">
-                    <span>SCORE: <span id="score-p1" class="text-neon-pink">0</span></span>
-                    <span>|</span>
-                    <span>OPPONENT: <span id="score-p2" class="text-neon-cyan">0</span></span>
-                </div>
-            </div>
-
-            <!-- Game Canvas Container -->
-            <div class="relative bg-neon-card cyber-border rounded-lg overflow-hidden flex flex-col items-center justify-center p-2" style="min-height: 400px;">
-                <canvas id="game-canvas" width="600" height="400" class="max-w-full bg-neon-dark rounded shadow-2xl"></canvas>
-                
-                <!-- Touch Controller D-Pad for Mobile -->
-                <div id="mobile-controls" class="w-full flex justify-between items-center px-6 py-3 mt-2 bg-neon-dark/80 rounded border border-neon-cyan/20">
-                    <div class="flex gap-2">
-                        <button id="btn-left" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
-                        <button id="btn-right" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-[10px] font-mono text-gray-400 block">KONTROL 3D</span>
-                        <span class="text-xs font-orbitron text-neon-pink">GESER KIRI / KANAN</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="text-center py-4 text-xs font-mono text-gray-500 border-t border-neon-cyan/10">
-        NEON ARCADE 3D &bull; THREE.JS &amp; FIREBASE REAL-TIME ENGINE (`gamebaru-3629e`)
-    </footer>
-
-    <!-- MODAL JOIN / CREATE -->
-    <div id="custom-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
-        <div class="bg-neon-card cyber-border p-6 rounded-lg max-w-sm w-full space-y-4">
-            <h3 id="modal-title" class="font-orbitron font-bold text-lg text-neon-cyan">JUDUL MODAL</h3>
-            <div id="modal-body" class="space-y-3"></div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-800 text-gray-300 text-xs font-mono hover:bg-gray-700">BATAL</button>
-                <button id="modal-confirm-btn" onclick="" class="px-4 py-2 rounded bg-neon-cyan text-neon-dark font-bold text-xs font-orbitron hover:opacity-90">PROSES</button>
+            <div class="hidden md:flex gap-4 text-slate-400">
+                <span><i class="fa-solid fa-server text-emerald-400 mr-1"></i> System Status: <strong class="text-emerald-400">ONLINE</strong></span>
+                <span><i class="fa-solid fa-clock mr-1"></i> <span id="clockDisplay">--:--:-- WIB</span></span>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE SDKs & GAME LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- Main Navigation Header -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo & Brand -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="filterCategory('all')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-amber-500/20">
+                    Y
+                </div>
+                <div>
+                    <h1 class="font-black text-xl tracking-wider text-white flex items-center gap-1.5">
+                        <span class="gold-gradient-text">YANSUO888</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400 -mt-1 font-semibold tracking-widest">OFFICIAL iGAMING LOBBY</p>
+                </div>
+            </div>
 
-        // Konfigurasi Firebase Project Baru (Region Singapura/Mumbai untuk Sri Lanka)
-        const firebaseConfig = {
-          apiKey: "AIzaSyAaIn49hcSoaN50Kax1J5wJzWwVxelNsOU",
-          authDomain: "gamebaru-3629e.firebaseapp.com",
-          projectId: "gamebaru-3629e",
-          storageBucket: "gamebaru-3629e.firebasestorage.app",
-          messagingSenderId: "234755202063",
-          appId: "1:234755202063:web:9d72c766bff7bc2658177a",
-          measurementId: "G-F74BNSZHRB"
-        };
+            <!-- User Balance & Quick Actions -->
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-3">
+                    <i class="fa-solid fa-wallet text-amber-400 text-sm"></i>
+                    <div>
+                        <div class="text-[9px] text-slate-400 font-bold leading-none">DOMPET UTAMA</div>
+                        <div id="userBalance" class="text-sm font-extrabold text-emerald-400 leading-tight">Rp 500.000</div>
+                    </div>
+                </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+                <button onclick="openDepositModal()" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-lg shadow-amber-500/20 transition">
+                    <i class="fa-solid fa-circle-plus"></i> DEPOSIT
+                </button>
 
-        window.FB = { db, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc };
-        window.appState = {
-            username: "KINGNANONG",
-            roomCode: null,
-            isHost: false,
-            selectedGame: 'runner3d',
-            unsubscribeRoom: null,
-            activeGameInterval: null,
-            audioEnabled: true
-        };
+                <button onclick="openAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition" title="Buka Admin Portal">
+                    <i class="fa-solid fa-sliders text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-        window.selectGame = function(gameKey) {
-            window.appState.selectedGame = gameKey;
-            
-            const games = ['runner3d', 'airhockey', 'snake', 'tictactoe'];
-            games.forEach(g => {
-                const card = document.getElementById(`card-${g}`);
-                const badge = document.getElementById(`badge-${g}`);
-                if (g === gameKey) {
-                    card.classList.add('game-card-active');
-                    badge.classList.remove('hidden');
-                } else {
-                    card.classList.remove('game-card-active');
-                    badge.classList.add('hidden');
-                }
+    <!-- Main Content Body -->
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+        
+        <!-- Live Progressive Jackpot Banner -->
+        <div class="relative rounded-3xl overflow-hidden mb-8 border border-amber-500/30 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 md:p-8 flex flex-col md:flex-row justify-between items-center shadow-2xl">
+            <div class="z-10 text-center md:text-left mb-4 md:mb-0">
+                <span class="inline-block bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 mb-2">
+                    🔥 GRAND PROGRESSIVE JACKPOT YANSUO888
+                </span>
+                <h2 id="jackpotTicker" class="text-3xl md:text-5xl font-black gold-gradient-text tracking-tight my-1">
+                    Rp 8.429.105.800
+                </h2>
+                <p class="text-xs text-slate-400">Diupdate secara real-time dari jaringan YANSUO888 Server.</p>
+            </div>
+            <div class="z-10 flex gap-2">
+                <button onclick="openDepositModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-6 py-3 rounded-2xl text-xs shadow-lg shadow-emerald-500/20 transition">
+                    KLAIM BONUS 100%
+                </button>
+            </div>
+        </div>
+
+        <!-- Provider & Category Navigation Filter -->
+        <div class="flex flex-col gap-4 mb-6">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                <button onclick="filterCategory('all')" class="cat-btn active bg-amber-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap transition">
+                    <i class="fa-solid fa-border-all mr-1.5"></i> Semua Game
+                </button>
+                <button onclick="filterCategory('pragmatic')" class="cat-btn bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap border border-slate-800 transition">
+                    <i class="fa-solid fa-crown text-amber-400 mr-1.5"></i> Pragmatic Play
+                </button>
+                <button onclick="filterCategory('pgsoft')" class="cat-btn bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap border border-slate-800 transition">
+                    <i class="fa-solid fa-gamepad text-indigo-400 mr-1.5"></i> PG Soft
+                </button>
+                <button onclick="filterCategory('simulator')" class="cat-btn bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap border border-slate-800 transition">
+                    <i class="fa-solid fa-microchip text-emerald-400 mr-1.5"></i> Custom Simulator
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+                <div class="flex items-center gap-2 w-full max-w-xs">
+                    <i class="fa-solid fa-magnifying-glass text-slate-500 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="searchGames()" placeholder="Cari nama game..." class="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full">
+                </div>
+                <span class="text-[11px] text-slate-400 font-semibold" id="gameCountDisplay">Tersedia: 4 Game</span>
+            </div>
+        </div>
+
+        <!-- Game Cards Grid -->
+        <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <!-- Dynamic Content Injected via JS -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-8 px-4 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col gap-4 items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center">Y</div>
+                <span class="font-extrabold text-slate-300 tracking-wider">YANSUO888 iGAMING PLATFORM</span>
+            </div>
+            <p class="max-w-xl text-[11px] text-slate-600 leading-relaxed">
+                Website ini adalah platform demo dan edukasi sistem arsitektur iGaming YANSUO888. Seluruh link demo berasal langsung dari server resmi penyedia game.
+            </p>
+            <p class="text-[10px] text-slate-600">&copy; 2026 YANSUO888 Platform. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- GAME MODAL -->
+    <div id="gameModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md items-center justify-center p-2 sm:p-4">
+        <div id="gameModalContainer" class="w-full max-w-5xl">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <!-- DEPOSIT MODAL -->
+    <div id="depositModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
+            <button onclick="closeDepositModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-wallet text-amber-400 mr-2"></i>Deposit Saldo Virtual</h3>
+            <p class="text-xs text-slate-400 mb-4">Pilih nominal deposit untuk menambah saldo latihan kamu.</p>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button onclick="setDepositAmount(50000)" class="bg-slate-800 hover:bg-slate-700 text-white font-bold p-3 rounded-xl text-xs border border-slate-700">Rp 50.000</button>
+                <button onclick="setDepositAmount(100000)" class="bg-slate-800 hover:bg-slate-700 text-white font-bold p-3 rounded-xl text-xs border border-slate-700">Rp 100.000</button>
+                <button onclick="setDepositAmount(500000)" class="bg-slate-800 hover:bg-slate-700 text-white font-bold p-3 rounded-xl text-xs border border-slate-700">Rp 500.000</button>
+            </div>
+            <div class="mb-4">
+                <label class="text-[11px] text-slate-400 font-bold block mb-1">NOMINAL CUSTOM</label>
+                <input type="number" id="customDepoInput" placeholder="Masukkan jumlah..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-emerald-400 font-bold focus:outline-none focus:border-amber-500">
+            </div>
+            <button onclick="processDeposit()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition">
+                KONFIRMASI DEPOSIT INSTAN
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN MODAL -->
+    <div id="adminModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
+                    <i class="fa-solid fa-sliders"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Backoffice Admin Portal</h3>
+                    <p class="text-xs text-slate-400">Pengaturan Parameter RTP & Log Sistem YANSUO888</p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-white">Global House RTP Setting</span>
+                        <span id="rtpDisplay" class="text-xs font-bold text-amber-400">96.5%</span>
+                    </div>
+                    <input type="range" min="80" max="99" value="96.5" step="0.5" id="rtpSlider" oninput="updateRTP(this.value)" class="w-full accent-amber-500">
+                </div>
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                    <span class="text-xs font-bold text-white block mb-2"><i class="fa-solid fa-terminal mr-1.5 text-emerald-400"></i>Live Webhook API Logs</span>
+                    <div id="apiLogConsole" class="bg-black p-3 rounded-xl font-mono text-[10px] text-emerald-400 h-32 overflow-y-auto space-y-1 custom-scrollbar">
+                        <div>[SYSTEM]: YANSUO888 Platform initialized successfully.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        const gameDatabase = [
+            {
+                id: 'pragmatic-olympus',
+                title: 'Gates of Olympus',
+                provider: 'PRAGMATIC PLAY',
+                category: 'pragmatic',
+                rtp: '96.50%',
+                isHot: true,
+                image: 'https://i.postimg.cc/cHjzbqJD/images.jpg',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympgate&lang=id&cur=IDR'
+            },
+            {
+                id: 'pragmatic-bonanza',
+                title: 'Sweet Bonanza 1000',
+                provider: 'PRAGMATIC PLAY',
+                category: 'pragmatic',
+                rtp: '96.53%',
+                isHot: true,
+                image: 'https://i.postimg.cc/FHmBqV9Q/Sweet-Bonanza-1000.webp',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sbonanza&lang=id&cur=IDR'
+            },
+            {
+                id: 'pg-mahjong2',
+                title: 'Mahjong Ways 2',
+                provider: 'PG SOFT',
+                category: 'pgsoft',
+                rtp: '96.95%',
+                isHot: true,
+                image: 'https://i.postimg.cc/wB441KD7/images-(1).jpg',
+                demoUrl: 'https://m.pgsoft-games.com/102/index.html?ot=3&btt=1&aff=demo'
+            },
+            {
+                id: 'custom-slot',
+                title: 'YANSUO Fruit Spin',
+                provider: 'YANSUO LABS',
+                category: 'simulator',
+                rtp: '97.00%',
+                isHot: false,
+                image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&auto=format&fit=crop&q=60',
+                demoUrl: null 
+            }
+        ];
+
+        let balance = 500000;
+
+        function renderGames(games) {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+
+            games.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card relative bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg hover:border-amber-500/50 transition group cursor-pointer flex flex-col justify-between';
+                
+                card.innerHTML = `
+                    <div class="relative aspect-[4/5] overflow-hidden bg-slate-950">
+                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        ${game.isHot ? '<span class="absolute top-2 left-2 bg-rose-500 text-white font-black text-[9px] px-2 py-0.5 rounded-md shadow">HOT</span>' : ''}
+                        
+                        <div class="game-overlay absolute inset-0 bg-slate-950/80 backdrop-blur-xs opacity-0 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 p-3">
+                            <button onclick="openGame('${game.id}')" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-xs rounded-xl shadow-lg hover:scale-105 transition">
+                                <i class="fa-solid fa-play mr-1"></i> MAIN DEMO
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-slate-950/90 border-t border-slate-800/50">
+                        <div class="text-xs font-bold text-white truncate">${game.title}</div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">${game.provider}</span>
+                            <span class="text-[10px] text-emerald-400 font-bold"><i class="fa-solid fa-chart-line text-[8px] mr-0.5"></i> ${game.rtp}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
             });
-
-            const names = {
-                'runner3d': 'CYBER 3D CUBE RUNNER',
-                'airhockey': 'NEON AIR HOCKEY',
-                'snake': 'CYBER SNAKE BATTLE',
-                'tictactoe': 'CYBER TIC-TAC-TOE'
-            };
-            document.getElementById('lobby-game-title').innerText = names[gameKey];
-            window.playSound('beep');
+            document.getElementById('gameCountDisplay').innerText = `Tersedia: ${games.length} Game`;
         }
 
-        window.copyRoomCode = function() {
-            if (!window.appState.roomCode) return;
-            navigator.clipboard.writeText(window.appState.roomCode).then(() => {
-                const btnText = document.getElementById('copy-btn-text');
-                const icon = document.getElementById('copy-icon');
-                btnText.innerText = "DISALIN!";
-                icon.className = "fa-solid fa-check text-neon-green";
-                window.playSound('beep');
-                setTimeout(() => {
-                    btnText.innerText = "SALIN";
-                    icon.className = "fa-solid fa-copy";
-                }, 2000);
-            }).catch(() => {});
-        };
-
-        window.showScreen = function(screenId) {
-            ['home-screen', 'room-screen', 'game-arena-screen'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(screenId).classList.remove('hidden');
-        }
-
-        window.toggleAudio = function() {
-            window.appState.audioEnabled = !window.appState.audioEnabled;
-            const btn = document.getElementById('audio-btn');
-            const icon = document.getElementById('audio-icon');
-            if(window.appState.audioEnabled) {
-                icon.className = "fa-solid fa-volume-high";
-                btn.classList.remove('text-red-400', 'border-red-500/50');
-                btn.classList.add('text-neon-cyan', 'border-neon-cyan/50');
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active', 'bg-amber-500', 'text-slate-950'));
+            if (cat === 'all') {
+                renderGames(gameDatabase);
             } else {
-                icon.className = "fa-solid fa-volume-xmark";
-                btn.classList.remove('text-neon-cyan', 'border-neon-cyan/50');
-                btn.classList.add('text-red-400', 'border-red-500/50');
+                renderGames(gameDatabase.filter(g => g.category === cat));
             }
         }
 
-        window.playSound = function(type) {
-            if(!window.appState.audioEnabled) return;
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                if(type === 'beep') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                    osc.start(); osc.stop(ctx.currentTime + 0.1);
-                } else if(type === 'hit') {
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(150, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.15);
-                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-                    osc.start(); osc.stop(ctx.currentTime + 0.15);
-                }
-            } catch(e) {}
+        function searchGames() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            renderGames(gameDatabase.filter(g => g.title.toLowerCase().includes(query)));
         }
 
-        window.createRoomModal = function() {
-            const uInput = document.getElementById('username-input').value.trim();
-            if(uInput) window.appState.username = uInput;
-            document.getElementById('player-display-name').innerText = window.appState.username;
+        function openGame(gameId) {
+            const game = gameDatabase.find(g => g.id === gameId);
+            if (!game) return;
 
-            const code = Math.random().toString(36).substring(2, 7).toUpperCase();
-            window.appState.roomCode = code;
-            window.appState.isHost = true;
-
-            setDoc(doc(db, "rooms", code), {
-                host: window.appState.username,
-                guest: null,
-                game: window.appState.selectedGame,
-                status: 'waiting',
-                chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
-                gameState: { score1: 0, score2: 0, p1X: 0, p2X: 0 }
-            }).then(() => {
-                document.getElementById('display-room-code-text').innerText = code;
-                document.getElementById('host-name-slot').innerText = window.appState.username;
-                document.getElementById('guest-name-slot').innerText = "Menunggu Lawan...";
-                document.getElementById('start-game-btn').classList.remove('hidden');
-                document.getElementById('waiting-host-text').classList.add('hidden');
-                showScreen('room-screen');
-                listenToRoom(code);
-            }).catch(err => alert("Gagal membuat room!"));
-        }
-
-        window.joinRoomModal = function() {
-            const uInput = document.getElementById('username-input').value.trim();
-            if(uInput) window.appState.username = uInput;
-            document.getElementById('player-display-name').innerText = window.appState.username;
-
-            const modal = document.getElementById('custom-modal');
-            document.getElementById('modal-title').innerText = "GABUNG ROOM ONLINE";
-            document.getElementById('modal-body').innerHTML = `
-                <label class="text-xs font-mono text-gray-400 block mb-1">MASUKKAN KODE ROOM (5 DIGIT)</label>
-                <input type="text" id="join-code-input" placeholder="Cth: A3F92" class="w-full bg-neon-dark border border-neon-cyan/40 rounded px-3 py-2 text-white font-orbitron uppercase focus:outline-none focus:border-neon-cyan">
-            `;
-            document.getElementById('modal-confirm-btn').setAttribute('onclick', 'confirmJoinRoom()');
+            const modal = document.getElementById('gameModal');
+            const container = document.getElementById('gameModalContainer');
             modal.classList.remove('hidden');
-        }
+            modal.classList.add('flex');
 
-        window.confirmJoinRoom = async function() {
-            const codeInput = document.getElementById('join-code-input');
-            if(!codeInput) return;
-            const code = codeInput.value.trim().toUpperCase();
-            if(!code) return alert("Masukkan kode room!");
-
-            const roomRef = doc(db, "rooms", code);
-            const snap = await getDoc(roomRef);
-            if(!snap.exists()) return alert("Room tidak ditemukan!");
-
-            const data = snap.data();
-            await updateDoc(roomRef, {
-                guest: window.appState.username,
-                chat: [...data.chat, {sender: 'System', text: `${window.appState.username} bergabung ke room!`}]
-            });
-
-            window.appState.roomCode = code;
-            window.appState.isHost = false;
-            closeModal();
-
-            document.getElementById('display-room-code-text').innerText = code;
-            document.getElementById('host-name-slot').innerText = data.host;
-            document.getElementById('guest-name-slot').innerText = window.appState.username;
-            window.appState.selectedGame = data.game;
-            
-            document.getElementById('start-game-btn').classList.add('hidden');
-            document.getElementById('waiting-host-text').classList.remove('hidden');
-            showScreen('room-screen');
-            listenToRoom(code);
-        }
-
-        window.closeModal = function() { document.getElementById('custom-modal').classList.add('hidden'); }
-
-        window.listenToRoom = function(code) {
-            if(window.appState.unsubscribeRoom) window.appState.unsubscribeRoom();
-            window.appState.unsubscribeRoom = onSnapshot(doc(db, "rooms", code), (docSnap) => {
-                if(!docSnap.exists()) return;
-                const data = docSnap.data();
-                if(data.host) document.getElementById('host-name-slot').innerText = data.host;
-                if(data.guest) document.getElementById('guest-name-slot').innerText = data.guest;
-
-                if(data.chat) {
-                    const chatBox = document.getElementById('chat-messages');
-                    chatBox.innerHTML = data.chat.map(c => `<div class="truncate"><span class="text-neon-cyan font-bold">[${c.sender}]:</span> ${c.text}</div>`).join('');
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                }
-
-                if(data.status === 'playing' && document.getElementById('game-arena-screen').classList.contains('hidden')) {
-                    launchActiveGame(data.game);
-                }
-            });
-        }
-
-        window.sendChatMessage = async function() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if(!text || !window.appState.roomCode) return;
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-            const snap = await getDoc(roomRef);
-            if(snap.exists()) {
-                const data = snap.data();
-                await updateDoc(roomRef, { chat: [...data.chat, {sender: window.appState.username, text: text}] });
-                input.value = '';
+            if (game.demoUrl) {
+                container.innerHTML = `
+                    <div class="relative w-full h-[85vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 flex flex-col">
+                        <div class="bg-slate-950 px-4 py-3 flex justify-between items-center border-b border-slate-800">
+                            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">${game.title} - Official Demo Server</span>
+                            <button onclick="closeGameModal()" class="text-slate-400 hover:text-white bg-slate-800 px-3 py-1 rounded-xl text-xs font-bold">✕ Tutup</button>
+                        </div>
+                        <iframe src="${game.demoUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative max-w-md mx-auto text-center">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-amber-400">YANSUO SIMULATOR ENGINE</span>
+                            <button onclick="closeGameModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 bg-slate-950 p-4 rounded-2xl border border-slate-800 my-4 text-4xl h-32 items-center">
+                            <div id="simReel1">💎</div>
+                            <div id="simReel2">🍋</div>
+                            <div id="simReel3">👑</div>
+                        </div>
+                        <div id="simStatus" class="text-xs font-bold text-slate-400 h-6 mb-4">Tekan Spin untuk bermain!</div>
+                        <button onclick="spinCustomEngine()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black rounded-xl text-xs">SPIN (Rp 2.000)</button>
+                    </div>
+                `;
             }
         }
 
-        window.handleChatKey = function(e) { if(e.key === 'Enter') sendChatMessage(); }
-
-        window.startGameSession = async function() {
-            if(!window.appState.isHost || !window.appState.roomCode) return;
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-            await updateDoc(roomRef, { status: 'playing' });
-            launchActiveGame(window.appState.selectedGame);
+        function closeGameModal() {
+            document.getElementById('gameModal').classList.add('hidden');
+            document.getElementById('gameModalContainer').innerHTML = '';
         }
 
-        window.leaveRoom = async function() {
-            if(window.appState.unsubscribeRoom) window.appState.unsubscribeRoom();
-            if(window.appState.roomCode && window.appState.isHost) {
-                await deleteDoc(doc(db, "rooms", window.appState.roomCode));
-            }
-            window.appState.roomCode = null;
-            if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
-            showScreen('home-screen');
+        function spinCustomEngine() {
+            if (balance < 2000) return alert("Saldo tidak cukup!");
+            balance -= 2000;
+            updateBalanceDisplay();
+            const symbols = ['💎', '🍋', '👑', '7️⃣', '⭐'];
+            setTimeout(() => {
+                document.getElementById('simReel1').innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                document.getElementById('simReel2').innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                document.getElementById('simReel3').innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                document.getElementById('simStatus').innerText = "Selesai memutar!";
+            }, 300);
         }
 
-        window.quitActiveGame = function() {
-            if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
-            showScreen('room-screen');
+        function openDepositModal() { document.getElementById('depositModal').classList.remove('hidden'); document.getElementById('depositModal').classList.add('flex'); }
+        function closeDepositModal() { document.getElementById('depositModal').classList.add('hidden'); }
+        function setDepositAmount(amt) { document.getElementById('customDepoInput').value = amt; }
+        function processDeposit() {
+            const val = parseInt(document.getElementById('customDepoInput').value);
+            if (val) { balance += val; updateBalanceDisplay(); closeDepositModal(); alert(`Deposit Rp ${val.toLocaleString('id-ID')} Berhasil!`); }
         }
 
-        window.launchActiveGame = function(gameKey) {
-            showScreen('game-arena-screen');
-            document.getElementById('active-game-name').innerText = gameKey.toUpperCase() + " ARENA";
-            if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
+        function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); document.getElementById('adminModal').classList.add('flex'); }
+        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
+        function updateRTP(val) { document.getElementById('rtpDisplay').innerText = val + '%'; }
+        function updateBalanceDisplay() { document.getElementById('userBalance').innerText = `Rp ${balance.toLocaleString('id-ID')}`; }
 
-            const canvas = document.getElementById('game-canvas');
-            const ctx = canvas.getContext('2d');
+        setInterval(() => {
+            document.getElementById('clockDisplay').innerText = new Date().toLocaleTimeString('id-ID') + ' WIB';
+            let jpElem = document.getElementById('jackpotTicker');
+            let currentJp = parseInt(jpElem.innerText.replace(/[^0-9]/g, '')) + 250;
+            jpElem.innerText = `Rp ${currentJp.toLocaleString('id-ID')}`;
+        }, 1000);
 
-            if(gameKey === 'runner3d') run3DRunnerGame(canvas);
-            else if(gameKey === 'airhockey') runAirHockeyGame(ctx, canvas);
-            else if(gameKey === 'snake') runSnakeGame(ctx, canvas);
-            else if(gameKey === 'tictactoe') runTicTacToeGame(ctx, canvas);
-        }
-
-        // ================= GAME 3D: CYBER CUBE RUNNER (Three.js Fixed Background) =================
-        function run3DRunnerGame(canvas) {
-            const width = canvas.clientWidth || 600;
-            const height = canvas.clientHeight || 400;
-            canvas.width = width;
-            canvas.height = height;
-
-            const scene = new THREE.Scene();
-            // Memberi warna background scene agar tidak gelap gulita
-            scene.background = new THREE.Color(0x0a0a12);
-
-            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-            renderer.setSize(width, height);
-
-            // Pencahayaan
-            const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
-            scene.add(ambientLight);
-            
-            const pointLight = new THREE.PointLight(0x00f3ff, 3, 100);
-            pointLight.position.set(0, 5, 2);
-            scene.add(pointLight);
-
-            // Pemain (Kubus Neon Pink)
-            const playerGeo = new THREE.BoxGeometry(1, 1, 1);
-            const playerMat = new THREE.MeshStandardMaterial({ color: 0xff007f, roughness: 0.1, metalness: 0.5 });
-            const player = new THREE.Mesh(playerGeo, playerMat);
-            scene.add(player);
-            player.position.set(0, 0, 0);
-
-            // Rintangan 3D (Kubus Cyan)
-            const obstacles = [];
-            for(let i = 0; i < 6; i++) {
-                const obsGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-                const obsMat = new THREE.MeshStandardMaterial({ color: 0x00f3ff, roughness: 0.2 });
-                const obs = new THREE.Mesh(obsGeo, obsMat);
-                obs.position.set((Math.random() - 0.5) * 6, 0, -12 - (i * 7));
-                scene.add(obs);
-                obstacles.push(obs);
-            }
-
-            camera.position.z = 5;
-            camera.position.y = 2;
-            camera.rotation.x = -0.2;
-
-            let score = 0;
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-
-            let targetX = 0;
-            function movePlayer(val) {
-                targetX = Math.max(-3, Math.min(3, targetX + val));
-                playSound('beep');
-            }
-
-            window.onkeydown = (e) => {
-                if(e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-1);
-                if(e.key === 'ArrowRight' || e.key === 'd') movePlayer(1);
-            };
-
-            document.getElementById('btn-left').onclick = () => movePlayer(-1);
-            document.getElementById('btn-right').onclick = () => movePlayer(1);
-
-            // Game Loop 3D
-            window.appState.activeGameInterval = setInterval(async () => {
-                player.position.x += (targetX - player.position.x) * 0.2;
-                score++;
-
-                obstacles.forEach(obs => {
-                    obs.z += 0.35;
-                    obs.rotation.x += 0.03;
-                    obs.rotation.y += 0.03;
-                    if(obs.z > 5) {
-                        obs.z = -35;
-                        obs.x = (Math.random() - 0.5) * 6;
-                    }
-                    if(Math.abs(player.position.x - obs.x) < 1 && Math.abs(obs.z - player.position.z) < 1) {
-                        playSound('hit');
-                        score = Math.max(0, score - 10);
-                        obs.z = -35;
-                    }
-                });
-
-                document.getElementById('score-p1').innerText = score;
-                document.getElementById('score-p2').innerText = window.appState.isHost ? 'HOST' : 'GUEST';
-
-                if(window.appState.isHost) {
-                    await updateDoc(roomRef, { "gameState.score1": score });
-                }
-
-                renderer.render(scene, camera);
-            }, 1000 / 30);
-        }
-
-        // ================= 2. AIR HOCKEY (2D Arcade) =================
-        function runAirHockeyGame(ctx, canvas) {
-            let p1X = 300, p1Y = 340, p2X = 300, p2Y = 60;
-            let puckX = 300, puckY = 200, dx = 2.5, dy = 3;
-            let s1 = 0, s2 = 0;
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-
-            onSnapshot(roomRef, (docSnap) => {
-                if(!docSnap.exists()) return;
-                const state = docSnap.data().gameState;
-                if(state) {
-                    if(!window.appState.isHost) {
-                        p1X = state.p1X; p1Y = state.p1Y; puckX = state.puckX; puckY = state.puckY; s1 = state.s1; s2 = state.s2;
-                    } else { p2X = state.p2X; p2Y = state.p2Y; }
-                }
-            });
-
-            window.appState.activeGameInterval = setInterval(() => {
-                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = '#00f3ff40'; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); ctx.stroke();
-
-                if(window.appState.isHost) {
-                    puckX += dx; puckY += dy;
-                    if(puckX <= 15 || puckX >= canvas.width - 15) { dx *= -1; playSound('beep'); }
-                    if(puckY <= 0 || puckY >= canvas.height) { dy *= -1; }
-
-                    let dist1 = Math.hypot(puckX - p1X, puckY - p1Y);
-                    if(dist1 < 30) { dx = (puckX - p1X) * 0.2; dy = -Math.abs(dy) - 1; playSound('hit'); }
-
-                    updateDoc(roomRef, { "gameState.p1X": p1X, "gameState.p1Y": p1Y, "gameState.puckX": puckX, "gameState.puckY": puckY });
-                }
-
-                document.getElementById('score-p1').innerText = s1;
-                document.getElementById('score-p2').innerText = s2;
-
-                ctx.fillStyle = '#ff007f'; ctx.beginPath(); ctx.arc(p1X, p1Y, 22, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#00f3ff'; ctx.beginPath(); ctx.arc(p2X, p2Y, 22, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#00ff66'; ctx.beginPath(); ctx.arc(puckX, puckY, 12, 0, Math.PI*2); ctx.fill();
-            }, 1000 / 30);
-
-            function movePlayer(vx, vy) {
-                if(window.appState.isHost) {
-                    p1X = Math.max(30, Math.min(canvas.width - 30, p1X + vx));
-                    p1Y = Math.max(canvas.height/2 + 20, Math.min(canvas.height - 30, p1Y + vy));
-                    updateDoc(roomRef, { "gameState.p1X": p1X, "gameState.p1Y": p1Y });
-                }
-            }
-            window.onkeydown = (e) => {
-                if(e.key === 'ArrowUp' || e.key === 'w') movePlayer(0, -20);
-                if(e.key === 'ArrowDown' || e.key === 's') movePlayer(0, 20);
-                if(e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-20, 0);
-                if(e.key === 'ArrowRight' || e.key === 'd') movePlayer(20, 0);
-            };
-        }
-
-        // ================= 3. SNAKE BATTLE =================
-        function runSnakeGame(ctx, canvas) {
-            let snake1 = [{x: 10, y: 10}], dir1 = 'RIGHT';
-            window.appState.activeGameInterval = setInterval(() => {
-                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                let head = {...snake1[0]};
-                if(dir1 === 'RIGHT') head.x++;
-                snake1.unshift(head); snake1.pop();
-                ctx.fillStyle = '#ff007f';
-                snake1.forEach(p => ctx.fillRect(p.x * 20, p.y * 20, 18, 18));
-                document.getElementById('score-p1').innerText = snake1.length;
-            }, 150);
-        }
-
-        // ================= 4. TIC-TAC-TOE =================
-        function runTicTacToeGame(ctx, canvas) {
-            ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00f3ff'; ctx.font = '20px Orbitron';
-            ctx.fillText("TIC-TAC-TOE READY", 180, 200);
-        }
+        window.onload = () => { renderGames(gameDatabase); updateBalanceDisplay(); };
     </script>
 </body>
 </html>
