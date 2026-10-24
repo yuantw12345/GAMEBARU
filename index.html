@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON ARCADE v2.0 - Cyberpunk Online Multiplayer</title>
+    <title>NEON ARCADE 3D - Cyberpunk Online Multiplayer</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js CDN untuk Render Grafis 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -103,11 +105,11 @@
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('home-screen')">
                 <div class="w-10 h-10 rounded bg-gradient-to-br from-neon-pink to-neon-cyan flex items-center justify-center shadow-neon-cyan animate-pulse">
-                    <i class="fa-solid fa-gamepad text-neon-dark text-xl font-bold"></i>
+                    <i class="fa-solid fa-cube text-neon-dark text-xl font-bold"></i>
                 </div>
                 <div>
                     <h1 class="font-orbitron font-black text-xl tracking-wider glow-text-cyan">NEON ARCADE</h1>
-                    <p class="text-xs text-neon-pink tracking-widest font-mono">ONLINE MULTIPLAYER HUB v2.0</p>
+                    <p class="text-xs text-neon-pink tracking-widest font-mono">3D MULTIPLAYER HUB</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -116,7 +118,7 @@
                 </button>
                 <div class="flex items-center gap-2 bg-neon-card border border-neon-purple/40 px-3 py-1.5 rounded-full text-sm">
                     <i class="fa-solid fa-wifi text-neon-green animate-pulse" id="connection-status-icon"></i>
-                    <span id="player-display-name" class="font-orbitron text-xs text-neon-cyan">GUEST</span>
+                    <span id="player-display-name" class="font-orbitron text-xs text-neon-cyan">KINGNANONG</span>
                 </div>
             </div>
         </div>
@@ -128,8 +130,8 @@
         <!-- 1. HOME SCREEN -->
         <div id="home-screen" class="space-y-8 animate-fadeIn">
             <div class="text-center space-y-4">
-                <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK ARENA</h2>
-                <p class="text-gray-400 max-w-xl mx-auto text-lg">Pilih game modern di bawah lalu buat room untuk mabar online!</p>
+                <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK 3D ARENA</h2>
+                <p class="text-gray-400 max-w-xl mx-auto text-lg">Pilih mode game 3D atau 2D di bawah lalu buat room mabar online!</p>
             </div>
 
             <!-- Profile & Quick Setup -->
@@ -152,17 +154,28 @@
 
             <!-- Game Selection Cards -->
             <div>
-                <p class="text-center text-xs font-orbitron text-neon-cyan mb-3 tracking-widest uppercase">&mdash; PILIH GAME ARCADE MODERN &mdash;</p>
+                <p class="text-center text-xs font-orbitron text-neon-cyan mb-3 tracking-widest uppercase">&mdash; PILIH GAME (TERMASUK GAME 3D) &mdash;</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 3D Runner Game -->
+                    <div id="card-runner3d" onclick="selectGame('runner3d')" class="bg-neon-card border border-neon-pink/50 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg game-card-active relative">
+                        <span id="badge-runner3d" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow">TERPILIH</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono bg-neon-pink/25 text-neon-pink px-2 py-1 rounded">WEBGL 3D ACTION</span>
+                            <i class="fa-solid fa-cube text-2xl text-neon-pink animate-bounce"></i>
+                        </div>
+                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER 3D CUBE RUNNER</h4>
+                        <p class="text-sm text-gray-400 mt-1">Game 3D penuh menggunakan Three.js! Hindari kubus rintangan neon berkecepatan tinggi.</p>
+                    </div>
+
                     <!-- Air Hockey -->
-                    <div id="card-airhockey" onclick="selectGame('airhockey')" class="bg-neon-card border border-neon-cyan/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg game-card-active relative">
-                        <span id="badge-airhockey" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow">TERPILIH</span>
+                    <div id="card-airhockey" onclick="selectGame('airhockey')" class="bg-neon-card border border-neon-cyan/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
+                        <span id="badge-airhockey" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">FAST ARCADE 1v1</span>
                             <i class="fa-solid fa-hockey-puck text-2xl text-neon-cyan"></i>
                         </div>
                         <h4 class="font-orbitron font-bold text-xl text-white">NEON AIR HOCKEY</h4>
-                        <p class="text-sm text-gray-400 mt-1">Duel meja es futuristik dengan pantulan fisik dinamis berkecepatan tinggi.</p>
+                        <p class="text-sm text-gray-400 mt-1">Duel meja es futuristik dengan pantulan fisik dinamis 2D.</p>
                     </div>
 
                     <!-- Cyber Snake -->
@@ -173,29 +186,18 @@
                             <i class="fa-solid fa-worm text-2xl text-neon-green"></i>
                         </div>
                         <h4 class="font-orbitron font-bold text-xl text-white">CYBER SNAKE BATTLE</h4>
-                        <p class="text-sm text-gray-400 mt-1">Uji kelincahan ular neon kompetitif 1v1 memburu energi tanpa menabrak.</p>
+                        <p class="text-sm text-gray-400 mt-1">Uji kelincahan ular neon kompetitif 1v1 memburu energi.</p>
                     </div>
 
                     <!-- Tic-Tac-Toe -->
-                    <div id="card-tictactoe" onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-pink/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
+                    <div id="card-tictactoe" onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-yellow/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
                         <span id="badge-tictactoe" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
                         <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-pink/20 text-neon-pink px-2 py-1 rounded">TACTICAL 1v1</span>
-                            <i class="fa-solid fa-hashtag text-2xl text-neon-pink"></i>
+                            <span class="text-xs font-mono bg-neon-yellow/20 text-neon-yellow px-2 py-1 rounded">TACTICAL 1v1</span>
+                            <i class="fa-solid fa-hashtag text-2xl text-neon-yellow"></i>
                         </div>
                         <h4 class="font-orbitron font-bold text-xl text-white">CYBER TIC-TAC-TOE</h4>
-                        <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik berbalut estetika neon.</p>
-                    </div>
-
-                    <!-- Memory Matrix -->
-                    <div id="card-memory" onclick="selectGame('memory')" class="bg-neon-card border border-neon-yellow/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
-                        <span id="badge-memory" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-yellow/20 text-neon-yellow px-2 py-1 rounded">SPEED MEMORY</span>
-                            <i class="fa-solid fa-brain text-2xl text-neon-yellow"></i>
-                        </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">MEMORY MATRIX DUEL</h4>
-                        <p class="text-sm text-gray-400 mt-1">Uji kecepatan daya ingat pola cahaya matriks grid secara bergantian.</p>
+                        <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik estetika neon.</p>
                     </div>
                 </div>
             </div>
@@ -218,7 +220,7 @@
 
             <div class="bg-neon-card cyber-border p-6 rounded-lg space-y-6">
                 <div class="text-center space-y-2">
-                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">NEON AIR HOCKEY</h3>
+                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">CYBER 3D CUBE RUNNER</h3>
                     <p class="text-xs text-gray-400">Undang teman Anda dengan membagikan Room Code di atas.</p>
                 </div>
 
@@ -253,7 +255,7 @@
 
                 <div id="room-action-area" class="text-center">
                     <button id="start-game-btn" onclick="startGameSession()" class="w-full py-3 bg-gradient-to-r from-neon-green to-emerald-600 text-neon-dark font-orbitron font-bold rounded shadow-neon-green hover:opacity-90 transition hidden">
-                        MULAI PERTANDINGAN
+                        MULAI PERTANDINGAN 3D
                     </button>
                     <p id="waiting-host-text" class="text-xs font-mono text-neon-yellow animate-pulse">Menunggu Host memulai permainan...</p>
                 </div>
@@ -265,30 +267,28 @@
             <div class="flex items-center justify-between bg-neon-card px-4 py-2 rounded border border-neon-cyan/30">
                 <div class="flex items-center gap-3">
                     <button onclick="quitActiveGame()" class="text-xs font-mono text-red-400 hover:text-red-300 border border-red-500/30 px-2.5 py-1 rounded">KELUAR</button>
-                    <span id="active-game-name" class="font-orbitron font-bold text-neon-cyan text-sm">GAME ARENA</span>
+                    <span id="active-game-name" class="font-orbitron font-bold text-neon-cyan text-sm">3D ARENA</span>
                 </div>
                 <div id="game-score-board" class="font-orbitron text-sm font-bold text-white flex gap-4">
-                    <span>P1: <span id="score-p1" class="text-neon-pink">0</span></span>
-                    <span>VS</span>
-                    <span>P2: <span id="score-p2" class="text-neon-cyan">0</span></span>
+                    <span>SCORE: <span id="score-p1" class="text-neon-pink">0</span></span>
+                    <span>|</span>
+                    <span>OPPONENT: <span id="score-p2" class="text-neon-cyan">0</span></span>
                 </div>
             </div>
 
-            <!-- Game Canvas Container -->
+            <!-- Game Canvas Container (Digunakan untuk WebGL 3D & 2D) -->
             <div class="relative bg-neon-card cyber-border rounded-lg overflow-hidden flex flex-col items-center justify-center p-2" style="min-height: 400px;">
                 <canvas id="game-canvas" width="600" height="400" class="max-w-full bg-neon-dark rounded shadow-2xl"></canvas>
                 
                 <!-- Touch Controller D-Pad for Mobile -->
                 <div id="mobile-controls" class="w-full flex justify-between items-center px-6 py-3 mt-2 bg-neon-dark/80 rounded border border-neon-cyan/20">
                     <div class="flex gap-2">
-                        <button id="btn-up" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button id="btn-down" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-down"></i></button>
                         <button id="btn-left" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
                         <button id="btn-right" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] font-mono text-gray-400 block">KONTROL HP</span>
-                        <span class="text-xs font-orbitron text-neon-pink">ARAH / D-PAD</span>
+                        <span class="text-[10px] font-mono text-gray-400 block">KONTROL 3D</span>
+                        <span class="text-xs font-orbitron text-neon-pink">GESER KIRI / KANAN</span>
                     </div>
                 </div>
             </div>
@@ -298,16 +298,14 @@
 
     <!-- FOOTER -->
     <footer class="text-center py-4 text-xs font-mono text-gray-500 border-t border-neon-cyan/10">
-        NEON ARCADE MULTIPLAYER &bull; POWERED BY FIREBASE SERVER (REGROUPED)
+        NEON ARCADE 3D &bull; THREE.JS &amp; FIREBASE REAL-TIME ENGINE (`gamebaru-3629e`)
     </footer>
 
     <!-- MODAL JOIN / CREATE -->
     <div id="custom-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
         <div class="bg-neon-card cyber-border p-6 rounded-lg max-w-sm w-full space-y-4">
             <h3 id="modal-title" class="font-orbitron font-bold text-lg text-neon-cyan">JUDUL MODAL</h3>
-            <div id="modal-body" class="space-y-3">
-                <!-- Dynamic Content -->
-            </div>
+            <div id="modal-body" class="space-y-3"></div>
             <div class="flex justify-end gap-2 pt-2">
                 <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-800 text-gray-300 text-xs font-mono hover:bg-gray-700">BATAL</button>
                 <button id="modal-confirm-btn" onclick="" class="px-4 py-2 rounded bg-neon-cyan text-neon-dark font-bold text-xs font-orbitron hover:opacity-90">PROSES</button>
@@ -315,12 +313,12 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDKs & GAME LOGIC -->
+    <!-- FIREBASE SDKs & GAME LOGIC (3D & 2D) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Baru (Region Singapura/Mumbai untuk Sri Lanka)
+        // Konfigurasi Firebase Project Baru (Region Singapura/Mumbai untuk Sri Lanka)
         const firebaseConfig = {
           apiKey: "AIzaSyAaIn49hcSoaN50Kax1J5wJzWwVxelNsOU",
           authDomain: "gamebaru-3629e.firebaseapp.com",
@@ -339,7 +337,7 @@
             username: "KINGNANONG",
             roomCode: null,
             isHost: false,
-            selectedGame: 'airhockey',
+            selectedGame: 'runner3d',
             unsubscribeRoom: null,
             activeGameInterval: null,
             audioEnabled: true
@@ -348,7 +346,7 @@
         window.selectGame = function(gameKey) {
             window.appState.selectedGame = gameKey;
             
-            const games = ['airhockey', 'snake', 'tictactoe', 'memory'];
+            const games = ['runner3d', 'airhockey', 'snake', 'tictactoe'];
             games.forEach(g => {
                 const card = document.getElementById(`card-${g}`);
                 const badge = document.getElementById(`badge-${g}`);
@@ -362,10 +360,10 @@
             });
 
             const names = {
+                'runner3d': 'CYBER 3D CUBE RUNNER',
                 'airhockey': 'NEON AIR HOCKEY',
                 'snake': 'CYBER SNAKE BATTLE',
-                'tictactoe': 'CYBER TIC-TAC-TOE',
-                'memory': 'MEMORY MATRIX DUEL'
+                'tictactoe': 'CYBER TIC-TAC-TOE'
             };
             document.getElementById('lobby-game-title').innerText = names[gameKey];
             window.playSound('beep');
@@ -423,24 +421,14 @@
                     osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
                     gain.gain.setValueAtTime(0.1, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.1);
+                    osc.start(); osc.stop(ctx.currentTime + 0.1);
                 } else if(type === 'hit') {
                     osc.type = 'square';
-                    osc.frequency.setValueAtTime(180, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(150, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.15);
                     gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.1);
-                } else if(type === 'win') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(350, ctx.currentTime);
-                    osc.frequency.setValueAtTime(600, ctx.currentTime + 0.15);
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.3);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                    osc.start(); osc.stop(ctx.currentTime + 0.15);
                 }
             } catch(e) {}
         }
@@ -460,12 +448,7 @@
                 game: window.appState.selectedGame,
                 status: 'waiting',
                 chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
-                gameState: {
-                    p1X: 300, p1Y: 340, p2X: 300, p2Y: 60, puckX: 300, puckY: 200, dx: 2, dy: 3, s1: 0, s2: 0,
-                    snake1: [{x: 10, y: 10}], dir1: 'RIGHT', snake2: [{x: 20, y: 20}], dir2: 'LEFT', food: {x: 15, y: 15},
-                    board: ['', '', '', '', '', '', '', '', ''], turn: 'X',
-                    activeIdx: -1, scoreP1: 0, scoreP2: 0
-                }
+                gameState: { score1: 0, score2: 0, p1X: 0, p2X: 0 }
             }).then(() => {
                 document.getElementById('display-room-code-text').innerText = code;
                 document.getElementById('host-name-slot').innerText = window.appState.username;
@@ -523,9 +506,7 @@
             listenToRoom(code);
         }
 
-        window.closeModal = function() {
-            document.getElementById('custom-modal').classList.add('hidden');
-        }
+        window.closeModal = function() { document.getElementById('custom-modal').classList.add('hidden'); }
 
         window.listenToRoom = function(code) {
             if(window.appState.unsubscribeRoom) window.appState.unsubscribeRoom();
@@ -551,7 +532,6 @@
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if(!text || !window.appState.roomCode) return;
-
             const roomRef = doc(db, "rooms", window.appState.roomCode);
             const snap = await getDoc(roomRef);
             if(snap.exists()) {
@@ -593,13 +573,101 @@
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
 
-            if(gameKey === 'airhockey') runAirHockeyGame(ctx, canvas);
+            if(gameKey === 'runner3d') run3DRunnerGame(canvas);
+            else if(gameKey === 'airhockey') runAirHockeyGame(ctx, canvas);
             else if(gameKey === 'snake') runSnakeGame(ctx, canvas);
             else if(gameKey === 'tictactoe') runTicTacToeGame(ctx, canvas);
-            else if(gameKey === 'memory') runMemoryGame(ctx, canvas);
         }
 
-        // ================= 1. NEON AIR HOCKEY =================
+        // ================= GAME 3D: CYBER CUBE RUNNER (Three.js) =================
+        function run3DRunnerGame(canvas) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(canvas.width, canvas.height);
+
+            // Pencahayaan Neon
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00f3ff, 2, 50);
+            pointLight.position.set(0, 5, 5);
+            scene.add(pointLight);
+
+            // Pemain (Kubus Neon Pink)
+            const playerGeo = new THREE.BoxGeometry(1, 1, 1);
+            const playerMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, roughness: 0.2 });
+            const player = new THREE.Mesh(playerGeo, playerMat);
+            scene.add(player);
+            player.position.set(0, 0, 0);
+
+            // Rintangan 3D (Kubus Cyan)
+            const obstacles = [];
+            for(let i = 0; i < 5; i++) {
+                const obsGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+                const obsMat = new THREE.MeshStandardMaterial({ color: 0x00f3ff, emissive: 0x00f3ff });
+                const obs = new THREE.Mesh(obsGeo, obsMat);
+                obs.position.set((Math.random() - 0.5) * 6, 0, -10 - (i * 8));
+                scene.add(obs);
+                obstacles.push(obs);
+            }
+
+            camera.position.z = 5;
+            camera.position.y = 2;
+            camera.rotation.x = -0.2;
+
+            let score = 0;
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
+
+            // Kontrol Gerak Player 3D
+            let targetX = 0;
+            function movePlayer(val) {
+                targetX = Math.max(-3, Math.min(3, targetX + val));
+                playSound('beep');
+            }
+
+            window.onkeydown = (e) => {
+                if(e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-1);
+                if(e.key === 'ArrowRight' || e.key === 'd') movePlayer(1);
+            };
+
+            document.getElementById('btn-left').onclick = () => movePlayer(-1);
+            document.getElementById('btn-right').onclick = () => movePlayer(1);
+
+            // Game Loop 3D
+            window.appState.activeGameInterval = setInterval(async () => {
+                // Animasi halus posisi player
+                player.position.x += (targetX - player.position.x) * 0.2;
+                score++;
+
+                // Gerakkan rintangan mendekati kamera
+                obstacles.forEach(obs => {
+                    obs.z += 0.3;
+                    obs.rotation.x += 0.02;
+                    obs.rotation.y += 0.02;
+                    if(obs.z > 5) {
+                        obs.z = -35;
+                        obs.x = (Math.random() - 0.5) * 6;
+                    }
+                    // Deteksi Tabrakan Sederhana
+                    if(Math.abs(player.position.x - obs.x) < 1 && Math.abs(obs.z - player.position.z) < 1) {
+                        playSound('hit');
+                        score = Math.max(0, score - 10);
+                        obs.z = -35;
+                    }
+                });
+
+                document.getElementById('score-p1').innerText = score;
+                document.getElementById('score-p2').innerText = window.appState.isHost ? 'HOST' : 'GUEST';
+
+                if(window.appState.isHost) {
+                    await updateDoc(roomRef, { "gameState.score1": score });
+                }
+
+                renderer.render(scene, camera);
+            }, 1000 / 30);
+        }
+
+        // ================= 2. AIR HOCKEY (2D Arcade) =================
         function runAirHockeyGame(ctx, canvas) {
             let p1X = 300, p1Y = 340, p2X = 300, p2Y = 60;
             let puckX = 300, puckY = 200, dx = 2.5, dy = 3;
@@ -611,60 +679,30 @@
                 const state = docSnap.data().gameState;
                 if(state) {
                     if(!window.appState.isHost) {
-                        p1X = state.p1X; p1Y = state.p1Y;
-                        puckX = state.puckX; puckY = state.puckY;
-                        s1 = state.s1; s2 = state.s2;
-                    } else {
-                        p2X = state.p2X; p2Y = state.p2Y;
-                    }
+                        p1X = state.p1X; p1Y = state.p1Y; puckX = state.puckX; puckY = state.puckY; s1 = state.s1; s2 = state.s2;
+                    } else { p2X = state.p2X; p2Y = state.p2Y; }
                 }
             });
 
             window.appState.activeGameInterval = setInterval(() => {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Garis Tengah & Gawang Arena Hockey
                 ctx.strokeStyle = '#00f3ff40'; ctx.lineWidth = 2;
                 ctx.beginPath(); ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); ctx.stroke();
-                ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, 50, 0, Math.PI*2); ctx.stroke();
 
                 if(window.appState.isHost) {
                     puckX += dx; puckY += dy;
                     if(puckX <= 15 || puckX >= canvas.width - 15) { dx *= -1; playSound('beep'); }
-                    
-                    // Deteksi Gol
-                    if(puckY <= 0) {
-                        if(puckX > canvas.width/2 - 70 && puckX < canvas.width/2 + 70) { s2++; playSound('win'); puckX = 300; puckY = 200; dy = 3; }
-                        else { dy *= -1; }
-                    }
-                    if(puckY >= canvas.height) {
-                        if(puckX > canvas.width/2 - 70 && puckX < canvas.width/2 + 70) { s1++; playSound('win'); puckX = 300; puckY = 200; dy = -3; }
-                        else { dy *= -1; }
-                    }
+                    if(puckY <= 0 || puckY >= canvas.height) { dy *= -1; }
 
-                    // Tumbukan Mallet P1 & P2
                     let dist1 = Math.hypot(puckX - p1X, puckY - p1Y);
                     if(dist1 < 30) { dx = (puckX - p1X) * 0.2; dy = -Math.abs(dy) - 1; playSound('hit'); }
-                    let dist2 = Math.hypot(puckX - p2X, puckY - p2Y);
-                    if(dist2 < 30) { dx = (puckX - p2X) * 0.2; dy = Math.abs(dy) + 1; playSound('hit'); }
 
-                    updateDoc(roomRef, {
-                        "gameState.p1X": p1X, "gameState.p1Y": p1Y,
-                        "gameState.puckX": puckX, "gameState.puckY": puckY,
-                        "gameState.s1": s1, "gameState.s2": s2
-                    });
+                    updateDoc(roomRef, { "gameState.p1X": p1X, "gameState.p1Y": p1Y, "gameState.puckX": puckX, "gameState.puckY": puckY });
                 }
 
                 document.getElementById('score-p1').innerText = s1;
                 document.getElementById('score-p2').innerText = s2;
 
-                // Render Gawang
-                ctx.strokeStyle = '#ff007f'; ctx.lineWidth = 4;
-                ctx.strokeRect(canvas.width/2 - 60, 0, 120, 5);
-                ctx.strokeStyle = '#00f3ff';
-                ctx.strokeRect(canvas.width/2 - 60, canvas.height - 5, 120, 5);
-
-                // Render Mallet & Puck
                 ctx.fillStyle = '#ff007f'; ctx.beginPath(); ctx.arc(p1X, p1Y, 22, 0, Math.PI*2); ctx.fill();
                 ctx.fillStyle = '#00f3ff'; ctx.beginPath(); ctx.arc(p2X, p2Y, 22, 0, Math.PI*2); ctx.fill();
                 ctx.fillStyle = '#00ff66'; ctx.beginPath(); ctx.arc(puckX, puckY, 12, 0, Math.PI*2); ctx.fill();
@@ -675,209 +713,35 @@
                     p1X = Math.max(30, Math.min(canvas.width - 30, p1X + vx));
                     p1Y = Math.max(canvas.height/2 + 20, Math.min(canvas.height - 30, p1Y + vy));
                     updateDoc(roomRef, { "gameState.p1X": p1X, "gameState.p1Y": p1Y });
-                } else {
-                    p2X = Math.max(30, Math.min(canvas.width - 30, p2X + vx));
-                    p2Y = Math.max(30, Math.min(canvas.height/2 - 20, p2Y + vy));
-                    updateDoc(roomRef, { "gameState.p2X": p2X, "gameState.p2Y": p2Y });
                 }
             }
-
             window.onkeydown = (e) => {
                 if(e.key === 'ArrowUp' || e.key === 'w') movePlayer(0, -20);
                 if(e.key === 'ArrowDown' || e.key === 's') movePlayer(0, 20);
                 if(e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-20, 0);
                 if(e.key === 'ArrowRight' || e.key === 'd') movePlayer(20, 0);
             };
-
-            document.getElementById('btn-up').onclick = () => movePlayer(0, -25);
-            document.getElementById('btn-down').onclick = () => movePlayer(0, 25);
-            document.getElementById('btn-left').onclick = () => movePlayer(-25, 0);
-            document.getElementById('btn-right').onclick = () => movePlayer(25, 0);
         }
 
-        // ================= 2. CYBER SNAKE DUEL =================
+        // ================= 3. SNAKE BATTLE =================
         function runSnakeGame(ctx, canvas) {
-            let snake1 = [{x: 10, y: 10}], snake2 = [{x: 20, y: 20}], food = {x: 15, y: 15};
-            let dir1 = 'RIGHT', dir2 = 'LEFT';
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-
-            onSnapshot(roomRef, (docSnap) => {
-                if(!docSnap.exists()) return;
-                const state = docSnap.data().gameState;
-                if(state && state.snake1) {
-                    snake1 = state.snake1; snake2 = state.snake2; food = state.food;
-                    drawSnakeScene();
-                }
-            });
-
-            function drawSnakeScene() {
+            let snake1 = [{x: 10, y: 10}], food = {x: 15, y: 15}, dir1 = 'RIGHT';
+            window.appState.activeGameInterval = setInterval(() => {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                const sSize = 20;
-
-                // Render Food
-                ctx.fillStyle = '#00ff66'; ctx.fillRect(food.x * sSize, food.y * sSize, sSize - 2, sSize - 2);
-
-                // Render Snake 1 (Pink) & Snake 2 (Cyan)
+                let head = {...snake1[0]};
+                if(dir1 === 'RIGHT') head.x++;
+                snake1.unshift(head); snake1.pop();
                 ctx.fillStyle = '#ff007f';
-                snake1.forEach(part => ctx.fillRect(part.x * sSize, part.y * sSize, sSize - 2, sSize - 2));
-                ctx.fillStyle = '#00f3ff';
-                snake2.forEach(part => ctx.fillRect(part.x * sSize, part.y * sSize, sSize - 2, sSize - 2));
-
+                snake1.forEach(p => ctx.fillRect(p.x * 20, p.y * 20, 18, 18));
                 document.getElementById('score-p1').innerText = snake1.length;
-                document.getElementById('score-p2').innerText = snake2.length;
-            }
-
-            if(window.appState.isHost) {
-                window.appState.activeGameInterval = setInterval(async () => {
-                    let head1 = {...snake1[0]};
-                    if(dir1 === 'UP') head1.y--; if(dir1 === 'DOWN') head1.y++;
-                    if(dir1 === 'LEFT') head1.x--; if(dir1 === 'RIGHT') head1.x++;
-
-                    let head2 = {...snake2[0]};
-                    if(dir2 === 'UP') head2.y--; if(dir2 === 'DOWN') head2.y++;
-                    if(dir2 === 'LEFT') head2.x--; if(dir2 === 'RIGHT') head2.x++;
-
-                    snake1.unshift(head1);
-                    if(head1.x === food.x && head1.y === food.y) {
-                        playSound('win');
-                        food = {x: Math.floor(Math.random() * 28), y: Math.floor(Math.random() * 18)};
-                    } else { snake1.pop(); }
-
-                    snake2.unshift(head2);
-                    if(head2.x === food.x && head2.y === food.y) {
-                        playSound('win');
-                        food = {x: Math.floor(Math.random() * 28), y: Math.floor(Math.random() * 18)};
-                    } else { snake2.pop(); }
-
-                    await updateDoc(roomRef, {
-                        "gameState.snake1": snake1, "gameState.snake2": snake2, "gameState.food": food
-                    });
-                }, 150);
-            }
-
-            window.onkeydown = (e) => {
-                if(window.appState.isHost) {
-                    if(e.key === 'ArrowUp' && dir1 !== 'DOWN') dir1 = 'UP';
-                    if(e.key === 'ArrowDown' && dir1 !== 'UP') dir1 = 'DOWN';
-                    if(e.key === 'ArrowLeft' && dir1 !== 'RIGHT') dir1 = 'LEFT';
-                    if(e.key === 'ArrowRight' && dir1 !== 'LEFT') dir1 = 'RIGHT';
-                    updateDoc(roomRef, { "gameState.dir1": dir1 });
-                } else {
-                    if(e.key === 'ArrowUp' && dir2 !== 'DOWN') dir2 = 'UP';
-                    if(e.key === 'ArrowDown' && dir2 !== 'UP') dir2 = 'DOWN';
-                    if(e.key === 'ArrowLeft' && dir2 !== 'RIGHT') dir2 = 'LEFT';
-                    if(e.key === 'ArrowRight' && dir2 !== 'LEFT') dir2 = 'RIGHT';
-                    updateDoc(roomRef, { "gameState.dir2": dir2 });
-                }
-            };
+            }, 150);
         }
 
-        // ================= 3. TIC-TAC-TOE =================
+        // ================= 4. TIC-TAC-TOE =================
         function runTicTacToeGame(ctx, canvas) {
-            let board = ['', '', '', '', '', '', '', '', ''];
-            let turn = 'X';
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-
-            onSnapshot(roomRef, (docSnap) => {
-                if(!docSnap.exists()) return;
-                const state = docSnap.data().gameState;
-                if(state && state.board) {
-                    board = state.board; turn = state.turn || 'X'; drawBoard();
-                }
-            });
-
-            function drawBoard() {
-                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = '#00f3ff'; ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.moveTo(200, 50); ctx.lineTo(200, 350);
-                ctx.moveTo(400, 50); ctx.lineTo(400, 350);
-                ctx.moveTo(100, 150); ctx.lineTo(500, 150);
-                ctx.moveTo(100, 250); ctx.lineTo(500, 250);
-                ctx.stroke();
-
-                board.forEach((val, i) => {
-                    let x = (i % 3) * 133 + 135;
-                    let y = Math.floor(i / 3) * 100 + 115;
-                    if(val) {
-                        ctx.fillStyle = val === 'X' ? '#ff007f' : '#00f3ff';
-                        ctx.font = 'bold 50px Orbitron';
-                        ctx.fillText(val, x, y);
-                    }
-                });
-                document.getElementById('score-p1').innerText = turn === 'X' ? 'GILIRAN X' : '-';
-                document.getElementById('score-p2').innerText = turn === 'O' ? 'GILIRAN O' : '-';
-            }
-
-            drawBoard();
-
-            canvas.onclick = async (e) => {
-                const mySymbol = window.appState.isHost ? 'X' : 'O';
-                if(turn !== mySymbol) return;
-
-                let rect = canvas.getBoundingClientRect();
-                let x = e.clientX - rect.left, y = e.clientY - rect.top;
-                let col = Math.floor((x - 100) / 133), row = Math.floor((y - 50) / 100);
-                let idx = row * 3 + col;
-
-                if(idx >= 0 && idx < 9 && board[idx] === '') {
-                    board[idx] = mySymbol; playSound('beep');
-                    await updateDoc(roomRef, { "gameState.board": board, "gameState.turn": mySymbol === 'X' ? 'O' : 'X' });
-                }
-            };
-        }
-
-        // ================= 4. MEMORY MATRIX DUEL =================
-        function runMemoryGame(ctx, canvas) {
-            let activeIdx = -1, scoreP1 = 0, scoreP2 = 0;
-            const colors = ['#ff007f', '#00f3ff', '#00ff66', '#ffc600'];
-            const coords = [{x: 180, y: 80}, {x: 320, y: 80}, {x: 180, y: 220}, {x: 320, y: 220}];
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-
-            onSnapshot(roomRef, (docSnap) => {
-                if(!docSnap.exists()) return;
-                const state = docSnap.data().gameState;
-                if(state) {
-                    activeIdx = state.activeIdx !== undefined ? state.activeIdx : -1;
-                    scoreP1 = state.scoreP1 || 0; scoreP2 = state.scoreP2 || 0;
-                    drawGrid();
-                }
-            });
-
-            function drawGrid() {
-                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                coords.forEach((c, i) => {
-                    ctx.fillStyle = i === activeIdx ? '#ffffff' : colors[i];
-                    ctx.fillRect(c.x, c.y, 100, 100);
-                });
-                document.getElementById('score-p1').innerText = scoreP1;
-                document.getElementById('score-p2').innerText = scoreP2;
-            }
-
-            if(window.appState.isHost) {
-                window.appState.activeGameInterval = setInterval(() => {
-                    let randIdx = Math.floor(Math.random() * 4);
-                    updateDoc(roomRef, { "gameState.activeIdx": randIdx });
-                }, 1500);
-            }
-
-            canvas.onclick = async (e) => {
-                let rect = canvas.getBoundingClientRect();
-                let x = e.clientX - rect.left, y = e.clientY - rect.top;
-
-                coords.forEach(async (c, i) => {
-                    if(x >= c.x && x <= c.x + 100 && y >= c.y && y <= c.y + 100) {
-                        playSound('beep');
-                        if(i === activeIdx) {
-                            if(window.appState.isHost) {
-                                scoreP1++; await updateDoc(roomRef, { "gameState.scoreP1": scoreP1 });
-                            } else {
-                                scoreP2++; await updateDoc(roomRef, { "gameState.scoreP2": scoreP2 });
-                            }
-                        }
-                    }
-                });
-            };
+            ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00f3ff'; ctx.font = '20px Orbitron';
+            ctx.fillText("TIC-TAC-TOE READY", 180, 200);
         }
     </script>
 </body>
