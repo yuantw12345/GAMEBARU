@@ -276,7 +276,7 @@
                 </div>
             </div>
 
-            <!-- Game Canvas Container (Digunakan untuk WebGL 3D & 2D) -->
+            <!-- Game Canvas Container -->
             <div class="relative bg-neon-card cyber-border rounded-lg overflow-hidden flex flex-col items-center justify-center p-2" style="min-height: 400px;">
                 <canvas id="game-canvas" width="600" height="400" class="max-w-full bg-neon-dark rounded shadow-2xl"></canvas>
                 
@@ -313,7 +313,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDKs & GAME LOGIC (3D & 2D) -->
+    <!-- FIREBASE SDKs & GAME LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -579,34 +579,43 @@
             else if(gameKey === 'tictactoe') runTicTacToeGame(ctx, canvas);
         }
 
-        // ================= GAME 3D: CYBER CUBE RUNNER (Three.js) =================
+        // ================= GAME 3D: CYBER CUBE RUNNER (Three.js Fixed Background) =================
         function run3DRunnerGame(canvas) {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-            renderer.setSize(canvas.width, canvas.height);
+            const width = canvas.clientWidth || 600;
+            const height = canvas.clientHeight || 400;
+            canvas.width = width;
+            canvas.height = height;
 
-            // Pencahayaan Neon
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            const scene = new THREE.Scene();
+            // Memberi warna background scene agar tidak gelap gulita
+            scene.background = new THREE.Color(0x0a0a12);
+
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(width, height);
+
+            // Pencahayaan
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
             scene.add(ambientLight);
-            const pointLight = new THREE.PointLight(0x00f3ff, 2, 50);
-            pointLight.position.set(0, 5, 5);
+            
+            const pointLight = new THREE.PointLight(0x00f3ff, 3, 100);
+            pointLight.position.set(0, 5, 2);
             scene.add(pointLight);
 
             // Pemain (Kubus Neon Pink)
             const playerGeo = new THREE.BoxGeometry(1, 1, 1);
-            const playerMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, roughness: 0.2 });
+            const playerMat = new THREE.MeshStandardMaterial({ color: 0xff007f, roughness: 0.1, metalness: 0.5 });
             const player = new THREE.Mesh(playerGeo, playerMat);
             scene.add(player);
             player.position.set(0, 0, 0);
 
             // Rintangan 3D (Kubus Cyan)
             const obstacles = [];
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 6; i++) {
                 const obsGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-                const obsMat = new THREE.MeshStandardMaterial({ color: 0x00f3ff, emissive: 0x00f3ff });
+                const obsMat = new THREE.MeshStandardMaterial({ color: 0x00f3ff, roughness: 0.2 });
                 const obs = new THREE.Mesh(obsGeo, obsMat);
-                obs.position.set((Math.random() - 0.5) * 6, 0, -10 - (i * 8));
+                obs.position.set((Math.random() - 0.5) * 6, 0, -12 - (i * 7));
                 scene.add(obs);
                 obstacles.push(obs);
             }
@@ -618,7 +627,6 @@
             let score = 0;
             const roomRef = doc(db, "rooms", window.appState.roomCode);
 
-            // Kontrol Gerak Player 3D
             let targetX = 0;
             function movePlayer(val) {
                 targetX = Math.max(-3, Math.min(3, targetX + val));
@@ -635,20 +643,17 @@
 
             // Game Loop 3D
             window.appState.activeGameInterval = setInterval(async () => {
-                // Animasi halus posisi player
                 player.position.x += (targetX - player.position.x) * 0.2;
                 score++;
 
-                // Gerakkan rintangan mendekati kamera
                 obstacles.forEach(obs => {
-                    obs.z += 0.3;
-                    obs.rotation.x += 0.02;
-                    obs.rotation.y += 0.02;
+                    obs.z += 0.35;
+                    obs.rotation.x += 0.03;
+                    obs.rotation.y += 0.03;
                     if(obs.z > 5) {
                         obs.z = -35;
                         obs.x = (Math.random() - 0.5) * 6;
                     }
-                    // Deteksi Tabrakan Sederhana
                     if(Math.abs(player.position.x - obs.x) < 1 && Math.abs(obs.z - player.position.z) < 1) {
                         playSound('hit');
                         score = Math.max(0, score - 10);
@@ -725,7 +730,7 @@
 
         // ================= 3. SNAKE BATTLE =================
         function runSnakeGame(ctx, canvas) {
-            let snake1 = [{x: 10, y: 10}], food = {x: 15, y: 15}, dir1 = 'RIGHT';
+            let snake1 = [{x: 10, y: 10}], dir1 = 'RIGHT';
             window.appState.activeGameInterval = setInterval(() => {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 let head = {...snake1[0]};
