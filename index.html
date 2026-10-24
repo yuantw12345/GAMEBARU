@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON ARCADE - Cyberpunk Online Multiplayer</title>
+    <title>NEON ARCADE v2.0 - Cyberpunk Online Multiplayer</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -85,14 +85,12 @@
             border: 2px solid #ff007f;
             background: #0a0a12;
         }
-        /* Custom Game Card Active Glow */
         .game-card-active {
             border-color: #00f3ff !important;
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.8) !important;
             transform: scale(1.02);
             background-color: #1a1a38 !important;
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a12; }
         ::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 3px; }
@@ -109,7 +107,7 @@
                 </div>
                 <div>
                     <h1 class="font-orbitron font-black text-xl tracking-wider glow-text-cyan">NEON ARCADE</h1>
-                    <p class="text-xs text-neon-pink tracking-widest font-mono">ONLINE MULTIPLAYER HUB</p>
+                    <p class="text-xs text-neon-pink tracking-widest font-mono">ONLINE MULTIPLAYER HUB v2.0</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -131,7 +129,7 @@
         <div id="home-screen" class="space-y-8 animate-fadeIn">
             <div class="text-center space-y-4">
                 <h2 class="text-4xl md:text-6xl font-black font-orbitron glow-text-pink tracking-wider">CYBERPUNK ARENA</h2>
-                <p class="text-gray-400 max-w-xl mx-auto text-lg">Pilih game di bawah lalu buat room untuk mabar online bersama teman!</p>
+                <p class="text-gray-400 max-w-xl mx-auto text-lg">Pilih game modern di bawah lalu buat room untuk mabar online!</p>
             </div>
 
             <!-- Profile & Quick Setup -->
@@ -154,18 +152,31 @@
 
             <!-- Game Selection Cards -->
             <div>
-                <p class="text-center text-xs font-orbitron text-neon-cyan mb-3 tracking-widest uppercase">&mdash; PILIH GAME UNTUK DIMAINKAN &mdash;</p>
+                <p class="text-center text-xs font-orbitron text-neon-cyan mb-3 tracking-widest uppercase">&mdash; PILIH GAME ARCADE MODERN &mdash;</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div id="card-pong" onclick="selectGame('pong')" class="bg-neon-card border border-neon-cyan/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg game-card-active relative">
-                        <span id="badge-pong" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow">TERPILIH</span>
+                    <!-- Air Hockey -->
+                    <div id="card-airhockey" onclick="selectGame('airhockey')" class="bg-neon-card border border-neon-cyan/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg game-card-active relative">
+                        <span id="badge-airhockey" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow">TERPILIH</span>
                         <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">MULTIPLAYER 1v1</span>
-                            <i class="fa-solid fa-table-tennis-paddle-ball text-2xl text-neon-cyan"></i>
+                            <span class="text-xs font-mono bg-neon-cyan/20 text-neon-cyan px-2 py-1 rounded">FAST ARCADE 1v1</span>
+                            <i class="fa-solid fa-hockey-puck text-2xl text-neon-cyan"></i>
                         </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">NEON PONG BATTLE</h4>
-                        <p class="text-sm text-gray-400 mt-1">Duel pantulan bola cepat real-time dengan kontrol dayung presisi.</p>
+                        <h4 class="font-orbitron font-bold text-xl text-white">NEON AIR HOCKEY</h4>
+                        <p class="text-sm text-gray-400 mt-1">Duel meja es futuristik dengan pantulan fisik dinamis berkecepatan tinggi.</p>
                     </div>
 
+                    <!-- Cyber Snake -->
+                    <div id="card-snake" onclick="selectGame('snake')" class="bg-neon-card border border-neon-green/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
+                        <span id="badge-snake" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono bg-neon-green/20 text-neon-green px-2 py-1 rounded">SURVIVAL DUEL</span>
+                            <i class="fa-solid fa-worm text-2xl text-neon-green"></i>
+                        </div>
+                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER SNAKE BATTLE</h4>
+                        <p class="text-sm text-gray-400 mt-1">Uji kelincahan ular neon kompetitif 1v1 memburu energi tanpa menabrak.</p>
+                    </div>
+
+                    <!-- Tic-Tac-Toe -->
                     <div id="card-tictactoe" onclick="selectGame('tictactoe')" class="bg-neon-card border border-neon-pink/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
                         <span id="badge-tictactoe" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
                         <div class="flex items-center justify-between mb-3">
@@ -176,16 +187,7 @@
                         <p class="text-sm text-gray-400 mt-1">Pertarungan strategi grid 3x3 klasik berbalut estetika neon.</p>
                     </div>
 
-                    <div id="card-race" onclick="selectGame('race')" class="bg-neon-card border border-neon-green/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
-                        <span id="badge-race" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-mono bg-neon-green/20 text-neon-green px-2 py-1 rounded">SURVIVAL SCORE</span>
-                            <i class="fa-solid fa-car-tunnel text-2xl text-neon-green"></i>
-                        </div>
-                        <h4 class="font-orbitron font-bold text-xl text-white">CYBER RACE SURVIVAL</h4>
-                        <p class="text-sm text-gray-400 mt-1">Hindari rintangan neon kecepatan tinggi bersama secara online.</p>
-                    </div>
-
+                    <!-- Memory Matrix -->
                     <div id="card-memory" onclick="selectGame('memory')" class="bg-neon-card border border-neon-yellow/30 p-5 rounded-lg cursor-pointer transition transform hover:-translate-y-1 group shadow-lg relative">
                         <span id="badge-memory" class="absolute top-2 right-2 text-[10px] font-mono bg-neon-green text-neon-dark font-bold px-2 py-0.5 rounded shadow hidden">TERPILIH</span>
                         <div class="flex items-center justify-between mb-3">
@@ -216,7 +218,7 @@
 
             <div class="bg-neon-card cyber-border p-6 rounded-lg space-y-6">
                 <div class="text-center space-y-2">
-                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">NEON PONG BATTLE</h3>
+                    <h3 class="font-orbitron text-xl font-bold text-white" id="lobby-game-title">NEON AIR HOCKEY</h3>
                     <p class="text-xs text-gray-400">Undang teman Anda dengan membagikan Room Code di atas.</p>
                 </div>
 
@@ -281,10 +283,12 @@
                     <div class="flex gap-2">
                         <button id="btn-up" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-up"></i></button>
                         <button id="btn-down" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button id="btn-left" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
+                        <button id="btn-right" class="w-14 h-14 bg-neon-card border border-neon-cyan text-neon-cyan rounded-lg text-xl active:bg-neon-cyan active:text-neon-dark transition flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                     <div class="text-right">
                         <span class="text-[10px] font-mono text-gray-400 block">KONTROL HP</span>
-                        <span class="text-xs font-orbitron text-neon-pink">ATAS / BAWAH</span>
+                        <span class="text-xs font-orbitron text-neon-pink">ARAH / D-PAD</span>
                     </div>
                 </div>
             </div>
@@ -294,7 +298,7 @@
 
     <!-- FOOTER -->
     <footer class="text-center py-4 text-xs font-mono text-gray-500 border-t border-neon-cyan/10">
-        NEON ARCADE MULTIPLAYER &bull; POWERED BY FIREBASE REAL-TIME ENGINE
+        NEON ARCADE MULTIPLAYER &bull; POWERED BY FIREBASE SERVER (REGROUPED)
     </footer>
 
     <!-- MODAL JOIN / CREATE -->
@@ -311,12 +315,12 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDKs -->
+    <!-- FIREBASE SDKs & GAME LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Baru (Region Singapura/Mumbai)
+        // Konfigurasi Firebase Baru (Region Singapura/Mumbai untuk Sri Lanka)
         const firebaseConfig = {
           apiKey: "AIzaSyAaIn49hcSoaN50Kax1J5wJzWwVxelNsOU",
           authDomain: "gamebaru-3629e.firebaseapp.com",
@@ -330,23 +334,21 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Global State App
         window.FB = { db, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc };
         window.appState = {
             username: "KINGNANONG",
             roomCode: null,
             isHost: false,
-            selectedGame: 'pong',
+            selectedGame: 'airhockey',
             unsubscribeRoom: null,
             activeGameInterval: null,
             audioEnabled: true
         };
 
-        // Pemilihan Game Visual Highlight
         window.selectGame = function(gameKey) {
             window.appState.selectedGame = gameKey;
             
-            const games = ['pong', 'tictactoe', 'race', 'memory'];
+            const games = ['airhockey', 'snake', 'tictactoe', 'memory'];
             games.forEach(g => {
                 const card = document.getElementById(`card-${g}`);
                 const badge = document.getElementById(`badge-${g}`);
@@ -360,16 +362,15 @@
             });
 
             const names = {
-                'pong': 'NEON PONG BATTLE',
+                'airhockey': 'NEON AIR HOCKEY',
+                'snake': 'CYBER SNAKE BATTLE',
                 'tictactoe': 'CYBER TIC-TAC-TOE',
-                'race': 'CYBER RACE SURVIVAL',
                 'memory': 'MEMORY MATRIX DUEL'
             };
             document.getElementById('lobby-game-title').innerText = names[gameKey];
             window.playSound('beep');
         }
 
-        // Salin Kode Room
         window.copyRoomCode = function() {
             if (!window.appState.roomCode) return;
             navigator.clipboard.writeText(window.appState.roomCode).then(() => {
@@ -382,12 +383,9 @@
                     btnText.innerText = "SALIN";
                     icon.className = "fa-solid fa-copy";
                 }, 2000);
-            }).catch(err => {
-                alert("Kode Room: " + window.appState.roomCode);
-            });
+            }).catch(() => {});
         };
 
-        // Navigation
         window.showScreen = function(screenId) {
             ['home-screen', 'room-screen', 'game-arena-screen'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
@@ -410,7 +408,6 @@
             }
         }
 
-        // Web Audio Synthesizer
         window.playSound = function(type) {
             if(!window.appState.audioEnabled) return;
             try {
@@ -430,26 +427,24 @@
                     osc.stop(ctx.currentTime + 0.1);
                 } else if(type === 'hit') {
                     osc.type = 'square';
-                    osc.frequency.setValueAtTime(150, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(180, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.1);
                     gain.gain.setValueAtTime(0.15, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
                     osc.start();
                     osc.stop(ctx.currentTime + 0.1);
                 } else if(type === 'win') {
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(300, ctx.currentTime);
-                    osc.frequency.setValueAtTime(500, ctx.currentTime + 0.1);
-                    osc.frequency.setValueAtTime(700, ctx.currentTime + 0.2);
-                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.frequency.setValueAtTime(350, ctx.currentTime);
+                    osc.frequency.setValueAtTime(600, ctx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                     osc.start();
-                    osc.stop(ctx.currentTime + 0.4);
+                    osc.stop(ctx.currentTime + 0.3);
                 }
             } catch(e) {}
         }
 
-        // Room Creation & Joining
         window.createRoomModal = function() {
             const uInput = document.getElementById('username-input').value.trim();
             if(uInput) window.appState.username = uInput;
@@ -466,9 +461,9 @@
                 status: 'waiting',
                 chat: [{sender: 'System', text: `Room ${code} dibuat oleh ${window.appState.username}`}],
                 gameState: {
-                    p1Y: 160, p2Y: 160, ballX: 300, ballY: 200, dx: 3, dy: 2, s1: 0, s2: 0,
+                    p1X: 300, p1Y: 340, p2X: 300, p2Y: 60, puckX: 300, puckY: 200, dx: 2, dy: 3, s1: 0, s2: 0,
+                    snake1: [{x: 10, y: 10}], dir1: 'RIGHT', snake2: [{x: 20, y: 20}], dir2: 'LEFT', food: {x: 15, y: 15},
                     board: ['', '', '', '', '', '', '', '', ''], turn: 'X',
-                    car1X: 200, car2X: 360, obstacles: [],
                     activeIdx: -1, scoreP1: 0, scoreP2: 0
                 }
             }).then(() => {
@@ -479,10 +474,7 @@
                 document.getElementById('waiting-host-text').classList.add('hidden');
                 showScreen('room-screen');
                 listenToRoom(code);
-            }).catch(err => {
-                alert("Gagal membuat room!");
-                console.error(err);
-            });
+            }).catch(err => alert("Gagal membuat room!"));
         }
 
         window.joinRoomModal = function() {
@@ -508,10 +500,7 @@
 
             const roomRef = doc(db, "rooms", code);
             const snap = await getDoc(roomRef);
-            if(!snap.exists()) {
-                alert("Room tidak ditemukan!");
-                return;
-            }
+            if(!snap.exists()) return alert("Room tidak ditemukan!");
 
             const data = snap.data();
             await updateDoc(roomRef, {
@@ -543,7 +532,6 @@
             window.appState.unsubscribeRoom = onSnapshot(doc(db, "rooms", code), (docSnap) => {
                 if(!docSnap.exists()) return;
                 const data = docSnap.data();
-
                 if(data.host) document.getElementById('host-name-slot').innerText = data.host;
                 if(data.guest) document.getElementById('guest-name-slot').innerText = data.guest;
 
@@ -568,16 +556,12 @@
             const snap = await getDoc(roomRef);
             if(snap.exists()) {
                 const data = snap.data();
-                await updateDoc(roomRef, {
-                    chat: [...data.chat, {sender: window.appState.username, text: text}]
-                });
+                await updateDoc(roomRef, { chat: [...data.chat, {sender: window.appState.username, text: text}] });
                 input.value = '';
             }
         }
 
-        window.handleChatKey = function(e) {
-            if(e.key === 'Enter') sendChatMessage();
-        }
+        window.handleChatKey = function(e) { if(e.key === 'Enter') sendChatMessage(); }
 
         window.startGameSession = async function() {
             if(!window.appState.isHost || !window.appState.roomCode) return;
@@ -603,22 +587,22 @@
 
         window.launchActiveGame = function(gameKey) {
             showScreen('game-arena-screen');
-            document.getElementById('active-game-name').innerText = gameKey.toUpperCase() + " BATTLE";
+            document.getElementById('active-game-name').innerText = gameKey.toUpperCase() + " ARENA";
             if(window.appState.activeGameInterval) clearInterval(window.appState.activeGameInterval);
 
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
 
-            if(gameKey === 'pong') runPongGame(ctx, canvas);
+            if(gameKey === 'airhockey') runAirHockeyGame(ctx, canvas);
+            else if(gameKey === 'snake') runSnakeGame(ctx, canvas);
             else if(gameKey === 'tictactoe') runTicTacToeGame(ctx, canvas);
-            else if(gameKey === 'race') runRaceGame(ctx, canvas);
             else if(gameKey === 'memory') runMemoryGame(ctx, canvas);
         }
 
-        // ================= 1. PONG BATTLE =================
-        function runPongGame(ctx, canvas) {
-            let localP1Y = 160, localP2Y = 160;
-            let ballX = 300, ballY = 200, dx = 3, dy = 2;
+        // ================= 1. NEON AIR HOCKEY =================
+        function runAirHockeyGame(ctx, canvas) {
+            let p1X = 300, p1Y = 340, p2X = 300, p2Y = 60;
+            let puckX = 300, puckY = 200, dx = 2.5, dy = 3;
             let s1 = 0, s2 = 0;
             const roomRef = doc(db, "rooms", window.appState.roomCode);
 
@@ -627,13 +611,11 @@
                 const state = docSnap.data().gameState;
                 if(state) {
                     if(!window.appState.isHost) {
-                        localP1Y = state.p1Y;
-                        ballX = state.ballX;
-                        ballY = state.ballY;
-                        s1 = state.s1;
-                        s2 = state.s2;
+                        p1X = state.p1X; p1Y = state.p1Y;
+                        puckX = state.puckX; puckY = state.puckY;
+                        s1 = state.s1; s2 = state.s2;
                     } else {
-                        localP2Y = state.p2Y;
+                        p2X = state.p2X; p2Y = state.p2Y;
                     }
                 }
             });
@@ -641,52 +623,156 @@
             window.appState.activeGameInterval = setInterval(() => {
                 ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                if(window.appState.isHost) {
-                    ballX += dx; ballY += dy;
-                    if(ballY <= 0 || ballY >= canvas.height) { dy *= -1; playSound('beep'); }
-                    if(ballX <= 20 && ballY >= localP1Y && ballY <= localP1Y + 80) { dx *= -1; playSound('hit'); }
-                    if(ballX >= canvas.width - 25 && ballY >= localP2Y && ballY <= localP2Y + 80) { dx *= -1; playSound('hit'); }
+                // Garis Tengah & Gawang Arena Hockey
+                ctx.strokeStyle = '#00f3ff40'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, 50, 0, Math.PI*2); ctx.stroke();
 
-                    if(ballX < 0) { s2++; ballX = 300; ballY = 200; playSound('win'); }
-                    if(ballX > canvas.width) { s1++; ballX = 300; ballY = 200; playSound('win'); }
+                if(window.appState.isHost) {
+                    puckX += dx; puckY += dy;
+                    if(puckX <= 15 || puckX >= canvas.width - 15) { dx *= -1; playSound('beep'); }
+                    
+                    // Deteksi Gol
+                    if(puckY <= 0) {
+                        if(puckX > canvas.width/2 - 70 && puckX < canvas.width/2 + 70) { s2++; playSound('win'); puckX = 300; puckY = 200; dy = 3; }
+                        else { dy *= -1; }
+                    }
+                    if(puckY >= canvas.height) {
+                        if(puckX > canvas.width/2 - 70 && puckX < canvas.width/2 + 70) { s1++; playSound('win'); puckX = 300; puckY = 200; dy = -3; }
+                        else { dy *= -1; }
+                    }
+
+                    // Tumbukan Mallet P1 & P2
+                    let dist1 = Math.hypot(puckX - p1X, puckY - p1Y);
+                    if(dist1 < 30) { dx = (puckX - p1X) * 0.2; dy = -Math.abs(dy) - 1; playSound('hit'); }
+                    let dist2 = Math.hypot(puckX - p2X, puckY - p2Y);
+                    if(dist2 < 30) { dx = (puckX - p2X) * 0.2; dy = Math.abs(dy) + 1; playSound('hit'); }
 
                     updateDoc(roomRef, {
-                        "gameState.p1Y": localP1Y,
-                        "gameState.ballX": ballX,
-                        "gameState.ballY": ballY,
-                        "gameState.s1": s1,
-                        "gameState.s2": s2
+                        "gameState.p1X": p1X, "gameState.p1Y": p1Y,
+                        "gameState.puckX": puckX, "gameState.puckY": puckY,
+                        "gameState.s1": s1, "gameState.s2": s2
                     });
                 }
 
                 document.getElementById('score-p1').innerText = s1;
                 document.getElementById('score-p2').innerText = s2;
 
-                ctx.fillStyle = '#ff007f'; ctx.fillRect(10, localP1Y, 10, 80);
-                ctx.fillStyle = '#00f3ff'; ctx.fillRect(canvas.width - 20, localP2Y, 10, 80);
-                ctx.fillStyle = '#00ff66'; ctx.beginPath(); ctx.arc(ballX, ballY, 8, 0, Math.PI * 2); ctx.fill();
+                // Render Gawang
+                ctx.strokeStyle = '#ff007f'; ctx.lineWidth = 4;
+                ctx.strokeRect(canvas.width/2 - 60, 0, 120, 5);
+                ctx.strokeStyle = '#00f3ff';
+                ctx.strokeRect(canvas.width/2 - 60, canvas.height - 5, 120, 5);
+
+                // Render Mallet & Puck
+                ctx.fillStyle = '#ff007f'; ctx.beginPath(); ctx.arc(p1X, p1Y, 22, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#00f3ff'; ctx.beginPath(); ctx.arc(p2X, p2Y, 22, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#00ff66'; ctx.beginPath(); ctx.arc(puckX, puckY, 12, 0, Math.PI*2); ctx.fill();
             }, 1000 / 30);
 
-            function moveLocalPaddle(delta) {
+            function movePlayer(vx, vy) {
                 if(window.appState.isHost) {
-                    localP1Y = Math.max(0, Math.min(canvas.height - 80, localP1Y + delta));
-                    updateDoc(roomRef, { "gameState.p1Y": localP1Y });
+                    p1X = Math.max(30, Math.min(canvas.width - 30, p1X + vx));
+                    p1Y = Math.max(canvas.height/2 + 20, Math.min(canvas.height - 30, p1Y + vy));
+                    updateDoc(roomRef, { "gameState.p1X": p1X, "gameState.p1Y": p1Y });
                 } else {
-                    localP2Y = Math.max(0, Math.min(canvas.height - 80, localP2Y + delta));
-                    updateDoc(roomRef, { "gameState.p2Y": localP2Y });
+                    p2X = Math.max(30, Math.min(canvas.width - 30, p2X + vx));
+                    p2Y = Math.max(30, Math.min(canvas.height/2 - 20, p2Y + vy));
+                    updateDoc(roomRef, { "gameState.p2X": p2X, "gameState.p2Y": p2Y });
                 }
             }
 
             window.onkeydown = (e) => {
-                if(e.key === 'ArrowUp' || e.key === 'w') moveLocalPaddle(-25);
-                if(e.key === 'ArrowDown' || e.key === 's') moveLocalPaddle(25);
+                if(e.key === 'ArrowUp' || e.key === 'w') movePlayer(0, -20);
+                if(e.key === 'ArrowDown' || e.key === 's') movePlayer(0, 20);
+                if(e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-20, 0);
+                if(e.key === 'ArrowRight' || e.key === 'd') movePlayer(20, 0);
             };
 
-            document.getElementById('btn-up').onclick = () => moveLocalPaddle(-30);
-            document.getElementById('btn-down').onclick = () => moveLocalPaddle(30);
+            document.getElementById('btn-up').onclick = () => movePlayer(0, -25);
+            document.getElementById('btn-down').onclick = () => movePlayer(0, 25);
+            document.getElementById('btn-left').onclick = () => movePlayer(-25, 0);
+            document.getElementById('btn-right').onclick = () => movePlayer(25, 0);
         }
 
-        // ================= 2. TIC-TAC-TOE =================
+        // ================= 2. CYBER SNAKE DUEL =================
+        function runSnakeGame(ctx, canvas) {
+            let snake1 = [{x: 10, y: 10}], snake2 = [{x: 20, y: 20}], food = {x: 15, y: 15};
+            let dir1 = 'RIGHT', dir2 = 'LEFT';
+            const roomRef = doc(db, "rooms", window.appState.roomCode);
+
+            onSnapshot(roomRef, (docSnap) => {
+                if(!docSnap.exists()) return;
+                const state = docSnap.data().gameState;
+                if(state && state.snake1) {
+                    snake1 = state.snake1; snake2 = state.snake2; food = state.food;
+                    drawSnakeScene();
+                }
+            });
+
+            function drawSnakeScene() {
+                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                const sSize = 20;
+
+                // Render Food
+                ctx.fillStyle = '#00ff66'; ctx.fillRect(food.x * sSize, food.y * sSize, sSize - 2, sSize - 2);
+
+                // Render Snake 1 (Pink) & Snake 2 (Cyan)
+                ctx.fillStyle = '#ff007f';
+                snake1.forEach(part => ctx.fillRect(part.x * sSize, part.y * sSize, sSize - 2, sSize - 2));
+                ctx.fillStyle = '#00f3ff';
+                snake2.forEach(part => ctx.fillRect(part.x * sSize, part.y * sSize, sSize - 2, sSize - 2));
+
+                document.getElementById('score-p1').innerText = snake1.length;
+                document.getElementById('score-p2').innerText = snake2.length;
+            }
+
+            if(window.appState.isHost) {
+                window.appState.activeGameInterval = setInterval(async () => {
+                    let head1 = {...snake1[0]};
+                    if(dir1 === 'UP') head1.y--; if(dir1 === 'DOWN') head1.y++;
+                    if(dir1 === 'LEFT') head1.x--; if(dir1 === 'RIGHT') head1.x++;
+
+                    let head2 = {...snake2[0]};
+                    if(dir2 === 'UP') head2.y--; if(dir2 === 'DOWN') head2.y++;
+                    if(dir2 === 'LEFT') head2.x--; if(dir2 === 'RIGHT') head2.x++;
+
+                    snake1.unshift(head1);
+                    if(head1.x === food.x && head1.y === food.y) {
+                        playSound('win');
+                        food = {x: Math.floor(Math.random() * 28), y: Math.floor(Math.random() * 18)};
+                    } else { snake1.pop(); }
+
+                    snake2.unshift(head2);
+                    if(head2.x === food.x && head2.y === food.y) {
+                        playSound('win');
+                        food = {x: Math.floor(Math.random() * 28), y: Math.floor(Math.random() * 18)};
+                    } else { snake2.pop(); }
+
+                    await updateDoc(roomRef, {
+                        "gameState.snake1": snake1, "gameState.snake2": snake2, "gameState.food": food
+                    });
+                }, 150);
+            }
+
+            window.onkeydown = (e) => {
+                if(window.appState.isHost) {
+                    if(e.key === 'ArrowUp' && dir1 !== 'DOWN') dir1 = 'UP';
+                    if(e.key === 'ArrowDown' && dir1 !== 'UP') dir1 = 'DOWN';
+                    if(e.key === 'ArrowLeft' && dir1 !== 'RIGHT') dir1 = 'LEFT';
+                    if(e.key === 'ArrowRight' && dir1 !== 'LEFT') dir1 = 'RIGHT';
+                    updateDoc(roomRef, { "gameState.dir1": dir1 });
+                } else {
+                    if(e.key === 'ArrowUp' && dir2 !== 'DOWN') dir2 = 'UP';
+                    if(e.key === 'ArrowDown' && dir2 !== 'UP') dir2 = 'DOWN';
+                    if(e.key === 'ArrowLeft' && dir2 !== 'RIGHT') dir2 = 'LEFT';
+                    if(e.key === 'ArrowRight' && dir2 !== 'LEFT') dir2 = 'RIGHT';
+                    updateDoc(roomRef, { "gameState.dir2": dir2 });
+                }
+            };
+        }
+
+        // ================= 3. TIC-TAC-TOE =================
         function runTicTacToeGame(ctx, canvas) {
             let board = ['', '', '', '', '', '', '', '', ''];
             let turn = 'X';
@@ -696,9 +782,7 @@
                 if(!docSnap.exists()) return;
                 const state = docSnap.data().gameState;
                 if(state && state.board) {
-                    board = state.board;
-                    turn = state.turn || 'X';
-                    drawBoard();
+                    board = state.board; turn = state.turn || 'X'; drawBoard();
                 }
             });
 
@@ -732,86 +816,15 @@
                 if(turn !== mySymbol) return;
 
                 let rect = canvas.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                let y = e.clientY - rect.top;
-                let col = Math.floor((x - 100) / 133);
-                let row = Math.floor((y - 50) / 100);
+                let x = e.clientX - rect.left, y = e.clientY - rect.top;
+                let col = Math.floor((x - 100) / 133), row = Math.floor((y - 50) / 100);
                 let idx = row * 3 + col;
 
                 if(idx >= 0 && idx < 9 && board[idx] === '') {
-                    board[idx] = mySymbol;
-                    playSound('beep');
-                    let nextTurn = mySymbol === 'X' ? 'O' : 'X';
-                    await updateDoc(roomRef, {
-                        "gameState.board": board,
-                        "gameState.turn": nextTurn
-                    });
+                    board[idx] = mySymbol; playSound('beep');
+                    await updateDoc(roomRef, { "gameState.board": board, "gameState.turn": mySymbol === 'X' ? 'O' : 'X' });
                 }
             };
-        }
-
-        // ================= 3. RACE SURVIVAL =================
-        function runRaceGame(ctx, canvas) {
-            let car1X = 200, car2X = 360, obstacles = [], score = 0;
-            const roomRef = doc(db, "rooms", window.appState.roomCode);
-
-            onSnapshot(roomRef, (docSnap) => {
-                if(!docSnap.exists()) return;
-                const state = docSnap.data().gameState;
-                if(state) {
-                    if(window.appState.isHost) {
-                        car2X = state.car2X !== undefined ? state.car2X : car2X;
-                    } else {
-                        car1X = state.car1X !== undefined ? state.car1X : car1X;
-                        obstacles = state.obstacles || [];
-                        score = state.score || 0;
-                    }
-                }
-            });
-
-            window.appState.activeGameInterval = setInterval(() => {
-                ctx.fillStyle = '#0a0a12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                if(window.appState.isHost) {
-                    score++;
-                    if(Math.random() < 0.04) obstacles.push({x: Math.random() * (canvas.width - 80), y: -50, w: 40, h: 40});
-                    obstacles.forEach(obs => obs.y += 4);
-                    obstacles = obstacles.filter(o => o.y < canvas.height);
-
-                    updateDoc(roomRef, {
-                        "gameState.obstacles": obstacles,
-                        "gameState.score": score,
-                        "gameState.car1X": car1X
-                    });
-                }
-
-                document.getElementById('score-p1').innerText = score;
-                document.getElementById('score-p2').innerText = window.appState.isHost ? 'HOST' : 'GUEST';
-
-                ctx.fillStyle = '#ff007f';
-                obstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.w, obs.h));
-
-                ctx.fillStyle = '#ff007f'; ctx.fillRect(car1X, 330, 35, 50);
-                ctx.fillStyle = '#00f3ff'; ctx.fillRect(car2X, 330, 35, 50);
-            }, 1000 / 30);
-
-            function moveCar(delta) {
-                if(window.appState.isHost) {
-                    car1X = Math.max(50, Math.min(canvas.width - 90, car1X + delta));
-                    updateDoc(roomRef, { "gameState.car1X": car1X });
-                } else {
-                    car2X = Math.max(50, Math.min(canvas.width - 90, car2X + delta));
-                    updateDoc(roomRef, { "gameState.car2X": car2X });
-                }
-            }
-
-            window.onkeydown = (e) => {
-                if(e.key === 'ArrowLeft' || e.key === 'a') moveCar(-25);
-                if(e.key === 'ArrowRight' || e.key === 'd') moveCar(25);
-            };
-
-            document.getElementById('btn-up').onclick = () => moveCar(-30);
-            document.getElementById('btn-down').onclick = () => moveCar(30);
         }
 
         // ================= 4. MEMORY MATRIX DUEL =================
@@ -826,8 +839,7 @@
                 const state = docSnap.data().gameState;
                 if(state) {
                     activeIdx = state.activeIdx !== undefined ? state.activeIdx : -1;
-                    scoreP1 = state.scoreP1 || 0;
-                    scoreP2 = state.scoreP2 || 0;
+                    scoreP1 = state.scoreP1 || 0; scoreP2 = state.scoreP2 || 0;
                     drawGrid();
                 }
             });
@@ -843,7 +855,7 @@
             }
 
             if(window.appState.isHost) {
-                setInterval(() => {
+                window.appState.activeGameInterval = setInterval(() => {
                     let randIdx = Math.floor(Math.random() * 4);
                     updateDoc(roomRef, { "gameState.activeIdx": randIdx });
                 }, 1500);
@@ -851,19 +863,16 @@
 
             canvas.onclick = async (e) => {
                 let rect = canvas.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                let y = e.clientY - rect.top;
+                let x = e.clientX - rect.left, y = e.clientY - rect.top;
 
                 coords.forEach(async (c, i) => {
                     if(x >= c.x && x <= c.x + 100 && y >= c.y && y <= c.y + 100) {
                         playSound('beep');
                         if(i === activeIdx) {
                             if(window.appState.isHost) {
-                                scoreP1++;
-                                await updateDoc(roomRef, { "gameState.scoreP1": scoreP1 });
+                                scoreP1++; await updateDoc(roomRef, { "gameState.scoreP1": scoreP1 });
                             } else {
-                                scoreP2++;
-                                await updateDoc(roomRef, { "gameState.scoreP2": scoreP2 });
+                                scoreP2++; await updateDoc(roomRef, { "gameState.scoreP2": scoreP2 });
                             }
                         }
                     }
