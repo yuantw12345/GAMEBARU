@@ -33,6 +33,364 @@
     <!-- TAB NAVIGASI GRUPING 1 - 5 -->
     <div class="mb-5">
       <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Sheet Gruping:</label>
+      <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700/80 text-[11px]">
+        <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
+        <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 2</button>
+        <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 3</button>
+        <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 4</button>
+        <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 5</button>
+      </div>
+    </div>
+
+    <!-- Panel Pengaturan URL -->
+    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/80 border border-slate-700 rounded-xl space-y-2">
+      <label class="block text-xs font-semibold text-slate-300">URL Web App Google Script:</label>
+      <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
+      </div>
+    </div>
+
+    <!-- Textarea Input -->
+    <div class="space-y-2 mb-4">
+      <div class="flex justify-between items-center text-xs text-slate-400">
+        <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
+        <div class="flex space-x-3">
+          <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
+            <i class="fa-regular fa-clipboard"></i> Paste
+          </button>
+          <span>•</span>
+          <!-- Tombol Kecil Atas: Hapus Web & Sheet Sekaligus -->
+          <button onclick="hapusWebDanSheet()" class="text-rose-400 hover:text-rose-300 transition flex items-center gap-1 font-semibold">
+            <i class="fa-solid fa-trash-can"></i> Hapus Teks Web
+          </button>
+        </div>
+      </div>
+
+      <div class="relative">
+        <textarea id="inputText" rows="5" class="w-full bg-slate-900/90 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
+        <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
+          <span id="charCount">0</span> karakter
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Alert -->
+    <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-6">
+      <!-- 1. Tombol Kirim -->
+      <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span id="btnText">Kirim (S1)</span>
+      </button>
+
+      <!-- 2. Tombol Click Here (Format) -->
+      <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-700 hover:bg-sky-600 active:bg-sky-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
+        <i class="fa-solid fa-bolt"></i>
+        <span>CLICK HERE (Format)</span>
+      </button>
+
+      <!-- 3. TOMBOL MERAH BESAR -->
+      <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
+        <i class="fa-solid fa-trash-can"></i>
+        <span id="btnClearSheetText">HAPUS TEKS DI WEBSITE NYA</span>
+      </button>
+    </div>
+
+    <!-- Hasil Format Container (A1, A2, A3) -->
+    <div id="resultContainer" class="hidden space-y-4 border-t border-slate-700 pt-6">
+      <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-list-check text-emerald-400"></i> Hasil Format Pesanan:
+      </h2>
+
+      <!-- Format A1 -->
+      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+          <span>Format Standar (A1):</span>
+          <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
+            <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
+          </button>
+        </div>
+        <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      </div>
+
+      <!-- Format A2 (WD > 100Jt) -->
+      <div id="wrapperA2" class="hidden bg-slate-900/80 border border-amber-700/50 rounded-xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
+          <span>Format WD Di Atas 100Jt (A2):</span>
+          <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
+            <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
+          </button>
+        </div>
+        <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      </div>
+
+      <!-- Format A3 (WD > 50Jt) -->
+      <div id="wrapperA3" class="hidden bg-slate-900/80 border border-sky-700/50 rounded-xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
+          <span>Format WD Di Atas 50Jt (A3):</span>
+          <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
+            <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
+          </button>
+        </div>
+        <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
+    let currentTab = 'GRUPING 1';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      document.getElementById('scriptUrl').value = savedUrl;
+      document.getElementById('inputText').addEventListener('input', updateCharCount);
+    });
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.getElementById('currentTabLabel').textContent = tabName;
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800";
+      });
+
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
+      }
+
+      showStatus(`Aktif di ${tabName}`, 'info');
+    }
+
+    function updateCharCount() {
+      const text = document.getElementById('inputText').value;
+      document.getElementById('charCount').textContent = text.length;
+    }
+
+    function toggleSettings() {
+      document.getElementById('settingsPanel').classList.toggle('hidden');
+    }
+
+    function saveSettings() {
+      const url = document.getElementById('scriptUrl').value.trim();
+      if (!url) return alert('URL tidak boleh kosong!');
+      localStorage.setItem('gs_script_url', url);
+      showStatus('URL Pengaturan berhasil disimpan!', 'success');
+      toggleSettings();
+    }
+
+    async function pasteFromClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('inputText').value = text;
+        updateCharCount();
+        showStatus('Teks berhasil ditempel dari clipboard!', 'info');
+      } catch (err) {
+        alert('Gagal membaca clipboard.');
+      }
+    }
+
+    function hapusWebDanSheet() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+
+      document.getElementById('inputText').value = '';
+      updateCharCount();
+      document.getElementById('resultContainer').classList.add('hidden');
+
+      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
+
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: "clearSheet",
+          sheetName: currentTab 
+        })
+      })
+      .then(() => {
+        showStatus(`Teks web & Data S1 di ${currentTab} berhasil dihapus!`, 'error');
+      })
+      .catch(error => {
+        showStatus('Teks web terhapus, tetapi gagal di Sheets: ' + error.message, 'error');
+      })
+      .finally(() => {
+        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS DI WEBSITE NYA');
+      });
+    }
+
+    function sendToSheet() {
+      const text = document.getElementById('inputText').value;
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+
+      if (!text.trim()) {
+        showStatus('Isi teks terlebih dahulu sebelum mengirim!', 'error');
+        return;
+      }
+
+      setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
+      hideStatus();
+
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          text: text,
+          sheetName: currentTab 
+        })
+      })
+      .then(() => {
+        showStatus(`Berhasil dikirim ke ${currentTab} (S1)!`, 'success');
+        setTimeout(fetchFormatOnly, 1200);
+      })
+      .catch(error => {
+        showStatus('Gagal mengirim: ' + error.message, 'error');
+      })
+      .finally(() => {
+        setLoading(false, 'sendBtn', 'btnText', 'Kirim (S1)');
+      });
+    }
+
+    function fetchFormatOnly() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      
+      setLoading(true, 'fetchBtn', null, null);
+      showStatus(`Memuat format dari ${currentTab}...`, 'info');
+
+      fetch(url, {
+        method: 'POST',
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ 
+          action: "getFormat",
+          sheetName: currentTab
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.isiA1 !== undefined) {
+          displayFormatResult(data);
+          showStatus(`Format ${currentTab} dimuat!`, 'success');
+        } else {
+          showStatus('Gagal membaca format.', 'error');
+        }
+      })
+      .catch(err => {
+        showStatus(`Selesai diproses di ${currentTab}!`, 'success');
+      })
+      .finally(() => {
+        setLoading(false, 'fetchBtn', null, null);
+      });
+    }
+
+    function displayFormatResult(data) {
+      document.getElementById('resultContainer').classList.remove('hidden');
+      document.getElementById('boxA1').textContent = data.isiA1 || '-';
+
+      const wrapA2 = document.getElementById('wrapperA2');
+      if (data.adaWithdrawDiatas100Jt) {
+        wrapA2.classList.remove('hidden');
+        document.getElementById('boxA2').textContent = data.isiA2;
+      } else {
+        wrapA2.classList.add('hidden');
+      }
+
+      const wrapA3 = document.getElementById('wrapperA3');
+      if (data.adaWithdrawDiatas50Jt) {
+        wrapA3.classList.remove('hidden');
+        document.getElementById('boxA3').textContent = data.isiA3;
+      } else {
+        wrapA3.classList.add('hidden');
+      }
+    }
+
+    function copyToClipboard(boxId, toastId) {
+      const text = document.getElementById(boxId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById(toastId);
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2000);
+      });
+    }
+
+    function setLoading(isLoading, btnId, textId, htmlContent) {
+      const btn = document.getElementById(btnId);
+      if (isLoading) {
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        if (textId) document.getElementById(textId).innerHTML = htmlContent;
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        if (textId) document.getElementById(textId).innerHTML = htmlContent;
+      }
+    }
+
+    function showStatus(msg, type) {
+      const box = document.getElementById('statusBox');
+      box.classList.remove('hidden', 'bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700', 'bg-rose-900/40', 'text-rose-300', 'border-rose-700', 'bg-sky-900/40', 'text-sky-300', 'border-sky-700');
+      box.classList.add('border');
+
+      let icon = '';
+      if (type === 'success') {
+        box.classList.add('bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700');
+        icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+      } else if (type === 'error') {
+        box.classList.add('bg-rose-900/40', 'text-rose-300', 'border-rose-700');
+        icon = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+      } else {
+        box.classList.add('bg-sky-900/40', 'text-sky-300', 'border-sky-700');
+        icon = '<i class="fa-solid fa-circle-info text-sky-400"></i>';
+      }
+      box.innerHTML = `${icon} <span>${msg}</span>`;
+    }
+
+    function hideStatus() {
+      document.getElementById('statusBox').classList.add('hidden');
+    }
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sheets Auto Inject & Format Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
+      <div class="flex items-center space-x-3">
+        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
+          <i class="fa-solid fa-file-excel text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-white">Google Sheets Injector</h1>
+          <p class="text-xs text-slate-400">Otomatis Paste / Hapus ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span> (S1)</p>
+        </div>
+      </div>
+      <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
+        <i class="fa-solid fa-gear text-lg"></i>
+      </button>
+    </div>
+
+    <!-- TAB NAVIGASI GRUPING 1 - 5 -->
+    <div class="mb-5">
+      <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Sheet Gruping:</label>
       <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700/80">
         <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 text-xs font-bold rounded-lg transition bg-emerald-600 text-white shadow">G-1</button>
         <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">G-2</button>
