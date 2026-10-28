@@ -60,8 +60,9 @@
             <i class="fa-regular fa-clipboard"></i> Paste
           </button>
           <span>•</span>
-          <button onclick="clearInputOnly()" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-semibold">
-            <i class="fa-solid fa-eraser"></i> Bersihkan Teks Web
+          <!-- Tombol Kecil Atas: Hapus Web & Sheet Sekaligus -->
+          <button onclick="hapusWebDanSheet()" class="text-rose-400 hover:text-rose-300 transition flex items-center gap-1 font-semibold">
+            <i class="fa-solid fa-trash-can"></i> Hapus Teks Web
           </button>
         </div>
       </div>
@@ -91,10 +92,10 @@
         <span>CLICK HERE (Format)</span>
       </button>
 
-      <!-- 3. TOMBOL KHUSUS HAPUS DATA SHEET S1 PER GRUPING -->
-      <button id="clearSheetBtn" onclick="clearSheetData()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
+      <!-- 3. TOMBOL MERAH BESAR: HAPUS TEKS DI WEBSITE NYA (+ HAPUS SHEET S1) -->
+      <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-trash-can"></i>
-        <span id="btnClearSheetText">HAPUS SHEET S1</span>
+        <span id="btnClearSheetText">HAPUS TEKS DI WEBSITE NYA</span>
       </button>
     </div>
 
@@ -194,13 +195,39 @@
       }
     }
 
-    function clearInputOnly() {
+    // FUNGSI UTAMA: MENGAHUS TEKS WEB + MENGHAPUS DATA S1 DI GOOGLE SHEETS SEKALIGUS
+    function hapusWebDanSheet() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+
+      // 1. Bersihkan textarea di website langsung
       document.getElementById('inputText').value = '';
       updateCharCount();
-      hideStatus();
+      document.getElementById('resultContainer').classList.add('hidden');
+
+      // 2. Kirim perintah hapus ke Google Sheets (S1)
+      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
+
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: "clearSheet",
+          sheetName: currentTab 
+        })
+      })
+      .then(() => {
+        showStatus(`Teks web & Data S1 di ${currentTab} berhasil dihapus!`, 'error');
+      })
+      .catch(error => {
+        showStatus('Teks web terhapus, tetapi gagal di Sheets: ' + error.message, 'error');
+      })
+      .finally(() => {
+        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS DI WEBSITE NYA');
+      });
     }
 
-    // 1. KIRIM TEKS KE GOOGLE SHEETS
+    // KIRIM TEKS KE GOOGLE SHEETS
     function sendToSheet() {
       const text = document.getElementById('inputText').value;
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
@@ -234,39 +261,7 @@
       });
     }
 
-    // 2. TOMBOL HAPUS DATA SHEET S1 (PER GRUPING)
-    function clearSheetData() {
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      
-      if (!confirm(`Hapus seluruh data S1 di tab ${currentTab}?`)) {
-        return;
-      }
-
-      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Hapus...');
-
-      fetch(url, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: "clearSheet",
-          sheetName: currentTab 
-        })
-      })
-      .then(() => {
-        showStatus(`Data S1 di ${currentTab} berhasil dihapus!`, 'error');
-        clearInputOnly();
-        document.getElementById('resultContainer').classList.add('hidden');
-      })
-      .catch(error => {
-        showStatus('Gagal menghapus: ' + error.message, 'error');
-      })
-      .finally(() => {
-        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS SHEET S1');
-      });
-    }
-
-    // 3. AMBIL FORMAT (CLICK HERE)
+    // AMBIL FORMAT (CLICK HERE)
     function fetchFormatOnly() {
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       
