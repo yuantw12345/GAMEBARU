@@ -1,407 +1,357 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YANSUO888 - Official iGaming Lobby & Game Demo</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icon CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Outfit', sans-serif;
-            user-select: none;
-        }
-        body {
-            background-color: #080c14;
-            color: #f1f5f9;
-        }
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .game-card:hover .game-overlay {
-            opacity: 1;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sheets Auto Inject & Format Generator (Multi-Gruping)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar overflow-x-hidden">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Top Announcement Bar -->
-    <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-400 text-xs py-1.5 px-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2 overflow-hidden">
-                <span class="bg-amber-500 text-black px-2 py-0.5 rounded font-black text-[10px] tracking-wider">LATEST WIN</span>
-                <marquee class="w-64 md:w-96 text-slate-300">
-                    <span class="text-amber-400 font-bold">User***89</span> menang <span class="text-emerald-400 font-bold">Rp 12.500.000</span> di Gates of Olympus! &bull; <span class="text-amber-400 font-bold">Rizky***21</span> menang <span class="text-emerald-400 font-bold">Rp 8.200.000</span> di Mahjong Ways 2!
-                </marquee>
-            </div>
-            <div class="hidden md:flex gap-4 text-slate-400">
-                <span><i class="fa-solid fa-server text-emerald-400 mr-1"></i> System Status: <strong class="text-emerald-400">ONLINE</strong></span>
-                <span><i class="fa-solid fa-clock mr-1"></i> <span id="clockDisplay">--:--:-- WIB</span></span>
-            </div>
+  <div class="bg-slate-800 border border-slate-700/80 shadow-2xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all my-6">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
+      <div class="flex items-center space-x-3">
+        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+          <i class="fa-solid fa-file-excel text-2xl"></i>
         </div>
+        <div>
+          <h1 class="text-xl font-bold text-white tracking-tight">Auto Inject Multi-Gruping</h1>
+          <p class="text-xs text-slate-400">Pilih tab gruping agar data tidak saling bentrok</p>
+        </div>
+      </div>
+      <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/60 transition" title="Pengaturan URL">
+        <i class="fa-solid fa-gear text-lg"></i>
+      </button>
     </div>
 
-    <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <!-- Logo & Brand -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="filterCategory('all')">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-amber-500/20">
-                    Y
-                </div>
-                <div>
-                    <h1 class="font-black text-xl tracking-wider text-white flex items-center gap-1.5">
-                        <span class="gold-gradient-text">YANSUO888</span>
-                    </h1>
-                    <p class="text-[10px] text-slate-400 -mt-1 font-semibold tracking-widest">OFFICIAL iGAMING LOBBY</p>
-                </div>
-            </div>
-
-            <!-- User Balance & Quick Actions -->
-            <div class="flex items-center gap-3">
-                <div class="bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-3">
-                    <i class="fa-solid fa-wallet text-amber-400 text-sm"></i>
-                    <div>
-                        <div class="text-[9px] text-slate-400 font-bold leading-none">DOMPET UTAMA</div>
-                        <div id="userBalance" class="text-sm font-extrabold text-emerald-400 leading-tight">Rp 500.000</div>
-                    </div>
-                </div>
-
-                <button onclick="openDepositModal()" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-lg shadow-amber-500/20 transition">
-                    <i class="fa-solid fa-circle-plus"></i> DEPOSIT
-                </button>
-
-                <button onclick="openAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition" title="Buka Admin Portal">
-                    <i class="fa-solid fa-sliders text-xs"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content Body -->
-    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-        
-        <!-- Live Progressive Jackpot Banner -->
-        <div class="relative rounded-3xl overflow-hidden mb-8 border border-amber-500/30 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 md:p-8 flex flex-col md:flex-row justify-between items-center shadow-2xl">
-            <div class="z-10 text-center md:text-left mb-4 md:mb-0">
-                <span class="inline-block bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 mb-2">
-                    🔥 GRAND PROGRESSIVE JACKPOT YANSUO888
-                </span>
-                <h2 id="jackpotTicker" class="text-3xl md:text-5xl font-black gold-gradient-text tracking-tight my-1">
-                    Rp 8.429.105.800
-                </h2>
-                <p class="text-xs text-slate-400">Diupdate secara real-time dari jaringan YANSUO888 Server.</p>
-            </div>
-            <div class="z-10 flex gap-2">
-                <button onclick="openDepositModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-6 py-3 rounded-2xl text-xs shadow-lg shadow-emerald-500/20 transition">
-                    KLAIM BONUS 100%
-                </button>
-            </div>
-        </div>
-
-        <!-- Provider & Category Navigation Filter -->
-        <div class="flex flex-col gap-4 mb-6">
-            <div class="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
-                <button onclick="filterCategory('all')" class="cat-btn active bg-amber-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap transition">
-                    <i class="fa-solid fa-border-all mr-1.5"></i> Semua Game
-                </button>
-                <button onclick="filterCategory('pragmatic')" class="cat-btn bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap border border-slate-800 transition">
-                    <i class="fa-solid fa-crown text-amber-400 mr-1.5"></i> Pragmatic Play
-                </button>
-                <button onclick="filterCategory('pgsoft')" class="cat-btn bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap border border-slate-800 transition">
-                    <i class="fa-solid fa-gamepad text-indigo-400 mr-1.5"></i> PG Soft
-                </button>
-                <button onclick="filterCategory('simulator')" class="cat-btn bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs whitespace-nowrap border border-slate-800 transition">
-                    <i class="fa-solid fa-microchip text-emerald-400 mr-1.5"></i> Custom Simulator
-                </button>
-            </div>
-
-            <div class="flex justify-between items-center bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
-                <div class="flex items-center gap-2 w-full max-w-xs">
-                    <i class="fa-solid fa-magnifying-glass text-slate-500 text-xs"></i>
-                    <input type="text" id="searchInput" oninput="searchGames()" placeholder="Cari nama game..." class="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full">
-                </div>
-                <span class="text-[11px] text-slate-400 font-semibold" id="gameCountDisplay">Tersedia: 4 Game</span>
-            </div>
-        </div>
-
-        <!-- Game Cards Grid -->
-        <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <!-- Dynamic Content Injected via JS -->
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-slate-950 border-t border-slate-900 py-8 px-4 mt-12 text-center text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto flex flex-col gap-4 items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center">Y</div>
-                <span class="font-extrabold text-slate-300 tracking-wider">YANSUO888 iGAMING PLATFORM</span>
-            </div>
-            <p class="max-w-xl text-[11px] text-slate-600 leading-relaxed">
-                Website ini adalah platform demo dan edukasi sistem arsitektur iGaming YANSUO888. Seluruh link demo berasal langsung dari server resmi penyedia game.
-            </p>
-            <p class="text-[10px] text-slate-600">&copy; 2026 YANSUO888 Platform. All Rights Reserved.</p>
-        </div>
-    </footer>
-
-    <!-- GAME MODAL -->
-    <div id="gameModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md items-center justify-center p-2 sm:p-4">
-        <div id="gameModalContainer" class="w-full max-w-5xl">
-            <!-- Injected via JS -->
-        </div>
+    <!-- Panel Pengaturan URL -->
+    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/90 border border-slate-700 rounded-xl space-y-2">
+      <label class="block text-xs font-semibold text-slate-300">URL Web App Google Script:</label>
+      <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
+      </div>
     </div>
 
-    <!-- DEPOSIT MODAL -->
-    <div id="depositModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
-            <button onclick="closeDepositModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h3 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-wallet text-amber-400 mr-2"></i>Deposit Saldo Virtual</h3>
-            <p class="text-xs text-slate-400 mb-4">Pilih nominal deposit untuk menambah saldo latihan kamu.</p>
-            <div class="grid grid-cols-3 gap-2 mb-4">
-                <button onclick="setDepositAmount(50000)" class="bg-slate-800 hover:bg-slate-700 text-white font-bold p-3 rounded-xl text-xs border border-slate-700">Rp 50.000</button>
-                <button onclick="setDepositAmount(100000)" class="bg-slate-800 hover:bg-slate-700 text-white font-bold p-3 rounded-xl text-xs border border-slate-700">Rp 100.000</button>
-                <button onclick="setDepositAmount(500000)" class="bg-slate-800 hover:bg-slate-700 text-white font-bold p-3 rounded-xl text-xs border border-slate-700">Rp 500.000</button>
-            </div>
-            <div class="mb-4">
-                <label class="text-[11px] text-slate-400 font-bold block mb-1">NOMINAL CUSTOM</label>
-                <input type="number" id="customDepoInput" placeholder="Masukkan jumlah..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-emerald-400 font-bold focus:outline-none focus:border-amber-500">
-            </div>
-            <button onclick="processDeposit()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition">
-                KONFIRMASI DEPOSIT INSTAN
-            </button>
-        </div>
+    <!-- TAB NAVIGASI GRUPING -->
+    <div class="mb-5">
+      <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+        <i class="fa-solid fa-layer-group text-emerald-400 mr-1"></i> Pilih Tab Sheet Target:
+      </label>
+      <div class="grid grid-cols-5 gap-1.5 p-1 bg-slate-900/90 rounded-xl border border-slate-700/80" id="tabContainer">
+        <button onclick="selectTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center bg-emerald-600 text-white shadow">
+          GRUPING 1
+        </button>
+        <button onclick="selectTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          GRUPING 2
+        </button>
+        <button onclick="selectTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          GRUPING 3
+        </button>
+        <button onclick="selectTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          GRUPING 4
+        </button>
+        <button onclick="selectTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          GRUPING 5
+        </button>
+      </div>
+      <div class="mt-2 text-right">
+        <span class="text-[11px] text-slate-400">Aktif: <b id="activeTabLabel" class="text-emerald-400 font-mono">GRUPING 1</b></span>
+      </div>
     </div>
 
-    <!-- ADMIN MODAL -->
-    <div id="adminModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
-                    <i class="fa-solid fa-sliders"></i>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-white">Backoffice Admin Portal</h3>
-                    <p class="text-xs text-slate-400">Pengaturan Parameter RTP & Log Sistem YANSUO888</p>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold text-white">Global House RTP Setting</span>
-                        <span id="rtpDisplay" class="text-xs font-bold text-amber-400">96.5%</span>
-                    </div>
-                    <input type="range" min="80" max="99" value="96.5" step="0.5" id="rtpSlider" oninput="updateRTP(this.value)" class="w-full accent-amber-500">
-                </div>
-                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                    <span class="text-xs font-bold text-white block mb-2"><i class="fa-solid fa-terminal mr-1.5 text-emerald-400"></i>Live Webhook API Logs</span>
-                    <div id="apiLogConsole" class="bg-black p-3 rounded-xl font-mono text-[10px] text-emerald-400 h-32 overflow-y-auto space-y-1 custom-scrollbar">
-                        <div>[SYSTEM]: YANSUO888 Platform initialized successfully.</div>
-                    </div>
-                </div>
-            </div>
+    <!-- Textarea Input -->
+    <div class="space-y-2 mb-4">
+      <div class="flex justify-between items-center text-xs text-slate-400">
+        <label for="inputText" class="font-medium">Tempel Transaksi (<span id="inputTargetLabel" class="text-emerald-400">GRUPING 1</span>):</label>
+        <div class="flex space-x-2">
+          <button onclick="pasteFromClipboard()" class="hover:text-emerald-400 transition flex items-center gap-1">
+            <i class="fa-regular fa-clipboard"></i> Paste
+          </button>
+          <span>•</span>
+          <button onclick="clearText()" class="hover:text-rose-400 transition flex items-center gap-1">
+            <i class="fa-regular fa-trash-can"></i> Hapus
+          </button>
         </div>
+      </div>
+
+      <div class="relative">
+        <textarea id="inputText" rows="5" class="w-full bg-slate-900/90 border border-slate-700/80 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
+        <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
+          <span id="charCount">0</span> karakter
+        </div>
+      </div>
     </div>
 
-    <!-- JAVASCRIPT -->
-    <script>
-        const gameDatabase = [
-            {
-                id: 'pragmatic-olympus',
-                title: 'Gates of Olympus',
-                provider: 'PRAGMATIC PLAY',
-                category: 'pragmatic',
-                rtp: '96.50%',
-                isHot: true,
-                image: 'https://i.postimg.cc/cHjzbqJD/images.jpg',
-                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympgate&lang=id&cur=IDR'
-            },
-            {
-                id: 'pragmatic-bonanza',
-                title: 'Sweet Bonanza 1000',
-                provider: 'PRAGMATIC PLAY',
-                category: 'pragmatic',
-                rtp: '96.53%',
-                isHot: true,
-                image: 'https://i.postimg.cc/FHmBqV9Q/Sweet-Bonanza-1000.webp',
-                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sbonanza&lang=id&cur=IDR'
-            },
-            {
-                id: 'pg-mahjong2',
-                title: 'Mahjong Ways 2',
-                provider: 'PG SOFT',
-                category: 'pgsoft',
-                rtp: '96.95%',
-                isHot: true,
-                image: 'https://i.postimg.cc/wB441KD7/images-(1).jpg',
-                demoUrl: 'https://m.pgsoft-games.com/102/index.html?ot=3&btt=1&aff=demo'
-            },
-            {
-                id: 'custom-slot',
-                title: 'YANSUO Fruit Spin',
-                provider: 'YANSUO LABS',
-                category: 'simulator',
-                rtp: '97.00%',
-                isHot: false,
-                image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&auto=format&fit=crop&q=60',
-                demoUrl: null 
-            }
-        ];
+    <!-- Status Alert -->
+    <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
 
-        let balance = 500000;
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+      <button id="sendBtn" onclick="sendToSheet()" class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-2 text-sm">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span id="btnText">Kirim ke <span id="btnSheetLabel">GRUPING 1</span> (S1)</span>
+      </button>
 
-        function renderGames(games) {
-            const grid = document.getElementById('gameGrid');
-            grid.innerHTML = '';
+      <button id="fetchBtn" onclick="fetchFormatOnly()" class="w-full bg-sky-700 hover:bg-sky-600 active:bg-sky-800 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-2 text-sm">
+        <i class="fa-solid fa-bolt"></i>
+        <span>CLICK HERE (Ambil Format)</span>
+      </button>
+    </div>
 
-            games.forEach(game => {
-                const card = document.createElement('div');
-                card.className = 'game-card relative bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg hover:border-amber-500/50 transition group cursor-pointer flex flex-col justify-between';
-                
-                card.innerHTML = `
-                    <div class="relative aspect-[4/5] overflow-hidden bg-slate-950">
-                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                        ${game.isHot ? '<span class="absolute top-2 left-2 bg-rose-500 text-white font-black text-[9px] px-2 py-0.5 rounded-md shadow">HOT</span>' : ''}
-                        
-                        <div class="game-overlay absolute inset-0 bg-slate-950/80 backdrop-blur-xs opacity-0 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 p-3">
-                            <button onclick="openGame('${game.id}')" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-xs rounded-xl shadow-lg hover:scale-105 transition">
-                                <i class="fa-solid fa-play mr-1"></i> MAIN DEMO
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-slate-950/90 border-t border-slate-800/50">
-                        <div class="text-xs font-bold text-white truncate">${game.title}</div>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">${game.provider}</span>
-                            <span class="text-[10px] text-emerald-400 font-bold"><i class="fa-solid fa-chart-line text-[8px] mr-0.5"></i> ${game.rtp}</span>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-            document.getElementById('gameCountDisplay').innerText = `Tersedia: ${games.length} Game`;
+    <!-- Hasil Format Container (A1, A2, A3) -->
+    <div id="resultContainer" class="hidden space-y-4 border-t border-slate-700/80 pt-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-emerald-400"></i> Hasil Format Pesanan (<span id="resultSheetLabel" class="text-emerald-400">GRUPING 1</span>):
+        </h2>
+      </div>
+
+      <!-- Format A1 -->
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+          <span>Format Standar (A1):</span>
+          <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1">
+            <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
+          </button>
+        </div>
+        <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      </div>
+
+      <!-- Format A2 (WD > 100Jt) -->
+      <div id="wrapperA2" class="hidden bg-slate-900/80 border border-amber-700/50 rounded-xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
+          <span>Format WD Di Atas 100Jt (A2):</span>
+          <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1">
+            <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
+          </button>
+        </div>
+        <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      </div>
+
+      <!-- Format A3 (WD > 50Jt) -->
+      <div id="wrapperA3" class="hidden bg-slate-900/80 border border-sky-700/50 rounded-xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
+          <span>Format WD Di Atas 50Jt (A3):</span>
+          <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1">
+            <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
+          </button>
+        </div>
+        <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
+    let currentSheet = 'GRUPING 1';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      document.getElementById('scriptUrl').value = savedUrl;
+      document.getElementById('inputText').addEventListener('input', updateCharCount);
+    });
+
+    function selectTab(sheetName) {
+      currentSheet = sheetName;
+      
+      // Update tampilan Tab UI
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(tab => {
+        tab.className = "tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+      });
+
+      const activeTab = document.getElementById(`tab-${sheetName}`);
+      if (activeTab) {
+        activeTab.className = "tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center bg-emerald-600 text-white shadow";
+      }
+
+      // Update Label
+      document.getElementById('activeTabLabel').textContent = sheetName;
+      document.getElementById('inputTargetLabel').textContent = sheetName;
+      document.getElementById('btnSheetLabel').textContent = sheetName;
+      document.getElementById('resultSheetLabel').textContent = sheetName;
+
+      hideStatus();
+    }
+
+    function updateCharCount() {
+      const text = document.getElementById('inputText').value;
+      document.getElementById('charCount').textContent = text.length;
+    }
+
+    function toggleSettings() {
+      document.getElementById('settingsPanel').classList.toggle('hidden');
+    }
+
+    function saveSettings() {
+      const url = document.getElementById('scriptUrl').value.trim();
+      if (!url) return alert('URL tidak boleh kosong!');
+      localStorage.setItem('gs_script_url', url);
+      showStatus('URL berhasil disimpan!', 'success');
+      toggleSettings();
+    }
+
+    async function pasteFromClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('inputText').value = text;
+        updateCharCount();
+        showStatus('Teks berhasil ditempel dari clipboard!', 'info');
+      } catch (err) {
+        alert('Gagal membaca clipboard.');
+      }
+    }
+
+    function clearText() {
+      document.getElementById('inputText').value = '';
+      updateCharCount();
+      hideStatus();
+    }
+
+    function sendToSheet() {
+      const text = document.getElementById('inputText').value;
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+
+      if (!text.trim()) {
+        showStatus('Isi teks terlebih dahulu sebelum mengirim!', 'error');
+        return;
+      }
+
+      setLoading(true, 'sendBtn', 'btnText', `<i class="fa-solid fa-spinner fa-spin"></i> Mengirim ke ${currentSheet}...`);
+      hideStatus();
+
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          text: text, 
+          sheetName: currentSheet,
+          action: 'paste'
+        })
+      })
+      .then(() => {
+        showStatus(`Berhasil dikirim ke sel S1 pada tab ${currentSheet}! Memuat format...`, 'success');
+        setTimeout(fetchFormatOnly, 1500);
+      })
+      .catch(error => {
+        showStatus('Gagal mengirim: ' + error.message, 'error');
+      })
+      .finally(() => {
+        setLoading(false, 'sendBtn', 'btnText', `<i class="fa-solid fa-paper-plane"></i> Kirim ke <span id="btnSheetLabel">${currentSheet}</span> (S1)`);
+      });
+    }
+
+    function fetchFormatOnly() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      
+      setLoading(true, 'fetchBtn', null, null);
+      showStatus(`Mengambil data format dari ${currentSheet}...`, 'info');
+
+      fetch(url, {
+        method: 'POST',
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ 
+          action: "getFormat",
+          sheetName: currentSheet 
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.isiA1 !== undefined) {
+          displayFormatResult(data);
+          showStatus(`Format ${currentSheet} berhasil dimuat!`, 'success');
+        } else {
+          showStatus('Gagal membaca format dari sheet.', 'error');
         }
+      })
+      .catch(err => {
+        showStatus(`Data dikirim ke ${currentSheet}. Silakan cek spreadsheet.`, 'success');
+      })
+      .finally(() => {
+        setLoading(false, 'fetchBtn', null, null);
+      });
+    }
 
-        function filterCategory(cat) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active', 'bg-amber-500', 'text-slate-950'));
-            if (cat === 'all') {
-                renderGames(gameDatabase);
-            } else {
-                renderGames(gameDatabase.filter(g => g.category === cat));
-            }
-        }
+    function displayFormatResult(data) {
+      document.getElementById('resultContainer').classList.remove('hidden');
+      
+      // A1
+      document.getElementById('boxA1').textContent = data.isiA1 || '-';
 
-        function searchGames() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            renderGames(gameDatabase.filter(g => g.title.toLowerCase().includes(query)));
-        }
+      // A2
+      const wrapA2 = document.getElementById('wrapperA2');
+      if (data.adaWithdrawDiatas100Jt) {
+        wrapA2.classList.remove('hidden');
+        document.getElementById('boxA2').textContent = data.isiA2;
+      } else {
+        wrapA2.classList.add('hidden');
+      }
 
-        function openGame(gameId) {
-            const game = gameDatabase.find(g => g.id === gameId);
-            if (!game) return;
+      // A3
+      const wrapA3 = document.getElementById('wrapperA3');
+      if (data.adaWithdrawDiatas50Jt) {
+        wrapA3.classList.remove('hidden');
+        document.getElementById('boxA3').textContent = data.isiA3;
+      } else {
+        wrapA3.classList.add('hidden');
+      }
+    }
 
-            const modal = document.getElementById('gameModal');
-            const container = document.getElementById('gameModalContainer');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+    function copyToClipboard(boxId, toastId) {
+      const text = document.getElementById(boxId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById(toastId);
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2000);
+      });
+    }
 
-            if (game.demoUrl) {
-                container.innerHTML = `
-                    <div class="relative w-full h-[85vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 flex flex-col">
-                        <div class="bg-slate-950 px-4 py-3 flex justify-between items-center border-b border-slate-800">
-                            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">${game.title} - Official Demo Server</span>
-                            <button onclick="closeGameModal()" class="text-slate-400 hover:text-white bg-slate-800 px-3 py-1 rounded-xl text-xs font-bold">✕ Tutup</button>
-                        </div>
-                        <iframe src="${game.demoUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative max-w-md mx-auto text-center">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-xs font-bold text-amber-400">YANSUO SIMULATOR ENGINE</span>
-                            <button onclick="closeGameModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 bg-slate-950 p-4 rounded-2xl border border-slate-800 my-4 text-4xl h-32 items-center">
-                            <div id="simReel1">💎</div>
-                            <div id="simReel2">🍋</div>
-                            <div id="simReel3">👑</div>
-                        </div>
-                        <div id="simStatus" class="text-xs font-bold text-slate-400 h-6 mb-4">Tekan Spin untuk bermain!</div>
-                        <button onclick="spinCustomEngine()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black rounded-xl text-xs">SPIN (Rp 2.000)</button>
-                    </div>
-                `;
-            }
-        }
+    function setLoading(isLoading, btnId, textId, htmlContent) {
+      const btn = document.getElementById(btnId);
+      if (isLoading) {
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        if (textId) document.getElementById(textId).innerHTML = htmlContent;
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        if (textId) document.getElementById(textId).innerHTML = htmlContent;
+      }
+    }
 
-        function closeGameModal() {
-            document.getElementById('gameModal').classList.add('hidden');
-            document.getElementById('gameModalContainer').innerHTML = '';
-        }
+    function showStatus(msg, type) {
+      const box = document.getElementById('statusBox');
+      box.classList.remove('hidden', 'bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700', 'bg-rose-900/40', 'text-rose-300', 'border-rose-700', 'bg-sky-900/40', 'text-sky-300', 'border-sky-700');
+      box.classList.add('border');
 
-        function spinCustomEngine() {
-            if (balance < 2000) return alert("Saldo tidak cukup!");
-            balance -= 2000;
-            updateBalanceDisplay();
-            const symbols = ['💎', '🍋', '👑', '7️⃣', '⭐'];
-            setTimeout(() => {
-                document.getElementById('simReel1').innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                document.getElementById('simReel2').innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                document.getElementById('simReel3').innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                document.getElementById('simStatus').innerText = "Selesai memutar!";
-            }, 300);
-        }
+      let icon = '';
+      if (type === 'success') {
+        box.classList.add('bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700');
+        icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+      } else if (type === 'error') {
+        box.classList.add('bg-rose-900/40', 'text-rose-300', 'border-rose-700');
+        icon = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+      } else {
+        box.classList.add('bg-sky-900/40', 'text-sky-300', 'border-sky-700');
+        icon = '<i class="fa-solid fa-circle-info text-sky-400"></i>';
+      }
+      box.innerHTML = `${icon} <span>${msg}</span>`;
+    }
 
-        function openDepositModal() { document.getElementById('depositModal').classList.remove('hidden'); document.getElementById('depositModal').classList.add('flex'); }
-        function closeDepositModal() { document.getElementById('depositModal').classList.add('hidden'); }
-        function setDepositAmount(amt) { document.getElementById('customDepoInput').value = amt; }
-        function processDeposit() {
-            const val = parseInt(document.getElementById('customDepoInput').value);
-            if (val) { balance += val; updateBalanceDisplay(); closeDepositModal(); alert(`Deposit Rp ${val.toLocaleString('id-ID')} Berhasil!`); }
-        }
-
-        function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); document.getElementById('adminModal').classList.add('flex'); }
-        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
-        function updateRTP(val) { document.getElementById('rtpDisplay').innerText = val + '%'; }
-        function updateBalanceDisplay() { document.getElementById('userBalance').innerText = `Rp ${balance.toLocaleString('id-ID')}`; }
-
-        setInterval(() => {
-            document.getElementById('clockDisplay').innerText = new Date().toLocaleTimeString('id-ID') + ' WIB';
-            let jpElem = document.getElementById('jackpotTicker');
-            let currentJp = parseInt(jpElem.innerText.replace(/[^0-9]/g, '')) + 250;
-            jpElem.innerText = `Rp ${currentJp.toLocaleString('id-ID')}`;
-        }, 1000);
-
-        window.onload = () => { renderGames(gameDatabase); updateBalanceDisplay(); };
-    </script>
+    function hideStatus() {
+      document.getElementById('statusBox').classList.add('hidden');
+    }
+  </script>
 </body>
 </html>
