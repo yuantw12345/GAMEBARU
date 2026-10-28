@@ -8,71 +8,70 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: 'Inter', sans-serif; }
-    /* Animasi Smooth Modal */
     @keyframes modalShow {
       from { opacity: 0; transform: scale(0.95) translateY(10px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
     .modal-animate {
-      animation: modalShow 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: modalShow 0.2s ease-out forwards;
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex items-center justify-center p-4">
 
-  <div class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl p-6 md:p-8 max-w-xl w-full transition-all">
+  <div class="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all">
     
     <!-- Header -->
-    <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
+    <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
       <div class="flex items-center space-x-3">
-        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
+        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
           <i class="fa-solid fa-list-check text-2xl"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold text-white">FORMAT CEK TRANSAKSI</h1>
-          <p class="text-xs text-slate-400">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
+          <h1 class="text-xl font-bold text-slate-900">FORMAT CEK TRANSAKSI</h1>
+          <p class="text-xs text-slate-500">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
         </div>
       </div>
-      <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
+      <button onclick="toggleSettings()" class="text-slate-400 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition" title="Pengaturan URL">
         <i class="fa-solid fa-gear text-lg"></i>
       </button>
     </div>
 
     <!-- TAB NAVIGASI GRUPING 1 - 5 -->
     <div class="mb-5">
-      <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Gruping:</label>
-      <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700/80 text-[11px]">
-        <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
-        <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 2</button>
-        <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 3</button>
-        <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 4</button>
-        <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 5</button>
+      <label class="block text-xs font-semibold text-slate-500 mb-2">Pilih Tab Gruping:</label>
+      <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-100 rounded-xl border border-slate-200 text-[11px]">
+        <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow-sm">GRUPING 1</button>
+        <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-200">GRUPING 2</button>
+        <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-200">GRUPING 3</button>
+        <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-200">GRUPING 4</button>
+        <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-200">GRUPING 5</button>
       </div>
     </div>
 
     <!-- Panel Pengaturan URL -->
-    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/80 border border-slate-700 rounded-xl space-y-2">
-      <label class="block text-xs font-semibold text-slate-300">URL Web App Server:</label>
-      <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+      <label class="block text-xs font-semibold text-slate-600">URL Web App Server:</label>
+      <input type="text" id="scriptUrl" class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
       <div class="flex justify-end space-x-2 pt-2">
-        <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
+        <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition">Simpan</button>
       </div>
     </div>
 
     <!-- Textarea Input -->
     <div class="space-y-2 mb-4">
-      <div class="flex justify-between items-center text-xs text-slate-400">
+      <div class="flex justify-between items-center text-xs text-slate-500">
         <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
         <div>
-          <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
+          <button onclick="pasteFromClipboard()" class="text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1 font-semibold">
             <i class="fa-regular fa-clipboard"></i> Paste
           </button>
         </div>
       </div>
 
       <div class="relative">
-        <textarea id="inputText" rows="5" class="w-full bg-slate-900/90 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
-        <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
+        <textarea id="inputText" rows="5" class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-500 text-slate-800 placeholder-slate-400 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
+        <div class="absolute bottom-3 right-3 text-xs text-slate-400 pointer-events-none font-mono">
           <span id="charCount">0</span> karakter
         </div>
       </div>
@@ -84,19 +83,19 @@
     <!-- ACTION BUTTONS -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-2">
       <!-- 1. Tombol Kirim -->
-      <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
+      <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-paper-plane"></i>
         <span id="btnText">Kirim Transaksi</span>
       </button>
 
       <!-- 2. Tombol Click Here (Format) -->
-      <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-700 hover:bg-sky-600 active:bg-sky-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
+      <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-sky-600/20 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-bolt"></i>
         <span>CLICK HERE (Format)</span>
       </button>
 
       <!-- 3. TOMBOL HAPUS TEKS -->
-      <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
+      <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-rose-600/20 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-trash-can"></i>
         <span id="btnClearSheetText">HAPUS TEKS</span>
       </button>
@@ -104,62 +103,62 @@
 
   </div>
 
-  <!-- ================= POP-UP MODAL KEREN & SMOOTH ================= -->
-  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
-    <div id="modalContent" class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-300 overflow-hidden">
+  <!-- ================= POP-UP MODAL BERSIH & SIMPEL ================= -->
+  <div id="resultModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div id="modalContent" class="bg-white border border-slate-200 shadow-2xl rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-200 overflow-hidden">
       
       <!-- Modal Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900/50">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
         <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-lg"></i>
-          <h2 class="text-sm font-bold text-white">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-400">GRUPING 1</span>)</h2>
+          <i class="fa-solid fa-square-poll-vertical text-emerald-600 text-lg"></i>
+          <h2 class="text-sm font-bold text-slate-800">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-600">GRUPING 1</span>)</h2>
         </div>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-700 transition">
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-200 transition">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <!-- Modal Body (Isi Format A1, A2, A3) -->
+      <!-- Modal Body -->
       <div class="p-6 space-y-4 overflow-y-auto">
         
         <!-- Format A1 -->
-        <div class="bg-slate-900/90 border border-slate-700 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
             <span>Format Standar (A1):</span>
-            <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
-              <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
+            <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1 font-bold">
+              <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-600 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+          <div id="boxA1" class="bg-white border border-slate-200 rounded-lg p-3 text-xs font-mono text-slate-700 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
         <!-- Format A2 (WD > 100Jt) -->
-        <div id="wrapperA2" class="hidden bg-slate-900/90 border border-amber-700/50 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
+        <div id="wrapperA2" class="hidden bg-amber-50/50 border border-amber-200 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-amber-700">
             <span>Format WD Di Atas 100Jt (A2):</span>
-            <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
-              <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
+            <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-700 hover:text-amber-800 transition flex items-center gap-1 font-bold">
+              <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-700 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+          <div id="boxA2" class="bg-white border border-amber-200 rounded-lg p-3 text-xs font-mono text-slate-700 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
         <!-- Format A3 (WD > 50Jt) -->
-        <div id="wrapperA3" class="hidden bg-slate-900/90 border border-sky-700/50 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
+        <div id="wrapperA3" class="hidden bg-sky-50/50 border border-sky-200 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-sky-700">
             <span>Format WD Di Atas 50Jt (A3):</span>
-            <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
-              <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
+            <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-700 hover:text-sky-800 transition flex items-center gap-1 font-bold">
+              <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-700 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+          <div id="boxA3" class="bg-white border border-sky-200 rounded-lg p-3 text-xs font-mono text-slate-700 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-700 bg-slate-900/50 flex justify-end">
-        <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-xl transition">
+      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">
           Tutup
         </button>
       </div>
@@ -182,12 +181,12 @@
       document.getElementById('currentTabLabel').textContent = tabName;
       
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800";
+        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-200";
       });
 
       const activeBtn = document.getElementById(`tab-${tabName}`);
       if (activeBtn) {
-        activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
+        activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow-sm";
       }
 
       showStatus(`Aktif di ${tabName}`, 'info');
@@ -356,7 +355,7 @@
       content.classList.add('scale-95');
       setTimeout(() => {
         modal.classList.add('hidden');
-      }, 300);
+      }, 200);
     }
 
     function copyToClipboard(boxId, toastId) {
@@ -383,19 +382,19 @@
 
     function showStatus(msg, type) {
       const box = document.getElementById('statusBox');
-      box.classList.remove('hidden', 'bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700', 'bg-rose-900/40', 'text-rose-300', 'border-rose-700', 'bg-sky-900/40', 'text-sky-300', 'border-sky-700');
+      box.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'bg-sky-50', 'text-sky-700', 'border-sky-200');
       box.classList.add('border');
 
       let icon = '';
       if (type === 'success') {
-        box.classList.add('bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700');
-        icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+        box.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+        icon = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
       } else if (type === 'error') {
-        box.classList.add('bg-rose-900/40', 'text-rose-300', 'border-rose-700');
-        icon = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+        box.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+        icon = '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i>';
       } else {
-        box.classList.add('bg-sky-900/40', 'text-sky-300', 'border-sky-700');
-        icon = '<i class="fa-solid fa-circle-info text-sky-400"></i>';
+        box.classList.add('bg-sky-50', 'text-sky-700', 'border-sky-200');
+        icon = '<i class="fa-solid fa-circle-info text-sky-600"></i>';
       }
       box.innerHTML = `${icon} <span>${msg}</span>`;
     }
