@@ -3,36 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Sheets Auto Inject & Format Generator (Multi-Gruping)</title>
+  <title>Google Sheets Auto Inject & Format Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
 
-  <div class="bg-slate-800 border border-slate-700/80 shadow-2xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all my-6">
+  <div class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all">
     
     <!-- Header -->
-    <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
+    <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
       <div class="flex items-center space-x-3">
-        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
           <i class="fa-solid fa-file-excel text-2xl"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold text-white tracking-tight">Auto Inject Multi-Gruping</h1>
-          <p class="text-xs text-slate-400">Pilih tab gruping agar data tidak saling bentrok</p>
+          <h1 class="text-xl font-bold text-white">Google Sheets Injector</h1>
+          <p class="text-xs text-slate-400">Otomatis Paste ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span> (S1)</p>
         </div>
       </div>
-      <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/60 transition" title="Pengaturan URL">
+      <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
         <i class="fa-solid fa-gear text-lg"></i>
       </button>
     </div>
 
+    <!-- TAB NAVIGASI GRUPING 1 - 5 -->
+    <div class="mb-5">
+      <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Sheet Gruping:</label>
+      <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700/80">
+        <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 text-xs font-bold rounded-lg transition bg-emerald-600 text-white shadow">G-1</button>
+        <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">G-2</button>
+        <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">G-3</button>
+        <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">G-4</button>
+        <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">G-5</button>
+      </div>
+    </div>
+
     <!-- Panel Pengaturan URL -->
-    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/90 border border-slate-700 rounded-xl space-y-2">
+    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/80 border border-slate-700 rounded-xl space-y-2">
       <label class="block text-xs font-semibold text-slate-300">URL Web App Google Script:</label>
       <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
       <div class="flex justify-end space-x-2 pt-2">
@@ -40,50 +51,23 @@
       </div>
     </div>
 
-    <!-- TAB NAVIGASI GRUPING -->
-    <div class="mb-5">
-      <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-        <i class="fa-solid fa-layer-group text-emerald-400 mr-1"></i> Pilih Tab Sheet Target:
-      </label>
-      <div class="grid grid-cols-5 gap-1.5 p-1 bg-slate-900/90 rounded-xl border border-slate-700/80" id="tabContainer">
-        <button onclick="selectTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center bg-emerald-600 text-white shadow">
-          GRUPING 1
-        </button>
-        <button onclick="selectTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
-          GRUPING 2
-        </button>
-        <button onclick="selectTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
-          GRUPING 3
-        </button>
-        <button onclick="selectTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
-          GRUPING 4
-        </button>
-        <button onclick="selectTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800">
-          GRUPING 5
-        </button>
-      </div>
-      <div class="mt-2 text-right">
-        <span class="text-[11px] text-slate-400">Aktif: <b id="activeTabLabel" class="text-emerald-400 font-mono">GRUPING 1</b></span>
-      </div>
-    </div>
-
     <!-- Textarea Input -->
     <div class="space-y-2 mb-4">
       <div class="flex justify-between items-center text-xs text-slate-400">
-        <label for="inputText" class="font-medium">Tempel Transaksi (<span id="inputTargetLabel" class="text-emerald-400">GRUPING 1</span>):</label>
-        <div class="flex space-x-2">
-          <button onclick="pasteFromClipboard()" class="hover:text-emerald-400 transition flex items-center gap-1">
+        <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
+        <div class="flex space-x-3">
+          <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
             <i class="fa-regular fa-clipboard"></i> Paste
           </button>
           <span>•</span>
-          <button onclick="clearText()" class="hover:text-rose-400 transition flex items-center gap-1">
-            <i class="fa-regular fa-trash-can"></i> Hapus
+          <button onclick="clearInputOnly()" class="text-slate-400 hover:text-amber-400 transition flex items-center gap-1">
+            <i class="fa-solid fa-eraser"></i> Hapus Teks Web
           </button>
         </div>
       </div>
 
       <div class="relative">
-        <textarea id="inputText" rows="5" class="w-full bg-slate-900/90 border border-slate-700/80 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
+        <textarea id="inputText" rows="5" class="w-full bg-slate-900/90 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
         <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
           <span id="charCount">0</span> karakter
         </div>
@@ -94,31 +78,37 @@
     <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
 
     <!-- Action Buttons -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-      <button id="sendBtn" onclick="sendToSheet()" class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-2 text-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-6">
+      <!-- Tombol Kirim -->
+      <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-paper-plane"></i>
-        <span id="btnText">Kirim ke <span id="btnSheetLabel">GRUPING 1</span> (S1)</span>
+        <span id="btnText">Kirim (S1)</span>
       </button>
 
-      <button id="fetchBtn" onclick="fetchFormatOnly()" class="w-full bg-sky-700 hover:bg-sky-600 active:bg-sky-800 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-2 text-sm">
+      <!-- Tombol Click Here (Format) -->
+      <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-700 hover:bg-sky-600 active:bg-sky-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-bolt"></i>
-        <span>CLICK HERE (Ambil Format)</span>
+        <span>CLICK HERE (Format)</span>
+      </button>
+
+      <!-- TOMBOL KHUSUS HAPUS DATA SHEET S1 -->
+      <button id="clearSheetBtn" onclick="clearSheetData()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
+        <i class="fa-solid fa-trash-can"></i>
+        <span id="btnClearSheetText">HAPUS SHEET (S1)</span>
       </button>
     </div>
 
     <!-- Hasil Format Container (A1, A2, A3) -->
-    <div id="resultContainer" class="hidden space-y-4 border-t border-slate-700/80 pt-6">
-      <div class="flex justify-between items-center">
-        <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-list-check text-emerald-400"></i> Hasil Format Pesanan (<span id="resultSheetLabel" class="text-emerald-400">GRUPING 1</span>):
-        </h2>
-      </div>
+    <div id="resultContainer" class="hidden space-y-4 border-t border-slate-700 pt-6">
+      <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-list-check text-emerald-400"></i> Hasil Format Pesanan:
+      </h2>
 
       <!-- Format A1 -->
-      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-4 space-y-2">
+      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-4 space-y-2">
         <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
           <span>Format Standar (A1):</span>
-          <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1">
+          <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
             <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
           </button>
         </div>
@@ -129,7 +119,7 @@
       <div id="wrapperA2" class="hidden bg-slate-900/80 border border-amber-700/50 rounded-xl p-4 space-y-2">
         <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
           <span>Format WD Di Atas 100Jt (A2):</span>
-          <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1">
+          <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
             <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
           </button>
         </div>
@@ -140,7 +130,7 @@
       <div id="wrapperA3" class="hidden bg-slate-900/80 border border-sky-700/50 rounded-xl p-4 space-y-2">
         <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
           <span>Format WD Di Atas 50Jt (A3):</span>
-          <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1">
+          <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
             <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
           </button>
         </div>
@@ -152,35 +142,28 @@
 
   <script>
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
-    let currentSheet = 'GRUPING 1';
-    
+    let currentTab = 'GRUPING 1';
+
     document.addEventListener('DOMContentLoaded', () => {
       const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       document.getElementById('scriptUrl').value = savedUrl;
       document.getElementById('inputText').addEventListener('input', updateCharCount);
     });
 
-    function selectTab(sheetName) {
-      currentSheet = sheetName;
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.getElementById('currentTabLabel').textContent = tabName;
       
-      // Update tampilan Tab UI
-      const tabs = document.querySelectorAll('.tab-btn');
-      tabs.forEach(tab => {
-        tab.className = "tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800";
       });
 
-      const activeTab = document.getElementById(`tab-${sheetName}`);
-      if (activeTab) {
-        activeTab.className = "tab-btn px-2 py-2 text-xs font-bold rounded-lg transition-all text-center bg-emerald-600 text-white shadow";
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "tab-btn py-2 text-xs font-bold rounded-lg transition bg-emerald-600 text-white shadow";
       }
 
-      // Update Label
-      document.getElementById('activeTabLabel').textContent = sheetName;
-      document.getElementById('inputTargetLabel').textContent = sheetName;
-      document.getElementById('btnSheetLabel').textContent = sheetName;
-      document.getElementById('resultSheetLabel').textContent = sheetName;
-
-      hideStatus();
+      showStatus(`Pindah ke ${tabName}`, 'info');
     }
 
     function updateCharCount() {
@@ -196,7 +179,7 @@
       const url = document.getElementById('scriptUrl').value.trim();
       if (!url) return alert('URL tidak boleh kosong!');
       localStorage.setItem('gs_script_url', url);
-      showStatus('URL berhasil disimpan!', 'success');
+      showStatus('URL Pengaturan berhasil disimpan!', 'success');
       toggleSettings();
     }
 
@@ -211,12 +194,13 @@
       }
     }
 
-    function clearText() {
+    function clearInputOnly() {
       document.getElementById('inputText').value = '';
       updateCharCount();
       hideStatus();
     }
 
+    // 1. KIRIM TEKS KE GOOGLE SHEETS
     function sendToSheet() {
       const text = document.getElementById('inputText').value;
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
@@ -226,7 +210,7 @@
         return;
       }
 
-      setLoading(true, 'sendBtn', 'btnText', `<i class="fa-solid fa-spinner fa-spin"></i> Mengirim ke ${currentSheet}...`);
+      setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
       hideStatus();
 
       fetch(url, {
@@ -234,28 +218,60 @@
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          text: text, 
-          sheetName: currentSheet,
-          action: 'paste'
+          text: text,
+          sheetName: currentTab 
         })
       })
       .then(() => {
-        showStatus(`Berhasil dikirim ke sel S1 pada tab ${currentSheet}! Memuat format...`, 'success');
-        setTimeout(fetchFormatOnly, 1500);
+        showStatus(`Berhasil dikirim ke ${currentTab} (S1)! Mengambil format...`, 'success');
+        setTimeout(fetchFormatOnly, 1200);
       })
       .catch(error => {
         showStatus('Gagal mengirim: ' + error.message, 'error');
       })
       .finally(() => {
-        setLoading(false, 'sendBtn', 'btnText', `<i class="fa-solid fa-paper-plane"></i> Kirim ke <span id="btnSheetLabel">${currentSheet}</span> (S1)`);
+        setLoading(false, 'sendBtn', 'btnText', 'Kirim (S1)');
       });
     }
 
+    // 2. TOMBOL HAPUS DATA GOOGLE SHEETS KHUSUS TAB AKTIF
+    function clearSheetData() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      
+      if (!confirm(`Yakin ingin menghapus seluruh data S1 di tab ${currentTab}?`)) {
+        return;
+      }
+
+      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
+
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: "clearSheet",
+          sheetName: currentTab 
+        })
+      })
+      .then(() => {
+        showStatus(`Data S1 di ${currentTab} berhasil dihapus dari Google Sheets!`, 'error');
+        clearInputOnly();
+        document.getElementById('resultContainer').classList.add('hidden');
+      })
+      .catch(error => {
+        showStatus('Gagal menghapus: ' + error.message, 'error');
+      })
+      .finally(() => {
+        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS SHEET (S1)');
+      });
+    }
+
+    // 3. AMBIL FORMAT (CLICK HERE)
     function fetchFormatOnly() {
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       
       setLoading(true, 'fetchBtn', null, null);
-      showStatus(`Mengambil data format dari ${currentSheet}...`, 'info');
+      showStatus(`Mengambil data format dari ${currentTab}...`, 'info');
 
       fetch(url, {
         method: 'POST',
@@ -263,20 +279,20 @@
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ 
           action: "getFormat",
-          sheetName: currentSheet 
+          sheetName: currentTab
         })
       })
       .then(res => res.json())
       .then(data => {
         if (data && data.isiA1 !== undefined) {
           displayFormatResult(data);
-          showStatus(`Format ${currentSheet} berhasil dimuat!`, 'success');
+          showStatus(`Format ${currentTab} berhasil dimuat!`, 'success');
         } else {
           showStatus('Gagal membaca format dari sheet.', 'error');
         }
       })
       .catch(err => {
-        showStatus(`Data dikirim ke ${currentSheet}. Silakan cek spreadsheet.`, 'success');
+        showStatus(`Data ${currentTab} berhasil diproses!`, 'success');
       })
       .finally(() => {
         setLoading(false, 'fetchBtn', null, null);
@@ -285,11 +301,8 @@
 
     function displayFormatResult(data) {
       document.getElementById('resultContainer').classList.remove('hidden');
-      
-      // A1
       document.getElementById('boxA1').textContent = data.isiA1 || '-';
 
-      // A2
       const wrapA2 = document.getElementById('wrapperA2');
       if (data.adaWithdrawDiatas100Jt) {
         wrapA2.classList.remove('hidden');
@@ -298,7 +311,6 @@
         wrapA2.classList.add('hidden');
       }
 
-      // A3
       const wrapA3 = document.getElementById('wrapperA3');
       if (data.adaWithdrawDiatas50Jt) {
         wrapA3.classList.remove('hidden');
