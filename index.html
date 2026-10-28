@@ -22,7 +22,7 @@
         </div>
         <div>
           <h1 class="text-xl font-bold text-white">Google Sheets Injector</h1>
-          <p class="text-xs text-slate-400">Otomatis Paste ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span> (S1)</p>
+          <p class="text-xs text-slate-400">Otomatis Paste / Hapus ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span> (S1)</p>
         </div>
       </div>
       <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
@@ -60,8 +60,8 @@
             <i class="fa-regular fa-clipboard"></i> Paste
           </button>
           <span>•</span>
-          <button onclick="clearInputOnly()" class="text-slate-400 hover:text-amber-400 transition flex items-center gap-1">
-            <i class="fa-solid fa-eraser"></i> Hapus Teks Web
+          <button onclick="clearInputOnly()" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-semibold">
+            <i class="fa-solid fa-eraser"></i> Bersihkan Teks Web
           </button>
         </div>
       </div>
@@ -77,24 +77,24 @@
     <!-- Status Alert -->
     <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
 
-    <!-- Action Buttons -->
+    <!-- ACTION BUTTONS -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-6">
-      <!-- Tombol Kirim -->
+      <!-- 1. Tombol Kirim -->
       <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-paper-plane"></i>
         <span id="btnText">Kirim (S1)</span>
       </button>
 
-      <!-- Tombol Click Here (Format) -->
+      <!-- 2. Tombol Click Here (Format) -->
       <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-700 hover:bg-sky-600 active:bg-sky-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-bolt"></i>
         <span>CLICK HERE (Format)</span>
       </button>
 
-      <!-- TOMBOL KHUSUS HAPUS DATA SHEET S1 -->
+      <!-- 3. TOMBOL KHUSUS HAPUS DATA SHEET S1 PER GRUPING -->
       <button id="clearSheetBtn" onclick="clearSheetData()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-trash-can"></i>
-        <span id="btnClearSheetText">HAPUS SHEET (S1)</span>
+        <span id="btnClearSheetText">HAPUS SHEET S1</span>
       </button>
     </div>
 
@@ -163,7 +163,7 @@
         activeBtn.className = "tab-btn py-2 text-xs font-bold rounded-lg transition bg-emerald-600 text-white shadow";
       }
 
-      showStatus(`Pindah ke ${tabName}`, 'info');
+      showStatus(`Aktif di ${tabName}`, 'info');
     }
 
     function updateCharCount() {
@@ -223,7 +223,7 @@
         })
       })
       .then(() => {
-        showStatus(`Berhasil dikirim ke ${currentTab} (S1)! Mengambil format...`, 'success');
+        showStatus(`Berhasil dikirim ke ${currentTab} (S1)!`, 'success');
         setTimeout(fetchFormatOnly, 1200);
       })
       .catch(error => {
@@ -234,15 +234,15 @@
       });
     }
 
-    // 2. TOMBOL HAPUS DATA GOOGLE SHEETS KHUSUS TAB AKTIF
+    // 2. TOMBOL HAPUS DATA SHEET S1 (PER GRUPING)
     function clearSheetData() {
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       
-      if (!confirm(`Yakin ingin menghapus seluruh data S1 di tab ${currentTab}?`)) {
+      if (!confirm(`Hapus seluruh data S1 di tab ${currentTab}?`)) {
         return;
       }
 
-      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
+      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Hapus...');
 
       fetch(url, {
         method: 'POST',
@@ -254,7 +254,7 @@
         })
       })
       .then(() => {
-        showStatus(`Data S1 di ${currentTab} berhasil dihapus dari Google Sheets!`, 'error');
+        showStatus(`Data S1 di ${currentTab} berhasil dihapus!`, 'error');
         clearInputOnly();
         document.getElementById('resultContainer').classList.add('hidden');
       })
@@ -262,7 +262,7 @@
         showStatus('Gagal menghapus: ' + error.message, 'error');
       })
       .finally(() => {
-        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS SHEET (S1)');
+        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS SHEET S1');
       });
     }
 
@@ -271,7 +271,7 @@
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       
       setLoading(true, 'fetchBtn', null, null);
-      showStatus(`Mengambil data format dari ${currentTab}...`, 'info');
+      showStatus(`Memuat format dari ${currentTab}...`, 'info');
 
       fetch(url, {
         method: 'POST',
@@ -286,13 +286,13 @@
       .then(data => {
         if (data && data.isiA1 !== undefined) {
           displayFormatResult(data);
-          showStatus(`Format ${currentTab} berhasil dimuat!`, 'success');
+          showStatus(`Format ${currentTab} dimuat!`, 'success');
         } else {
-          showStatus('Gagal membaca format dari sheet.', 'error');
+          showStatus('Gagal membaca format.', 'error');
         }
       })
       .catch(err => {
-        showStatus(`Data ${currentTab} berhasil diproses!`, 'success');
+        showStatus(`Selesai diproses di ${currentTab}!`, 'success');
       })
       .finally(() => {
         setLoading(false, 'fetchBtn', null, null);
