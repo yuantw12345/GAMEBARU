@@ -8,11 +8,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: 'Inter', sans-serif; }
+    /* Animasi Smooth Modal */
+    @keyframes modalShow {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-animate {
+      animation: modalShow 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
 
-  <div class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all">
+  <div class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl p-6 md:p-8 max-w-xl w-full transition-all">
     
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
@@ -74,7 +82,7 @@
     <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
 
     <!-- ACTION BUTTONS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-2">
       <!-- 1. Tombol Kirim -->
       <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-paper-plane"></i>
@@ -87,53 +95,76 @@
         <span>CLICK HERE (Format)</span>
       </button>
 
-      <!-- 3. TOMBOL MERAH BESAR: HAPUS TEKS -->
+      <!-- 3. TOMBOL HAPUS TEKS -->
       <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
         <i class="fa-solid fa-trash-can"></i>
         <span id="btnClearSheetText">HAPUS TEKS</span>
       </button>
     </div>
 
-    <!-- Hasil Format Container (A1, A2, A3) -->
-    <div id="resultContainer" class="hidden space-y-4 border-t border-slate-700 pt-6">
-      <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-        <i class="fa-solid fa-list-check text-emerald-400"></i> Hasil Format Pesanan:
-      </h2>
+  </div>
 
-      <!-- Format A1 -->
-      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-4 space-y-2">
-        <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
-          <span>Format Standar (A1):</span>
-          <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
-            <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
-          </button>
+  <!-- ================= POP-UP MODAL KEREN & SMOOTH ================= -->
+  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+    <div id="modalContent" class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-300 overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900/50">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-lg"></i>
+          <h2 class="text-sm font-bold text-white">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-400">GRUPING 1</span>)</h2>
         </div>
-        <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-700 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
       </div>
 
-      <!-- Format A2 (WD > 100Jt) -->
-      <div id="wrapperA2" class="hidden bg-slate-900/80 border border-amber-700/50 rounded-xl p-4 space-y-2">
-        <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
-          <span>Format WD Di Atas 100Jt (A2):</span>
-          <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
-            <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
-          </button>
+      <!-- Modal Body (Isi Format A1, A2, A3) -->
+      <div class="p-6 space-y-4 overflow-y-auto">
+        
+        <!-- Format A1 -->
+        <div class="bg-slate-900/90 border border-slate-700 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+            <span>Format Standar (A1):</span>
+            <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
+              <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
+            </button>
+          </div>
+          <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
-        <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+
+        <!-- Format A2 (WD > 100Jt) -->
+        <div id="wrapperA2" class="hidden bg-slate-900/90 border border-amber-700/50 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
+            <span>Format WD Di Atas 100Jt (A2):</span>
+            <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
+              <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
+            </button>
+          </div>
+          <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+        </div>
+
+        <!-- Format A3 (WD > 50Jt) -->
+        <div id="wrapperA3" class="hidden bg-slate-900/90 border border-sky-700/50 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
+            <span>Format WD Di Atas 50Jt (A3):</span>
+            <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
+              <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
+            </button>
+          </div>
+          <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+        </div>
+
       </div>
 
-      <!-- Format A3 (WD > 50Jt) -->
-      <div id="wrapperA3" class="hidden bg-slate-900/80 border border-sky-700/50 rounded-xl p-4 space-y-2">
-        <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
-          <span>Format WD Di Atas 50Jt (A3):</span>
-          <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
-            <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
-          </button>
-        </div>
-        <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-700 bg-slate-900/50 flex justify-end">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-xl transition">
+          Tutup
+        </button>
       </div>
+
     </div>
-
   </div>
 
   <script>
@@ -195,7 +226,7 @@
 
       document.getElementById('inputText').value = '';
       updateCharCount();
-      document.getElementById('resultContainer').classList.add('hidden');
+      closeModal();
 
       setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
 
@@ -270,7 +301,9 @@
       .then(res => res.json())
       .then(data => {
         if (data && data.isiA1 !== undefined) {
+          document.getElementById('modalTabTitle').textContent = currentTab;
           displayFormatResult(data);
+          openModal();
           showStatus(`Format ${currentTab} dimuat!`, 'success');
         } else {
           showStatus('Gagal membaca format.', 'error');
@@ -285,7 +318,6 @@
     }
 
     function displayFormatResult(data) {
-      document.getElementById('resultContainer').classList.remove('hidden');
       document.getElementById('boxA1').textContent = data.isiA1 || '-';
 
       const wrapA2 = document.getElementById('wrapperA2');
@@ -303,6 +335,28 @@
       } else {
         wrapA3.classList.add('hidden');
       }
+    }
+
+    function openModal() {
+      const modal = document.getElementById('resultModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+        content.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.add('opacity-0');
+      content.classList.remove('scale-100');
+      content.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
     }
 
     function copyToClipboard(boxId, toastId) {
