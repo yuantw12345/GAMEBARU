@@ -33,36 +33,36 @@
   <div class="max-w-3xl w-full space-y-6">
 
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
-    <div class="bg-slate-800/90 backdrop-blur-md border border-slate-700/80 shadow-2xl rounded-2xl p-6 md:p-8 transition-all">
+    <div class="bg-slate-800/75 backdrop-blur-md border border-slate-700/60 shadow-2xl rounded-2xl p-6 md:p-8 transition-all">
       
       <!-- Header & Fitur Ganti Background -->
-      <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-4">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-4 mb-4">
         <div class="flex items-center space-x-3">
-          <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
+          <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
             <i class="fa-solid fa-list-check text-2xl"></i>
           </div>
           <div>
             <h1 class="text-xl font-bold text-white">FORMAT CEK TRANSAKSI</h1>
-            <p class="text-xs text-slate-400">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
+            <p class="text-xs text-slate-300">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-900/80 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
           </div>
         </div>
 
         <!-- OPSI AKSI HEADER: UPLOAD BG SYNC & SETTINGS -->
         <div class="flex items-center space-x-2">
           <!-- Tombol Upload Foto BG -->
-          <label class="cursor-pointer bg-slate-700/80 hover:bg-slate-600 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600" title="Ganti Foto Background untuk Semua Perangkat">
+          <label class="cursor-pointer bg-slate-700/70 hover:bg-slate-600/80 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600/60 shadow" title="Ganti Foto Background untuk Semua Perangkat">
             <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
             <span class="hidden sm:inline">Sync BG Semua</span>
             <input type="file" id="bgUploader" accept="image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
           </label>
 
           <!-- Tombol Reset BG -->
-          <button id="btnResetBg" onclick="resetAndSyncBackground()" class="hidden bg-rose-900/40 hover:bg-rose-800/60 text-rose-300 p-2 rounded-lg text-xs transition border border-rose-700/50" title="Reset Background Default Semua">
+          <button id="btnResetBg" onclick="resetAndSyncBackground()" class="hidden bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 p-2 rounded-lg text-xs transition border border-rose-700/50" title="Reset Background Default Semua">
             <i class="fa-solid fa-trash-can"></i>
           </button>
 
           <!-- Tombol Pengaturan URL -->
-          <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/80 transition border border-transparent hover:border-slate-600" title="Pengaturan URL Web App">
+          <button onclick="toggleSettings()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-700/60 transition border border-transparent hover:border-slate-600/60" title="Pengaturan URL Web App">
             <i class="fa-solid fa-gear text-lg"></i>
           </button>
         </div>
@@ -70,20 +70,20 @@
 
       <!-- TAB NAVIGASI GRUPING 1 - 5 -->
       <div class="mb-5">
-        <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Gruping:</label>
-        <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900/90 rounded-xl border border-slate-700/80 text-[11px]">
+        <label class="block text-xs font-semibold text-slate-300 mb-2">Pilih Tab Gruping:</label>
+        <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900/60 backdrop-blur-sm rounded-xl border border-slate-700/60 text-[11px]">
           <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
-          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 2</button>
-          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 3</button>
-          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 4</button>
-          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 5</button>
+          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-800/60">GRUPING 2</button>
+          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-800/60">GRUPING 3</button>
+          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-800/60">GRUPING 4</button>
+          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-800/60">GRUPING 5</button>
         </div>
       </div>
 
       <!-- Panel Pengaturan URL -->
-      <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/90 border border-slate-700 rounded-xl space-y-2">
-        <label class="block text-xs font-semibold text-slate-300">URL Web App Server:</label>
-        <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+      <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900/75 backdrop-blur-sm border border-slate-700/60 rounded-xl space-y-2">
+        <label class="block text-xs font-semibold text-slate-200">URL Web App Server:</label>
+        <input type="text" id="scriptUrl" class="w-full bg-slate-800/80 border border-slate-600/70 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
         <div class="flex justify-end space-x-2 pt-2">
           <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
         </div>
@@ -91,7 +91,7 @@
 
       <!-- Textarea Input -->
       <div class="space-y-2 mb-4">
-        <div class="flex justify-between items-center text-xs text-slate-400">
+        <div class="flex justify-between items-center text-xs text-slate-300">
           <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
           <div>
             <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
@@ -101,15 +101,15 @@
         </div>
 
         <div class="relative">
-          <textarea id="inputText" rows="6" class="w-full bg-slate-900/90 border border-slate-700/80 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
-          <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
+          <textarea id="inputText" rows="6" class="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-700/60 focus:border-emerald-500 text-slate-100 placeholder-slate-400 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed shadow-inner"></textarea>
+          <div class="absolute bottom-3 right-3 text-xs text-slate-400 pointer-events-none font-mono">
             <span id="charCount">0</span> karakter
           </div>
         </div>
       </div>
 
       <!-- Status Alert -->
-      <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
+      <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium backdrop-blur-sm"></div>
 
       <!-- ACTION BUTTONS -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
@@ -137,11 +137,11 @@
   </div>
 
   <!-- POP-UP MODAL HASIL FORMAT -->
-  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-    <div id="modalContent" class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-200 overflow-hidden">
+  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div id="modalContent" class="bg-slate-800/90 backdrop-blur-md border border-slate-700 shadow-2xl rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-200 overflow-hidden">
       
       <!-- Modal Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900/80">
         <div class="flex items-center space-x-2">
           <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-lg"></i>
           <h2 class="text-sm font-bold text-white">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-400">GRUPING 1</span>)</h2>
@@ -153,39 +153,39 @@
 
       <!-- Modal Body -->
       <div class="p-6 space-y-4 overflow-y-auto">
-        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+        <div class="bg-slate-900/70 border border-slate-700/60 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold text-slate-300">
             <span>Format Standar (A1):</span>
             <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
               <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+          <div id="boxA1" class="bg-slate-950/80 border border-slate-800/80 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
-        <div id="wrapperA2" class="hidden bg-slate-900 border border-amber-700/50 rounded-xl p-4 space-y-2">
+        <div id="wrapperA2" class="hidden bg-slate-900/70 border border-amber-700/50 rounded-xl p-4 space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
             <span>Format WD Di Atas 100Jt (A2):</span>
             <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
               <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+          <div id="boxA2" class="bg-slate-950/80 border border-slate-800/80 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
-        <div id="wrapperA3" class="hidden bg-slate-900 border border-sky-700/50 rounded-xl p-4 space-y-2">
+        <div id="wrapperA3" class="hidden bg-slate-900/70 border border-sky-700/50 rounded-xl p-4 space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
             <span>Format WD Di Atas 50Jt (A3):</span>
             <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
               <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+          <div id="boxA3" class="bg-slate-950/80 border border-slate-800/80 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-700 bg-slate-900 flex justify-end">
+      <div class="px-6 py-4 border-t border-slate-700 bg-slate-900/80 flex justify-end">
         <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-xl transition">
           Tutup
         </button>
@@ -212,19 +212,16 @@
       document.getElementById('scriptUrl').value = savedUrl;
       document.getElementById('inputText').addEventListener('input', updateCharCount);
 
-      // Muat background tersimpan lokal jika ada
       loadSavedBackground();
     });
 
     // --- SINKRONISASI REALTIME BACKGROUND SUPABASE ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
-        // Minta status background saat ini ke HP/user lain yang aktif
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
       }
     });
 
-    // Menerima update background dari user lain
     bgChannel.on('broadcast', { event: 'update_bg' }, ({ payload }) => {
       if (payload.imgUrl) {
         applyBackground(payload.imgUrl);
@@ -234,7 +231,6 @@
       }
     });
 
-    // Memberikan background aktif saat ada perangkat baru yang masuk
     bgChannel.on('broadcast', { event: 'request_bg' }, () => {
       const currentBg = localStorage.getItem('custom_app_bg');
       if (currentBg) {
@@ -248,13 +244,12 @@
 
       showStatus('Mengirim & Mensinkronkan Foto Background...', 'info');
 
-      // Resize/Kompres gambar agar cepat dikirim via Realtime Supabase
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const maxDim = 1280; // Maksimal resolusi agar pas dikirim realtime
+          const maxDim = 1280;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
             if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
@@ -267,11 +262,9 @@
           
           const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-          // 1. Terapkan di perangkat sendiri
           applyBackground(compressedBase64);
           localStorage.setItem('custom_app_bg', compressedBase64);
 
-          // 2. Siarkan ke SEMUA perangkat via Supabase
           bgChannel.send({
             type: 'broadcast',
             event: 'update_bg',
@@ -314,7 +307,7 @@
       currentTab = tabName;
       document.getElementById('currentTabLabel').textContent = tabName;
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800";
+        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-800/60";
       });
       const activeBtn = document.getElementById(`tab-${tabName}`);
       if (activeBtn) activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
@@ -428,8 +421,8 @@
       box.classList.remove('hidden', 'bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700', 'bg-rose-900/40', 'text-rose-300', 'border-rose-700', 'bg-sky-900/40', 'text-sky-300', 'border-sky-700');
       box.classList.add('border');
       let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
-      box.classList.add(type === 'success' ? 'bg-emerald-900/40' : (type === 'error' ? 'bg-rose-900/40' : 'bg-sky-900/40'));
-      box.innerHTML = `${icon} <span>${msg}</span>`;
+      box.classList.add(type === 'success' ? 'bg-emerald-900/60' : (type === 'error' ? 'bg-rose-900/60' : 'bg-sky-900/60'));
+      box.innerHTML = `${icon} <span class="text-white">${msg}</span>`;
     }
 
     function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
