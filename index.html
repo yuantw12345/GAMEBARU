@@ -49,8 +49,8 @@
 
         <!-- OPSI AKSI HEADER: UPLOAD BG SYNC & SETTINGS -->
         <div class="flex items-center space-x-2">
-          <!-- Tombol Upload Foto BG -->
-          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Ganti Foto Background untuk Semua Perangkat">
+          <!-- Tombol Upload Foto BG (Mendukung GIF Bergerak) -->
+          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Ganti Foto/GIF Background untuk Semua Perangkat">
             <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
             <span class="hidden sm:inline">Sync BG Semua</span>
             <input type="file" id="bgUploader" accept="image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
@@ -134,7 +134,7 @@
     <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
     <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden">
       
-      <!-- MODAL LOGIN DALAM PANEL GAME -->
+      <!-- MODAL LOGIN KHUSUS DI DALAM PANEL GAME -->
       <div id="loginModal" class="absolute inset-0 bg-slate-950/95 z-20 flex items-center justify-center p-6">
         <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-xl max-w-sm w-full p-6 text-center space-y-4 modal-animate">
           <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
@@ -267,7 +267,7 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- BANK SOAL FAMILY 100 ---
+    // --- BANK SOAL FAMILY 100 (DIPERBANYAK) ---
     const questionBank = [
       {
         q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
@@ -354,7 +354,7 @@
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
-    // --- SINKRONISASI REALTIME BACKGROUND ---
+    // --- SINKRONISASI REALTIME BACKGROUND (Mendukung GIF Animasi) ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -381,38 +381,22 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      showStatus('Mengirim & Mensinkronkan Foto Background...', 'info');
+      showStatus('Mengirim & Mensinkronkan Background (GIF/Foto)...', 'info');
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const maxDim = 1280;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            else { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        const fileDataUrl = e.target.result; // Data asli dipertahankan agar GIF tetap bergerak
 
-          applyBackground(compressedBase64);
-          localStorage.setItem('custom_app_bg', compressedBase64);
+        applyBackground(fileDataUrl);
+        localStorage.setItem('custom_app_bg', fileDataUrl);
 
-          bgChannel.send({
-            type: 'broadcast',
-            event: 'update_bg',
-            payload: { imgUrl: compressedBase64 }
-          });
+        bgChannel.send({
+          type: 'broadcast',
+          event: 'update_bg',
+          payload: { imgUrl: fileDataUrl }
+        });
 
-          showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
-        };
-        img.src = e.target.result;
+        showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
       };
       reader.readAsDataURL(file);
     }
