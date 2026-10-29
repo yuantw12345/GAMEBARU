@@ -401,6 +401,7 @@
     let game = new Chess();
     let myRole = 'spectator'; // 'white', 'black', 'spectator'
     let roomState = { white: false, black: false };
+    const processedMessages = new Set(); // Melacak pesan unik agar tidak terjadi ganda/dobel
 
     let chessConfig = {
       draggable: true,
@@ -416,7 +417,6 @@
     roomChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         document.getElementById('statusGame').textContent = 'Terhubung ke Supabase! Pilih Peran.';
-        // Minta status room terbaru dari pemain lain
         roomChannel.send({ type: 'broadcast', event: 'request_state', payload: {} });
       }
     });
@@ -432,8 +432,9 @@
       updateLobbyUI(payload.role, true);
     });
 
+    // Menerima siaran chat realtime dengan filter ID unik
     roomChannel.on('broadcast', { event: 'chat_msg' }, ({ payload }) => {
-      addChatMessage(payload.sender, payload.message);
+      addChatMessage(payload.sender, payload.message, payload.id);
     });
 
     roomChannel.on('broadcast', { event: 'request_state' }, () => {
@@ -457,7 +458,7 @@
       document.getElementById('btnJoinBlack').classList.remove('opacity-50', 'cursor-not-allowed');
       board.orientation('white');
       updateChessStatus();
-      addChatMessage('Sistem', '🔄 Game di-reset oleh pemain.');
+      addChatMessage('Sistem', '🔄 Game di-reset oleh pemain.', 'sys-' + Date.now());
     });
 
     function joinRole(role) {
@@ -526,7 +527,7 @@
       roomChannel.send({ type: 'broadcast', event: 'reset_room', payload: {} });
     }
 
-    // --- FITUR CHAT ---
+    // --- FITUR CHAT REALTIME TANPA DOBEL ---
     function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const msg = input.value.trim();
@@ -534,17 +535,21 @@
 
       let senderName = myRole === 'white' ? 'Putih' : (myRole === 'black' ? 'Hitam' : 'Penonton');
       
-      addChatMessage(senderName, msg);
+      // Kirim siaran ke Supabase dilengkapi ID unik berbasis timestamp + angka acak
       roomChannel.send({
         type: 'broadcast',
         event: 'chat_msg',
-        payload: { sender: senderName, message: msg }
+        payload: { sender: senderName, message: msg, id: Date.now() + '_' + Math.random() }
       });
 
       input.value = '';
     }
 
-    function addChatMessage(sender, message) {
+    function addChatMessage(sender, message, msgId) {
+      // Tolak penambahan pesan jika ID pesan sudah pernah diproses/ditampilkan
+      if (msgId && processedMessages.has(msgId)) return;
+      if (msgId) processedMessages.add(msgId);
+
       const container = document.getElementById('chatMessages');
       const msgDiv = document.createElement('div');
       
