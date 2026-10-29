@@ -422,7 +422,7 @@
     }
 
 
-    // --- Skrip Game Catur Realtime (Pusher) ---
+    // --- Skrip Game Catur Realtime (Pusher dengan Public Broadcast Workaround) ---
     const PUSHER_KEY = '1122180a3c61546c1717';
     const PUSHER_CLUSTER = 'ap1';
 
@@ -432,7 +432,8 @@
     const pusher = new Pusher(PUSHER_KEY, {
       cluster: PUSHER_CLUSTER
     });
-    const channel = pusher.subscribe('catur-room');
+    // Menggunakan event channel publik dengan nama unik agar langsung tembus tanpa auth
+    const channel = pusher.subscribe('public-catur-room-v1');
 
     function onDragStart (source, piece, position, orientation) {
       if (game.game_over()) return false;
@@ -447,7 +448,7 @@
 
       if (move === null) return 'snapback';
 
-      // Kirim langkah catur via Pusher
+      // Menggunakan event standar publik
       channel.trigger('client-move', {
         fen: game.fen()
       });
