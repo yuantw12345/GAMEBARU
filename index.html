@@ -14,7 +14,6 @@
     body { 
       font-family: 'Inter', sans-serif; 
     }
-    /* Style untuk Video Background */
     #bgVideo {
       position: fixed;
       right: 0;
@@ -45,7 +44,7 @@
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
     <div class="bg-slate-950/80 border-2 border-slate-600 shadow-2xl rounded-2xl p-6 md:p-8 transition-all backdrop-blur-md">
       
-      <!-- Header & Fitur Ganti Background Video/Foto -->
+      <!-- Header & Fitur Ganti Background -->
       <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
         <div class="flex items-center space-x-3">
           <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
@@ -57,21 +56,18 @@
           </div>
         </div>
 
-        <!-- OPSI AKSI HEADER: UPLOAD BG VIDEO/GIF/FOTO & SETTINGS -->
+        <!-- OPSI AKSI HEADER -->
         <div class="flex items-center space-x-2">
-          <!-- Tombol Upload Media Background (Mendukung Video MP4 / GIF / Gambar) -->
-          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Ganti Background Video/Foto untuk Semua Perangkat">
-            <i class="fa-solid fa-video text-emerald-400"></i>
+          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Upload & Sync Video/BG ke Semua Perangkat">
+            <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
             <span class="hidden sm:inline">Sync Video/BG</span>
             <input type="file" id="bgUploader" accept="video/mp4,image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
           </label>
 
-          <!-- Tombol Reset BG -->
-          <button id="btnResetBg" onclick="resetAndSyncBackground()" class="hidden bg-rose-950 hover:bg-rose-900 text-rose-300 p-2 rounded-lg text-xs transition border border-rose-800" title="Reset Background Default Semua">
+          <button id="btnResetBg" onclick="resetAndSyncBackground()" class="hidden bg-rose-950 hover:bg-rose-900 text-rose-300 p-2 rounded-lg text-xs transition border border-rose-800" title="Reset Background Default">
             <i class="fa-solid fa-trash-can"></i>
           </button>
 
-          <!-- Tombol Pengaturan URL -->
           <button onclick="toggleSettings()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-900 transition border border-transparent hover:border-slate-700" title="Pengaturan URL Web App">
             <i class="fa-solid fa-gear text-lg"></i>
           </button>
@@ -144,7 +140,7 @@
     <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
     <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden backdrop-blur-md">
       
-      <!-- MODAL LOGIN KHUSUS DI DALAM PANEL GAME -->
+      <!-- MODAL LOGIN DALAM PANEL GAME -->
       <div id="loginModal" class="absolute inset-0 bg-slate-950/95 z-20 flex items-center justify-center p-6">
         <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-xl max-w-sm w-full p-6 text-center space-y-4 modal-animate">
           <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
@@ -193,10 +189,8 @@
         <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Klik tombol "Soal Baru" untuk mulai bermain!</h3>
       </div>
 
-      <!-- Kotak Daftar Jawaban (Tebakan + Catatan Pemain) -->
-      <div id="gameAnswersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <!-- Terisi otomatis via JS -->
-      </div>
+      <!-- Kotak Daftar Jawaban -->
+      <div id="gameAnswersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
 
       <!-- Form Kirim Tebakan -->
       <div class="flex gap-2 pt-2">
@@ -277,7 +271,6 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- BANK SOAL FAMILY 100 ---
     const questionBank = [
       {
         q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
@@ -315,11 +308,9 @@
       document.getElementById('scriptUrl').value = savedUrl;
       document.getElementById('inputText').addEventListener('input', updateCharCount);
       loadSavedBackground();
-
       checkUserLogin();
     });
 
-    // --- SISTEM LOGIN NAMA PEMAIN ---
     function checkUserLogin() {
       const savedName = localStorage.getItem('game_username');
       if (savedName) {
@@ -346,7 +337,7 @@
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
-    // --- SINKRONISASI REALTIME BACKGROUND (Mendukung Video MP4 & Gambar/GIF) ---
+    // --- SINKRONISASI REALTIME & SUPABASE STORAGE ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -371,31 +362,47 @@
       }
     });
 
-    function uploadAndSyncBackground(event) {
+    async function uploadAndSyncBackground(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      showStatus('Mengirim & Mensinkronkan Background Media...', 'info');
+      showStatus('Mengunggah file ke Supabase Storage...', 'info');
 
       const isVideo = file.type.startsWith('video/');
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const mediaDataUrl = e.target.result;
-        const mediaType = isVideo ? 'video' : 'image';
+      const fileExt = file.name.split('.').pop();
+      const fileName = `bg_${Date.now()}.${fileExt}`;
 
-        applyBackground(mediaDataUrl, mediaType);
-        localStorage.setItem('custom_app_bg', mediaDataUrl);
-        localStorage.setItem('custom_app_bg_type', mediaType);
+      // Upload ke Bucket Supabase bernama 'backgrounds'
+      const { data, error } = await client.storage
+        .from('backgrounds')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
 
-        bgChannel.send({
-          type: 'broadcast',
-          event: 'update_bg',
-          payload: { mediaUrl: mediaDataUrl, mediaType: mediaType }
-        });
+      if (error) {
+        alert('Gagal mengunggah file: ' + error.message);
+        showStatus('Gagal mengunggah background.', 'error');
+        return;
+      }
 
-        showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
-      };
-      reader.readAsDataURL(file);
+      // Ambil Public URL dari file yang di-upload
+      const { data: publicURLData } = client.storage
+        .from('backgrounds')
+        .getPublicUrl(fileName);
+
+      const publicUrl = publicURLData.publicUrl;
+      const mediaType = isVideo ? 'video' : 'image';
+
+      applyBackground(publicUrl, mediaType);
+      localStorage.setItem('custom_app_bg', publicUrl);
+      localStorage.setItem('custom_app_bg_type', mediaType);
+
+      // Broadcast link URL publik ke semua perangkat
+      bgChannel.send({
+        type: 'broadcast',
+        event: 'update_bg',
+        payload: { mediaUrl: publicUrl, mediaType: mediaType }
+      });
+
+      showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
     }
 
     function resetAndSyncBackground() {
@@ -441,7 +448,6 @@
       const savedType = localStorage.getItem('custom_app_bg_type') || 'image';
       if (savedBg) applyBackground(savedBg, savedType);
     }
-
 
     // --- REALTIME GAME FAMILY 100 LOGIC ---
     gameChannel.subscribe((status) => {
@@ -565,7 +571,6 @@
         showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
       }
     }
-
 
     // --- LOGIKA FORMAT TRANSAKSI KERJA ---
     function switchTab(tabName) {
