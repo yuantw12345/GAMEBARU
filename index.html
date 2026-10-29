@@ -267,7 +267,7 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- BANK SOAL FAMILY 100 (DIPERBANYAK) ---
+    // --- BANK SOAL FAMILY 100 ---
     const questionBank = [
       {
         q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
@@ -290,7 +290,7 @@
       {
         q: "Sebutkan alasan orang sering terlambat masuk kerja atau kuliah!",
         answers: [
-          { text: "Bangun Kesiangan", keywords: ["kesiangan", "telat bangun", "bangun siang", "kesiangan"], points: 40, revealed: false, answeredBy: null },
+          { text: "Bangun Kesiangan", keywords: ["kesiangan", "telat bangun", "bangun siang"], points: 40, revealed: false, answeredBy: null },
           { text: "Macet di Jalan", keywords: ["macet", "lalin", "jalanan"], points: 30, revealed: false, answeredBy: null },
           { text: "Ban Bocor / Kendaraan Rusak", keywords: ["ban", "bocor", "rusak", "motor", "mobil"], points: 15, revealed: false, answeredBy: null },
           { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", keywords: ["dandan", "mandi", "persiapan", "lama"], points: 15, revealed: false, answeredBy: null }
@@ -533,11 +533,9 @@
 
       currentQuestionData.answers.forEach(ans => {
         if (!ans.revealed) {
-          // Cek kecocokan persis via teks atau keywords
           const isMatchExact = ans.text.toLowerCase().includes(guess) || ans.keywords.some(kw => kw.includes(guess));
           
           if (isMatchExact) {
-            // Jika tebakan terlalu pendek tapi mendekati (misal cuma 2-3 huruf tapi ada di keyword)
             if (guess.length <= 2 && ans.keywords.some(kw => kw.startsWith(guess))) {
               foundAlmost = true;
             } else {
@@ -548,6 +546,9 @@
           }
         }
       });
+
+      // Kolom input otomatis dibersihkan setiap kali tombol ditekan
+      guessInput.value = '';
 
       if (foundExact) {
         gameChannel.send({
@@ -562,8 +563,6 @@
       } else {
         showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
       }
-
-      guessInput.value = '';
     }
 
 
