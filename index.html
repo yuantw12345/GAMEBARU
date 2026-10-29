@@ -3,9 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORMAT CEK TRANSAKSI</title>
+  <title>FORMAT CEK TRANSAKSI & CATUR REALTIME</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Library Papan Catur & Logika Catur -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.min.js"></script>
+  <!-- Pusher Realtime -->
+  <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+
   <style>
     body { font-family: 'Inter', sans-serif; }
     @keyframes modalShow {
@@ -17,88 +26,113 @@
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-  <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 max-w-2xl w-full transition-all">
-    
-    <!-- Header -->
-    <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
-      <div class="flex items-center space-x-3">
-        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
-          <i class="fa-solid fa-list-check text-2xl"></i>
+  <div class="max-w-2xl w-full space-y-6">
+
+    <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
+    <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 transition-all">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
+            <i class="fa-solid fa-list-check text-2xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">FORMAT CEK TRANSAKSI</h1>
+            <p class="text-xs text-slate-400">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
+          </div>
+        </div>
+        <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
+          <i class="fa-solid fa-gear text-lg"></i>
+        </button>
+      </div>
+
+      <!-- TAB NAVIGASI GRUPING 1 - 5 -->
+      <div class="mb-5">
+        <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Gruping:</label>
+        <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700 text-[11px]">
+          <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
+          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 2</button>
+          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 3</button>
+          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 4</button>
+          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 5</button>
+        </div>
+      </div>
+
+      <!-- Panel Pengaturan URL -->
+      <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900 border border-slate-700 rounded-xl space-y-2">
+        <label class="block text-xs font-semibold text-slate-300">URL Web App Server:</label>
+        <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+        <div class="flex justify-end space-x-2 pt-2">
+          <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
+        </div>
+      </div>
+
+      <!-- Textarea Input -->
+      <div class="space-y-2 mb-4">
+        <div class="flex justify-between items-center text-xs text-slate-400">
+          <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
+          <div>
+            <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
+              <i class="fa-regular fa-clipboard"></i> Paste
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <textarea id="inputText" rows="5" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
+          <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
+            <span id="charCount">0</span> karakter
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Alert -->
+      <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+        <!-- 1. Tombol Kirim -->
+        <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span id="btnText">Kirim Transaksi</span>
+        </button>
+
+        <!-- 2. Tombol Click Here (Format) -->
+        <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
+          <i class="fa-solid fa-bolt"></i>
+          <span>CLICK HERE (Format)</span>
+        </button>
+
+        <!-- 3. TOMBOL HAPUS TEKS -->
+        <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
+          <i class="fa-solid fa-trash-can"></i>
+          <span id="btnClearSheetText">HAPUS TEKS</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ================= SECTION TAMBAHAN: MAIN CATUR REALTIME ================= -->
+    <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 flex flex-col items-center">
+      <div class="flex items-center space-x-3 w-full border-b border-slate-700 pb-4 mb-4">
+        <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl">
+          <i class="fa-solid fa-chess text-2xl"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold text-white">FORMAT CEK TRANSAKSI</h1>
-          <p class="text-xs text-slate-400">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
-        </div>
-      </div>
-      <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
-        <i class="fa-solid fa-gear text-lg"></i>
-      </button>
-    </div>
-
-    <!-- TAB NAVIGASI GRUPING 1 - 5 -->
-    <div class="mb-5">
-      <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Gruping:</label>
-      <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700 text-[11px]">
-        <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
-        <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 2</button>
-        <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 3</button>
-        <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 4</button>
-        <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 5</button>
-      </div>
-    </div>
-
-    <!-- Panel Pengaturan URL -->
-    <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900 border border-slate-700 rounded-xl space-y-2">
-      <label class="block text-xs font-semibold text-slate-300">URL Web App Server:</label>
-      <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
-      <div class="flex justify-end space-x-2 pt-2">
-        <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
-      </div>
-    </div>
-
-    <!-- Textarea Input -->
-    <div class="space-y-2 mb-4">
-      <div class="flex justify-between items-center text-xs text-slate-400">
-        <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
-        <div>
-          <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
-            <i class="fa-regular fa-clipboard"></i> Paste
-          </button>
+          <h2 class="text-lg font-bold text-white">Main Catur Realtime</h2>
+          <p id="statusGame" class="text-xs text-indigo-400">Menghubungkan ke server Pusher...</p>
         </div>
       </div>
 
-      <div class="relative">
-        <textarea id="inputText" rows="5" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
-        <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
-          <span id="charCount">0</span> karakter
-        </div>
+      <!-- Papan Catur Container -->
+      <div id="board" class="w-full max-w-[320px] mb-4"></div>
+
+      <div class="text-xs text-slate-400 text-center bg-slate-900 border border-slate-700 p-3 rounded-xl w-full">
+        Geser bidak catur Anda, kawan Anda di perangkat/tab lain akan langsung melihat pergerakannya secara instan!
       </div>
-    </div>
-
-    <!-- Status Alert -->
-    <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
-
-    <!-- ACTION BUTTONS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-2">
-      <!-- 1. Tombol Kirim -->
-      <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
-        <i class="fa-solid fa-paper-plane"></i>
-        <span id="btnText">Kirim Transaksi</span>
-      </button>
-
-      <!-- 2. Tombol Click Here (Format) -->
-      <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
-        <i class="fa-solid fa-bolt"></i>
-        <span>CLICK HERE (Format)</span>
-      </button>
-
-      <!-- 3. TOMBOL HAPUS TEKS -->
-      <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
-        <i class="fa-solid fa-trash-can"></i>
-        <span id="btnClearSheetText">HAPUS TEKS</span>
-      </button>
     </div>
 
   </div>
@@ -120,7 +154,6 @@
 
       <!-- Modal Body -->
       <div class="p-6 space-y-4 overflow-y-auto">
-        
         <!-- Format A1 -->
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
@@ -153,7 +186,6 @@
           </div>
           <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
-
       </div>
 
       <!-- Modal Footer -->
@@ -167,6 +199,7 @@
   </div>
 
   <script>
+    // --- SKrip Utama Format Transaksi ---
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
     let currentTab = 'GRUPING 1';
 
@@ -222,7 +255,6 @@
 
     function hapusWebDanSheet() {
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-
       document.getElementById('inputText').value = '';
       updateCharCount();
       closeModal();
@@ -233,10 +265,7 @@
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: "clearSheet",
-          sheetName: currentTab 
-        })
+        body: JSON.stringify({ action: "clearSheet", sheetName: currentTab })
       })
       .then(() => {
         showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error');
@@ -265,10 +294,7 @@
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          text: text,
-          sheetName: currentTab 
-        })
+        body: JSON.stringify({ text: text, sheetName: currentTab })
       })
       .then(() => {
         showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success');
@@ -284,7 +310,6 @@
 
     function fetchFormatOnly() {
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      
       setLoading(true, 'fetchBtn', null, null);
       showStatus(`Memuat format dari ${currentTab}...`, 'info');
 
@@ -292,10 +317,7 @@
         method: 'POST',
         redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ 
-          action: "getFormat",
-          sheetName: currentTab
-        })
+        body: JSON.stringify({ action: "getFormat", sheetName: currentTab })
       })
       .then(res => res.json())
       .then(data => {
@@ -318,7 +340,6 @@
 
     function displayFormatResult(data) {
       document.getElementById('boxA1').textContent = data.isiA1 || '-';
-
       const wrapA2 = document.getElementById('wrapperA2');
       if (data.adaWithdrawDiatas100Jt) {
         wrapA2.classList.remove('hidden');
@@ -326,7 +347,6 @@
       } else {
         wrapA2.classList.add('hidden');
       }
-
       const wrapA3 = document.getElementById('wrapperA3');
       if (data.adaWithdrawDiatas50Jt) {
         wrapA3.classList.remove('hidden');
@@ -353,9 +373,7 @@
       modal.classList.add('opacity-0');
       content.classList.remove('scale-100');
       content.classList.add('scale-95');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 200);
+      setTimeout(() => { modal.classList.add('hidden'); }, 200);
     }
 
     function copyToClipboard(boxId, toastId) {
@@ -402,6 +420,80 @@
     function hideStatus() {
       document.getElementById('statusBox').classList.add('hidden');
     }
+
+
+    // --- Skrip Game Catur Realtime (Pusher) ---
+    const PUSHER_KEY = '1122180a3c61546c1717';
+    const PUSHER_CLUSTER = 'ap1';
+
+    let board = null;
+    let game = new Chess();
+
+    const pusher = new Pusher(PUSHER_KEY, {
+      cluster: PUSHER_CLUSTER
+    });
+    const channel = pusher.subscribe('catur-room');
+
+    function onDragStart (source, piece, position, orientation) {
+      if (game.game_over()) return false;
+    }
+
+    function onDrop (source, target) {
+      let move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q'
+      });
+
+      if (move === null) return 'snapback';
+
+      // Kirim langkah catur via Pusher
+      channel.trigger('client-move', {
+        fen: game.fen()
+      });
+
+      updateChessStatus();
+    }
+
+    function onSnapEnd () {
+      board.position(game.fen());
+    }
+
+    function updateChessStatus() {
+      let status = '';
+      let turno = game.turn() === 'w' ? 'Putih' : 'Hitam';
+      
+      if (game.in_checkmate()) {
+        status = `Game Over, ${turno} skakmat!`;
+      } else if (game.in_draw()) {
+        status = `Game Over, Draw!`;
+      } else {
+        status = `Giliran pemain: ${turno}`;
+      }
+      document.getElementById('statusGame').textContent = status;
+    }
+
+    // Menerima langkah dari perangkat kawan secara realtime
+    channel.bind('client-move', function(data) {
+      game.load(data.fen);
+      board.position(data.fen);
+      updateChessStatus();
+    });
+
+    let chessConfig = {
+      draggable: true,
+      position: 'start',
+      onDragStart: onDragStart,
+      onDrop: onDrop,
+      onSnapEnd: onSnapEnd
+    };
+
+    board = Chessboard('board', chessConfig);
+    updateChessStatus();
+
+    pusher.connection.bind('connected', () => {
+      document.getElementById('statusGame').textContent = 'Terhubung! Siap bermain.';
+    });
   </script>
 </body>
 </html>
