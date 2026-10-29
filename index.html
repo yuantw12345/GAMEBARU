@@ -13,11 +13,16 @@
   <style>
     body { 
       font-family: 'Inter', sans-serif; 
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      transition: background-image 0.4s ease-in-out;
+    }
+    /* Style untuk Video Background */
+    #bgVideo {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -10;
     }
     @keyframes modalShow {
       from { opacity: 0; transform: scale(0.95) translateY(10px); }
@@ -28,14 +33,19 @@
     }
   </style>
 </head>
-<body id="bgTarget" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden">
 
-  <div class="max-w-3xl w-full space-y-6">
+  <!-- ELEMEN VIDEO BACKGROUND -->
+  <video id="bgVideo" autoplay muted loop playsinline class="hidden">
+    <source id="videoSource" src="" type="video/mp4">
+  </video>
+
+  <div class="max-w-3xl w-full space-y-6 z-10">
 
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
-    <div class="bg-slate-950/80 border-2 border-slate-600 shadow-2xl rounded-2xl p-6 md:p-8 transition-all">
+    <div class="bg-slate-950/80 border-2 border-slate-600 shadow-2xl rounded-2xl p-6 md:p-8 transition-all backdrop-blur-md">
       
-      <!-- Header & Fitur Ganti Background -->
+      <!-- Header & Fitur Ganti Background Video/Foto -->
       <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
         <div class="flex items-center space-x-3">
           <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
@@ -47,13 +57,13 @@
           </div>
         </div>
 
-        <!-- OPSI AKSI HEADER: UPLOAD BG SYNC & SETTINGS -->
+        <!-- OPSI AKSI HEADER: UPLOAD BG VIDEO/GIF/FOTO & SETTINGS -->
         <div class="flex items-center space-x-2">
-          <!-- Tombol Upload Foto BG (Mendukung GIF Bergerak) -->
-          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Ganti Foto/GIF Background untuk Semua Perangkat">
-            <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
-            <span class="hidden sm:inline">Sync BG Semua</span>
-            <input type="file" id="bgUploader" accept="image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
+          <!-- Tombol Upload Media Background (Mendukung Video MP4 / GIF / Gambar) -->
+          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Ganti Background Video/Foto untuk Semua Perangkat">
+            <i class="fa-solid fa-video text-emerald-400"></i>
+            <span class="hidden sm:inline">Sync Video/BG</span>
+            <input type="file" id="bgUploader" accept="video/mp4,image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
           </label>
 
           <!-- Tombol Reset BG -->
@@ -132,7 +142,7 @@
     </div>
 
     <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
-    <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden">
+    <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden backdrop-blur-md">
       
       <!-- MODAL LOGIN KHUSUS DI DALAM PANEL GAME -->
       <div id="loginModal" class="absolute inset-0 bg-slate-950/95 z-20 flex items-center justify-center p-6">
@@ -267,7 +277,7 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- BANK SOAL FAMILY 100 (DIPERBANYAK) ---
+    // --- BANK SOAL FAMILY 100 ---
     const questionBank = [
       {
         q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
@@ -294,24 +304,6 @@
           { text: "Macet di Jalan", keywords: ["macet", "lalin", "jalanan"], points: 30, revealed: false, answeredBy: null },
           { text: "Ban Bocor / Kendaraan Rusak", keywords: ["ban", "bocor", "rusak", "motor", "mobil"], points: 15, revealed: false, answeredBy: null },
           { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", keywords: ["dandan", "mandi", "persiapan", "lama"], points: 15, revealed: false, answeredBy: null }
-        ]
-      },
-      {
-        q: "Sebutkan benda yang selalu dibawa saat bepergian keluar rumah!",
-        answers: [
-          { text: "Handphone / HP", keywords: ["hp", "handphone", "smartphone", "ponsel"], points: 45, revealed: false, answeredBy: null },
-          { text: "Dompet / Uang", keywords: ["dompet", "uang", "kartu", "atm"], points: 30, revealed: false, answeredBy: null },
-          { text: "Kunci (Rumah/Motor/Mobil)", keywords: ["kunci", "kontak"], points: 15, revealed: false, answeredBy: null },
-          { text: "Masker / Tisu", keywords: ["masker", "tisu", "tissue"], points: 10, revealed: false, answeredBy: null }
-        ]
-      },
-      {
-        q: "Apa yang biasa dilakukan orang saat bosan menunggu antrean panjang?",
-        answers: [
-          { text: "Main HP / Scroll Media Sosial", keywords: ["hp", "medsos", "game", "tiktok", "instagram", "scroll"], points: 50, revealed: false, answeredBy: null },
-          { text: "Menguap / Melamun", keywords: ["lamun", "melamun", "ngantuk"], points: 25, revealed: false, answeredBy: null },
-          { text: "Melihat Sekitar / Mondar-mandir", keywords: ["lihat", "keliling", "jalan"], points: 15, revealed: false, answeredBy: null },
-          { text: "Mengeluh / Marah-marah", keywords: ["ngeluh", "marah", "gerutu"], points: 10, revealed: false, answeredBy: null }
         ]
       }
     ];
@@ -354,7 +346,7 @@
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
-    // --- SINKRONISASI REALTIME BACKGROUND (Mendukung GIF Animasi) ---
+    // --- SINKRONISASI REALTIME BACKGROUND (Mendukung Video MP4 & Gambar/GIF) ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -362,9 +354,10 @@
     });
 
     bgChannel.on('broadcast', { event: 'update_bg' }, ({ payload }) => {
-      if (payload.imgUrl) {
-        applyBackground(payload.imgUrl);
-        localStorage.setItem('custom_app_bg', payload.imgUrl);
+      if (payload.mediaUrl) {
+        applyBackground(payload.mediaUrl, payload.mediaType);
+        localStorage.setItem('custom_app_bg', payload.mediaUrl);
+        localStorage.setItem('custom_app_bg_type', payload.mediaType);
       } else {
         resetBackgroundLocal();
       }
@@ -372,8 +365,9 @@
 
     bgChannel.on('broadcast', { event: 'request_bg' }, () => {
       const currentBg = localStorage.getItem('custom_app_bg');
+      const currentType = localStorage.getItem('custom_app_bg_type');
       if (currentBg) {
-        bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { imgUrl: currentBg } });
+        bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { mediaUrl: currentBg, mediaType: currentType } });
       }
     });
 
@@ -381,19 +375,22 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      showStatus('Mengirim & Mensinkronkan Background (GIF/Foto)...', 'info');
+      showStatus('Mengirim & Mensinkronkan Background Media...', 'info');
 
+      const isVideo = file.type.startsWith('video/');
       const reader = new FileReader();
       reader.onload = function(e) {
-        const fileDataUrl = e.target.result; // Data asli dipertahankan agar GIF tetap bergerak
+        const mediaDataUrl = e.target.result;
+        const mediaType = isVideo ? 'video' : 'image';
 
-        applyBackground(fileDataUrl);
-        localStorage.setItem('custom_app_bg', fileDataUrl);
+        applyBackground(mediaDataUrl, mediaType);
+        localStorage.setItem('custom_app_bg', mediaDataUrl);
+        localStorage.setItem('custom_app_bg_type', mediaType);
 
         bgChannel.send({
           type: 'broadcast',
           event: 'update_bg',
-          payload: { imgUrl: fileDataUrl }
+          payload: { mediaUrl: mediaDataUrl, mediaType: mediaType }
         });
 
         showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
@@ -403,25 +400,46 @@
 
     function resetAndSyncBackground() {
       resetBackgroundLocal();
-      bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { imgUrl: null } });
+      bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { mediaUrl: null, mediaType: null } });
       showStatus('Background di-reset untuk semua perangkat.', 'info');
     }
 
     function resetBackgroundLocal() {
       document.body.style.backgroundImage = 'none';
+      const videoEl = document.getElementById('bgVideo');
+      videoEl.pause();
+      videoEl.classList.add('hidden');
       localStorage.removeItem('custom_app_bg');
+      localStorage.removeItem('custom_app_bg_type');
       document.getElementById('btnResetBg').classList.add('hidden');
       document.getElementById('bgUploader').value = '';
     }
 
-    function applyBackground(imgUrl) {
-      document.body.style.backgroundImage = `url('${imgUrl}')`;
+    function applyBackground(mediaUrl, mediaType) {
+      const videoEl = document.getElementById('bgVideo');
+      const sourceEl = document.getElementById('videoSource');
+
+      if (mediaType === 'video') {
+        document.body.style.backgroundImage = 'none';
+        sourceEl.src = mediaUrl;
+        videoEl.load();
+        videoEl.classList.remove('hidden');
+        videoEl.play().catch(err => console.log("Autoplay dicegah browser:", err));
+      } else {
+        videoEl.pause();
+        videoEl.classList.add('hidden');
+        document.body.style.backgroundImage = `url('${mediaUrl}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+      }
       document.getElementById('btnResetBg').classList.remove('hidden');
     }
 
     function loadSavedBackground() {
       const savedBg = localStorage.getItem('custom_app_bg');
-      if (savedBg) applyBackground(savedBg);
+      const savedType = localStorage.getItem('custom_app_bg_type') || 'image';
+      if (savedBg) applyBackground(savedBg, savedType);
     }
 
 
@@ -531,7 +549,6 @@
         }
       });
 
-      // Kolom input otomatis dibersihkan setiap kali tombol ditekan
       guessInput.value = '';
 
       if (foundExact) {
