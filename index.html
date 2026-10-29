@@ -337,7 +337,7 @@
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
-    // --- SINKRONISASI REALTIME & SUPABASE STORAGE ---
+    // --- SINKRONISASI REALTIME & SUPABASE STORAGE DENGAN AUTO-DELETE ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -372,7 +372,16 @@
       const fileExt = file.name.split('.').pop();
       const fileName = `bg_${Date.now()}.${fileExt}`;
 
-      // Upload ke Bucket Supabase bernama 'backgrounds'
+      // 1. Ambil daftar file lama di bucket 'backgrounds' untuk dibersihkan
+      const { data: existingFiles, error: listError } = await client.storage
+        .from('backgrounds')
+        .list();
+
+      if (listError) {
+        console.error("Gagal mengambil list file lama:", listError.message);
+      }
+
+      // 2. Upload file baru ke Bucket Supabase bernama 'backgrounds'
       const { data, error } = await client.storage
         .from('backgrounds')
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
@@ -383,7 +392,7 @@
         return;
       }
 
-      // Ambil Public URL dari file yang di-upload
+      // 3. Ambil Public URL dari file yang di-upload
       const { data: publicURLData } = client.storage
         .from('backgrounds')
         .getPublicUrl(fileName);
@@ -395,14 +404,33 @@
       localStorage.setItem('custom_app_bg', publicUrl);
       localStorage.setItem('custom_app_bg_type', mediaType);
 
-      // Broadcast link URL publik ke semua perangkat
+      // 4. Broadcast link URL publik ke semua perangkat
       bgChannel.send({
         type: 'broadcast',
         event: 'update_bg',
         payload: { mediaUrl: publicUrl, mediaType: mediaType }
       });
 
-      showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
+      showStatus('Background berhasil disinkronkan & dibersihkan otomatis!', 'success');
+
+      // 5. AUTO-DELETE: Hapus file-file background lama dari server Supabase secara otomatis
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles
+          .map(f => f.name)
+          .filter(name => name !== fileName); // Kecualikan file yang baru di-upload
+
+        if (filesToDelete.length > 0) {
+          const { error: deleteError } = await client.storage
+            .from('backgrounds')
+            .remove(filesToDelete);
+            
+          if (deleteError) {
+            console.error("Gagal menghapus file lama:", deleteError.message);
+          } else {
+            console.log("File background lama berhasil dibersihkan otomatis dari server!");
+          }
+        }
+      }
     }
 
     function resetAndSyncBackground() {
