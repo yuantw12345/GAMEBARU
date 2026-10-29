@@ -30,6 +30,25 @@
 </head>
 <body id="bgTarget" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
+  <!-- ================= MODAL LOGIN NAMA PEMAIN ================= -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-950/95 z-[60] flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-2xl max-w-md w-full p-6 text-center space-y-5 modal-animate">
+      <div class="p-4 bg-indigo-500/20 text-indigo-400 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+        <i class="fa-solid fa-user-astronaut text-3xl"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-white">Masukkan Nama Pemain</h2>
+        <p class="text-xs text-slate-400 mt-1">Nama ini akan dicatat saat Anda berhasil menjawab soal Family 100 secara realtime.</p>
+      </div>
+      <div class="space-y-3">
+        <input type="text" id="usernameInput" placeholder="Ketik nama / julukan Anda..." class="w-full bg-black border border-slate-700 focus:border-indigo-500 text-white placeholder-slate-500 rounded-xl p-3.5 text-sm text-center focus:outline-none font-semibold">
+        <button onclick="saveUsername()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> Masuk Arena Game
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="max-w-3xl w-full space-y-6">
 
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
@@ -138,10 +157,18 @@
           <i class="fa-solid fa-gamepad text-indigo-400 text-xl"></i>
           <h2 class="text-base font-bold text-white">Family 100 Arena (Realtime)</h2>
         </div>
+        
         <div class="flex items-center gap-2">
-          <!-- Tombol Menyerah / Buka Semua -->
+          <!-- Indikator Nama Pemain yang Login -->
+          <div class="bg-indigo-950 border border-indigo-700 text-indigo-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-bold">
+            <i class="fa-solid fa-user-check text-emerald-400"></i>
+            <span id="activePlayerDisplay">Pemain</span>
+            <button onclick="changeUsername()" class="text-slate-400 hover:text-white ml-1" title="Ganti Nama"><i class="fa-solid fa-pen-to-square"></i></button>
+          </div>
+
+          <!-- Tombol Aksa Game -->
           <button onclick="revealAllAnswers()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
-            <i class="fa-solid fa-eye"></i> Buka Semua (Menyerah)
+            <i class="fa-solid fa-eye"></i> Menyerah
           </button>
           <button onclick="nextGameQuestion()" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
             <i class="fa-solid fa-rotate"></i> Soal Baru
@@ -155,7 +182,7 @@
         <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Klik tombol "Soal Baru" untuk mulai bermain!</h3>
       </div>
 
-      <!-- Kotak Daftar Jawaban (Tebakan) -->
+      <!-- Kotak Daftar Jawaban (Tebakan + Catatan Pemain) -->
       <div id="gameAnswersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2">
         <!-- Terisi otomatis via JS -->
       </div>
@@ -237,34 +264,35 @@
 
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
     let currentTab = 'GRUPING 1';
+    let currentPlayerName = '';
 
     // --- BANK SOAL FAMILY 100 ---
     const questionBank = [
       {
         q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
         answers: [
-          { text: "Menguap / Meregangkan Badan", points: 45, revealed: false },
-          { text: "Mengecek HP / Notifikasi", points: 30, revealed: false },
-          { text: "Ke Kamar Mandi / Buang Air", points: 15, revealed: false },
-          { text: "Minum Air Putih", points: 10, revealed: false }
+          { text: "Menguap / Meregangkan Badan", points: 45, revealed: false, answeredBy: null },
+          { text: "Mengecek HP / Notifikasi", points: 30, revealed: false, answeredBy: null },
+          { text: "Ke Kamar Mandi / Buang Air", points: 15, revealed: false, answeredBy: null },
+          { text: "Minum Air Putih", points: 10, revealed: false, answeredBy: null }
         ]
       },
       {
         q: "Apa yang dicari orang ketika kelaparan di malam hari?",
         answers: [
-          { text: "Mi Instan", points: 50, revealed: false },
-          { text: "Nasi Goreng / Makanan Sisa", points: 25, revealed: false },
-          { text: "Roti Bakar / Snack", points: 15, revealed: false },
-          { text: "Air Putih (Nahan Lapar)", points: 10, revealed: false }
+          { text: "Mi Instan", points: 50, revealed: false, answeredBy: null },
+          { text: "Nasi Goreng / Makanan Sisa", points: 25, revealed: false, answeredBy: null },
+          { text: "Roti Bakar / Snack", points: 15, revealed: false, answeredBy: null },
+          { text: "Air Putih (Nahan Lapar)", points: 10, revealed: false, answeredBy: null }
         ]
       },
       {
         q: "Sebutkan alasan orang sering terlambat masuk kerja atau kuliah!",
         answers: [
-          { text: "Bangun Kesiangan", points: 40, revealed: false },
-          { text: "Macet di Jalan", points: 30, revealed: false },
-          { text: "Ban Bocor / Kendaraan Rusak", points: 15, revealed: false },
-          { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", points: 15, revealed: false }
+          { text: "Bangun Kesiangan", points: 40, revealed: false, answeredBy: null },
+          { text: "Macet di Jalan", points: 30, revealed: false, answeredBy: null },
+          { text: "Ban Bocor / Kendaraan Rusak", points: 15, revealed: false, answeredBy: null },
+          { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", points: 15, revealed: false, answeredBy: null }
         ]
       }
     ];
@@ -276,7 +304,37 @@
       document.getElementById('scriptUrl').value = savedUrl;
       document.getElementById('inputText').addEventListener('input', updateCharCount);
       loadSavedBackground();
+
+      // Cek Nama Pemain
+      checkUserLogin();
     });
+
+    // --- SISTEM LOGIN NAMA PEMAIN ---
+    function checkUserLogin() {
+      const savedName = localStorage.getItem('game_username');
+      if (savedName) {
+        currentPlayerName = savedName;
+        document.getElementById('activePlayerDisplay').textContent = savedName;
+        document.getElementById('loginModal').classList.add('hidden');
+      } else {
+        document.getElementById('loginModal').classList.remove('hidden');
+      }
+    }
+
+    function saveUsername() {
+      const input = document.getElementById('usernameInput').value.trim();
+      if (!input) return alert('Sebutkan nama / julukan Anda dulu!');
+      localStorage.setItem('game_username', input);
+      currentPlayerName = input;
+      document.getElementById('activePlayerDisplay').textContent = input;
+      document.getElementById('loginModal').classList.add('hidden');
+    }
+
+    function changeUsername() {
+      localStorage.removeItem('game_username');
+      document.getElementById('usernameInput').value = currentPlayerName;
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
 
     // --- SINKRONISASI REALTIME BACKGROUND ---
     bgChannel.subscribe((status) => {
@@ -399,10 +457,12 @@
       showStatus('Soal Family 100 baru dimuat!', 'success');
     }
 
-    // Fitur Menyerah / Buka Semua Jawaban
     function revealAllAnswers() {
       if (!currentQuestionData) return;
-      currentQuestionData.answers.forEach(ans => ans.revealed = true);
+      currentQuestionData.answers.forEach(ans => {
+        ans.revealed = true;
+        if (!ans.answeredBy) ans.answeredBy = "Sistem (Menyerah)";
+      });
 
       gameChannel.send({
         type: 'broadcast',
@@ -411,7 +471,7 @@
       });
 
       renderGameUI();
-      showStatus('Semua jawaban dibuka (Menyerah)!', 'error');
+      showStatus('Semua jawaban dibuka!', 'error');
     }
 
     function renderGameUI() {
@@ -424,8 +484,9 @@
       currentQuestionData.answers.forEach((ans, index) => {
         const div = document.createElement('div');
         if (ans.revealed) {
+          const winnerText = ans.answeredBy ? `<span class="text-[10px] bg-slate-900 border border-emerald-500/50 text-emerald-300 px-1.5 py-0.5 rounded font-sans ml-1">Dijawab: <b>${ans.answeredBy}</b></span>` : '';
           div.className = "bg-emerald-950/80 border border-emerald-600 rounded-lg p-2.5 text-xs text-emerald-200 font-mono flex justify-between items-center animate-pulse";
-          div.innerHTML = `<span>${index + 1}. ${ans.text}</span> <span class="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold">${ans.points}</span>`;
+          div.innerHTML = `<div class="flex flex-col"><span>${index + 1}. ${ans.text}</span>${winnerText}</div> <span class="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold">${ans.points}</span>`;
         } else {
           div.className = "bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between items-center";
           div.innerHTML = `<span>${index + 1}. [Tersembunyi]</span> <span>...</span>`;
@@ -439,6 +500,11 @@
       const guess = guessInput.value.trim().toLowerCase();
       if (!guess) return;
 
+      if (!currentPlayerName) {
+        checkUserLogin();
+        return;
+      }
+
       if (!currentQuestionData) {
         alert('Belum ada soal yang aktif!');
         return;
@@ -448,6 +514,7 @@
       currentQuestionData.answers.forEach(ans => {
         if (!ans.revealed && ans.text.toLowerCase().includes(guess)) {
           ans.revealed = true;
+          ans.answeredBy = currentPlayerName; // Mencatat nama yang menjawab
           found = true;
         }
       });
@@ -459,7 +526,7 @@
           payload: { questionData: currentQuestionData }
         });
         renderGameUI();
-        showStatus(`Tebakan benar! Jawaban terbuka.`, 'success');
+        showStatus(`Hebat ${currentPlayerName}! Tebakan benar!`, 'success');
       } else {
         showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
       }
