@@ -1,275 +1,700 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiba Tiba Tournament - Cek Transaksi & Synced Background</title>
-    <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            color: white;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMAT TRANSAKSI & FAMILY 100 - SUPABASE REALTIME</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* Background Video Container */
-        #bg-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-            background: #111;
-        }
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        #bg-video, #bg-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        /* Panel Kontrol di Pojok Kanan Atas */
-        .control-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
-            backdrop-filter: blur(5px);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn-sync {
-            background: #22c55e;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .btn-sync:hover {
-            background: #16a34a;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        /* Konten Utama Aplikasi (Cek Transaksi & Format) */
-        .main-content {
-            position: relative;
-            z-index: 1;
-            padding: 40px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .card {
-            background: rgba(0, 0, 0, 0.65);
-            padding: 20px;
-            border-radius: 12px;
-            backdrop-filter: blur(8px);
-            margin-top: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        h1 {
-            margin-bottom: 5px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            color: white;
-            padding: 10px;
-            font-size: 14px;
-            resize: vertical;
-            box-sizing: border-box;
-            margin-top: 10px;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #22c55e;
-        }
-    </style>
+  <style>
+    body { 
+      font-family: 'Inter', sans-serif; 
+    }
+    #bgVideo {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -10;
+    }
+    @keyframes modalShow {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-animate {
+      animation: modalShow 0.2s ease-out forwards;
+    }
+  </style>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden">
 
-    <!-- Latar Belakang Video / Gambar -->
-    <div id="bg-container">
-        <video id="bg-video" autoplay muted loop playsinline style="display: none;"></video>
-        <img id="bg-image" style="display: none;" alt="Background">
-    </div>
+  <!-- ELEMEN VIDEO BACKGROUND -->
+  <video id="bgVideo" autoplay muted loop playsinline class="hidden">
+    <source id="videoSource" src="" type="video/mp4">
+  </video>
 
-    <!-- Panel Tombol Sinkronisasi Background -->
-    <div class="control-panel">
-        <span id="status-text" style="font-size: 12px; color: #cbd5e1;">Terhubung</span>
-        <button class="btn-sync" onclick="document.getElementById('file-input').click()">Sync Video/BG</button>
-        <input type="file" id="file-input" accept="video/mp4,image/*" onchange="handleFileSelect(event)">
-    </div>
+  <div class="max-w-3xl w-full space-y-6 z-10">
 
-    <!-- Konten Utama (Fitur Cek Transaksi & Format Anda) -->
-    <div class="main-content">
-        <h1>Tiba Tiba Tournament</h1>
-        <p>Panel Admin & Cek Transaksi / Format</p>
-
-        <div class="card">
-            <h3>Cek Format / Transaksi</h3>
-            <p style="font-size: 13px; color: #94a3b8;">Masukkan teks atau data transaksi di bawah untuk pengecekan:</p>
-            <textarea id="transaction-input" placeholder="Tempel data transaksi atau format di sini..."></textarea>
-            <button class="btn-sync" style="margin-top: 10px;" onclick="checkTransaction()">Cek Format</button>
-            <div id="result-output" style="margin-top: 10px; font-weight: bold; color: #4ade80;"></div>
+    <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
+    <div class="bg-slate-950/80 border-2 border-slate-600 shadow-2xl rounded-2xl p-6 md:p-8 transition-all backdrop-blur-md">
+      
+      <!-- Header & Fitur Ganti Background -->
+      <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <i class="fa-solid fa-list-check text-2xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">FORMAT CEK TRANSAKSI</h1>
+            <p class="text-xs text-slate-300">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-950 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
+          </div>
         </div>
+
+        <!-- OPSI AKSI HEADER -->
+        <div class="flex items-center space-x-2">
+          <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition border border-slate-600 shadow" title="Upload & Sync Video/BG ke Semua Perangkat">
+            <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
+            <span class="hidden sm:inline">Sync Video/BG</span>
+            <input type="file" id="bgUploader" accept="video/mp4,image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
+          </label>
+
+          <button id="btnResetBg" onclick="resetAndSyncBackground()" class="hidden bg-rose-950 hover:bg-rose-900 text-rose-300 p-2 rounded-lg text-xs transition border border-rose-800" title="Reset Background Default">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+
+          <button onclick="toggleSettings()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-900 transition border border-transparent hover:border-slate-700" title="Pengaturan URL Web App">
+            <i class="fa-solid fa-gear text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB NAVIGASI GRUPING 1 - 5 -->
+      <div class="mb-5">
+        <label class="block text-xs font-semibold text-slate-300 mb-2">Pilih Tab Gruping:</label>
+        <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-black/95 border border-slate-700 rounded-xl text-[11px] shadow-inner">
+          <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
+          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-900">GRUPING 2</button>
+          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-900">GRUPING 3</button>
+          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-900">GRUPING 4</button>
+          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-900">GRUPING 5</button>
+        </div>
+      </div>
+
+      <!-- Panel Pengaturan URL -->
+      <div id="settingsPanel" class="hidden mb-6 p-4 bg-black/95 border border-slate-700 rounded-xl space-y-2">
+        <label class="block text-xs font-semibold text-slate-200">URL Web App Server:</label>
+        <input type="text" id="scriptUrl" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+        <div class="flex justify-end space-x-2 pt-2">
+          <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
+        </div>
+      </div>
+
+      <!-- Textarea Input -->
+      <div class="space-y-2 mb-4">
+        <div class="flex justify-between items-center text-xs text-slate-300">
+          <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
+          <div>
+            <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
+              <i class="fa-regular fa-clipboard"></i> Paste
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <textarea id="inputText" rows="5" class="w-full bg-black/95 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-400 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed shadow-inner"></textarea>
+          <div class="absolute bottom-3 right-3 text-xs text-slate-400 pointer-events-none font-mono">
+            <span id="charCount">0</span> karakter
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Alert -->
+      <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium border bg-black/95"></div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+        <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span id="btnText">Kirim Transaksi</span>
+        </button>
+
+        <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
+          <i class="fa-solid fa-bolt"></i>
+          <span>CLICK HERE (Format)</span>
+        </button>
+
+        <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
+          <i class="fa-solid fa-trash-can"></i>
+          <span id="btnClearSheetText">HAPUS TEKS</span>
+        </button>
+      </div>
+
     </div>
 
-    <script>
-        // --- KONFIGURASI SUPABASE ---
-        // Masukkan kredensial project Supabase Anda di sini
-        const SUPABASE_URL = 'https://URL_PROJECT_ANDA.supabase.co';
-        const SUPABASE_KEY = 'SUPABASE_ANON_KEY_ANDA';
+    <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
+    <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden backdrop-blur-md">
+      
+      <!-- MODAL LOGIN DALAM PANEL GAME -->
+      <div id="loginModal" class="absolute inset-0 bg-slate-950/95 z-20 flex items-center justify-center p-6">
+        <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-xl max-w-sm w-full p-6 text-center space-y-4 modal-animate">
+          <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
+            <i class="fa-solid fa-user-astronaut text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Masukkan Nama Anda</h3>
+            <p class="text-[11px] text-slate-400 mt-1">Agar tebakan benar tercatat di papan skor.</p>
+          </div>
+          <div class="space-y-2.5">
+            <input type="text" id="usernameInput" placeholder="Ketik nama panggilan..." class="w-full bg-black border border-slate-700 focus:border-indigo-500 text-white placeholder-slate-500 rounded-lg p-2.5 text-xs text-center focus:outline-none font-semibold">
+            <button onclick="saveUsername()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold py-2.5 px-3 rounded-lg transition shadow text-xs flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-right-to-bracket"></i> Mulai Main
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between border-b border-indigo-900/50 pb-3 flex-wrap gap-2">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-gamepad text-indigo-400 text-xl"></i>
+          <h2 class="text-base font-bold text-white">Family 100 Arena (Realtime)</h2>
+        </div>
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const channel = supabase.channel('room_background_sync');
+        <div class="flex items-center gap-2">
+          <!-- Indikator Nama Pemain -->
+          <div class="bg-indigo-950 border border-indigo-700 text-indigo-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1 font-bold">
+            <i class="fa-solid fa-user-check text-emerald-400"></i>
+            <span id="activePlayerDisplay">Pemain</span>
+            <button onclick="changeUsername()" class="text-slate-400 hover:text-white ml-1" title="Ganti Nama"><i class="fa-solid fa-pen-to-square"></i></button>
+          </div>
 
-        // Fungsi untuk merubah background di layar (Video atau Gambar)
-        function applyBackground(url) {
-            const videoEl = document.getElementById('bg-video');
-            const imageEl = document.getElementById('bg-image');
+          <!-- Tombol Aksi Game -->
+          <button onclick="revealAllAnswers()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
+            <i class="fa-solid fa-eye"></i> Menyerah
+          </button>
+          <button onclick="nextGameQuestion()" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
+            <i class="fa-solid fa-rotate"></i> Soal Baru
+          </button>
+        </div>
+      </div>
 
-            if (url.match(/\.(mp4|webm|ogg)$/i)) {
-                imageEl.style.display = 'none';
-                videoEl.style.display = 'block';
-                videoEl.src = url;
-                videoEl.load();
-                videoEl.play().catch(e => console.log("Autoplay dicegah browser:", e));
+      <!-- Kotak Pertanyaan Aktif -->
+      <div class="bg-black/80 border border-indigo-900/60 rounded-xl p-4 text-center space-y-1">
+        <span class="text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Pertanyaan Saat Ini:</span>
+        <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Klik tombol "Soal Baru" untuk mulai bermain!</h3>
+      </div>
+
+      <!-- Kotak Daftar Jawaban -->
+      <div id="gameAnswersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+
+      <!-- Form Kirim Tebakan -->
+      <div class="flex gap-2 pt-2">
+        <input type="text" id="playerGuess" placeholder="Ketik jawaban tebakanmu di sini..." class="flex-1 bg-black/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" onkeypress="if(event.key === 'Enter') sendGameGuess()">
+        <button onclick="sendGameGuess()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-xl text-xs transition shadow">
+          <i class="fa-solid fa-paper-plane mr-1"></i> Tebak
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- POP-UP MODAL HASIL FORMAT -->
+  <div id="resultModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div id="modalContent" class="bg-slate-950 border border-slate-700 shadow-2xl rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col transform scale-95 transition-all duration-200 overflow-hidden">
+      
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-black">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-xl"></i>
+          <h2 class="text-base font-bold text-white">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-400">GRUPING 1</span>)</h2>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-900 transition">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 overflow-y-auto">
+        <div class="bg-black border border-slate-700 rounded-xl p-4 space-y-2.5 shadow-md">
+          <div class="flex justify-between items-center text-sm font-semibold text-slate-300">
+            <span>Format Standar (A1):</span>
+            <button onclick="copyToClipboard('boxA1', 'toastA1')" class="bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500 px-3 py-1 rounded-lg transition flex items-center gap-1.5 font-bold text-xs">
+              <i class="fa-regular fa-copy text-sm"></i> Salin <span id="toastA1" class="text-xs text-emerald-200 hidden">✓ Disalin!</span>
+            </button>
+          </div>
+          <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm md:text-base font-mono text-slate-100 whitespace-pre-wrap max-h-48 overflow-y-auto shadow-inner leading-relaxed"></div>
+        </div>
+
+        <div id="wrapperA2" class="hidden bg-black border border-amber-700 rounded-xl p-4 space-y-2.5 shadow-md">
+          <div class="flex justify-between items-center text-sm font-semibold text-amber-400">
+            <span>Format WD Di Atas 100Jt (A2):</span>
+            <button onclick="copyToClipboard('boxA2', 'toastA2')" class="bg-amber-700 hover:bg-amber-600 text-white border border-amber-500 px-3 py-1 rounded-lg transition flex items-center gap-1.5 font-bold text-xs">
+              <i class="fa-regular fa-copy text-sm"></i> Salin <span id="toastA2" class="text-xs text-amber-200 hidden">✓ Disalin!</span>
+            </button>
+          </div>
+          <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm md:text-base font-mono text-slate-100 whitespace-pre-wrap max-h-48 overflow-y-auto shadow-inner leading-relaxed"></div>
+        </div>
+
+        <div id="wrapperA3" class="hidden bg-black border border-sky-700 rounded-xl p-4 space-y-2.5 shadow-md">
+          <div class="flex justify-between items-center text-sm font-semibold text-sky-400">
+            <span>Format WD Di Atas 50Jt (A3):</span>
+            <button onclick="copyToClipboard('boxA3', 'toastA3')" class="bg-sky-700 hover:bg-sky-600 text-white border border-sky-500 px-3 py-1 rounded-lg transition flex items-center gap-1.5 font-bold text-xs">
+              <i class="fa-regular fa-copy text-sm"></i> Salin <span id="toastA3" class="text-xs text-sky-200 hidden">✓ Disalin!</span>
+            </button>
+          </div>
+          <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm md:text-base font-mono text-slate-100 whitespace-pre-wrap max-h-48 overflow-y-auto shadow-inner leading-relaxed"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 border-t border-slate-700 bg-black flex justify-end">
+        <button onclick="closeModal()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs md:text-sm font-semibold rounded-xl transition shadow">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://keadrtohkrjoltcissqj.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable__dXhUS3eSgSx6Op3hVIYpQ_IKMhqMos';
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    const bgChannel = client.channel('app-bg-sync', { config: { broadcast: { self: true } } });
+    const gameChannel = client.channel('family100-room', { config: { broadcast: { self: true } } });
+
+    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
+    let currentTab = 'GRUPING 1';
+    let currentPlayerName = '';
+
+    const questionBank = [
+      {
+        q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
+        answers: [
+          { text: "Menguap / Meregangkan Badan", keywords: ["menguap", "regang", "liat", "liyat", "geliat"], points: 45, revealed: false, answeredBy: null },
+          { text: "Mengecek HP / Notifikasi", keywords: ["hp", "handphone", "ponsel", "notif", "pesan"], points: 30, revealed: false, answeredBy: null },
+          { text: "Ke Kamar Mandi / Buang Air", keywords: ["kamar mandi", "wc", "toilet", "mandi", "buang air", "kencing", "BAB"], points: 15, revealed: false, answeredBy: null },
+          { text: "Minum Air Putih", keywords: ["minum", "air putih", "haus"], points: 10, revealed: false, answeredBy: null }
+        ]
+      },
+      {
+        q: "Apa yang dicari orang ketika kelaparan di malam hari?",
+        answers: [
+          { text: "Mi Instan", keywords: ["mi", "mie", "indomie", "instan", "rebus"], points: 50, revealed: false, answeredBy: null },
+          { text: "Nasi Goreng / Makanan Sisa", keywords: ["nasi goreng", "nasgor", "sisa", "makanan sisa"], points: 25, revealed: false, answeredBy: null },
+          { text: "Roti Bakar / Snack", keywords: ["roti", "snack", "camilan", "biskuit"], points: 15, revealed: false, answeredBy: null },
+          { text: "Air Putih (Nahan Lapar)", keywords: ["air", "tidur", "puasa"], points: 10, revealed: false, answeredBy: null }
+        ]
+      },
+      {
+        q: "Sebutkan alasan orang sering terlambat masuk kerja atau kuliah!",
+        answers: [
+          { text: "Bangun Kesiangan", keywords: ["kesiangan", "telat bangun", "bangun siang"], points: 40, revealed: false, answeredBy: null },
+          { text: "Macet di Jalan", keywords: ["macet", "lalin", "jalanan"], points: 30, revealed: false, answeredBy: null },
+          { text: "Ban Bocor / Kendaraan Rusak", keywords: ["ban", "bocor", "rusak", "motor", "mobil"], points: 15, revealed: false, answeredBy: null },
+          { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", keywords: ["dandan", "mandi", "persiapan", "lama"], points: 15, revealed: false, answeredBy: null }
+        ]
+      }
+    ];
+
+    let currentQuestionData = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      document.getElementById('scriptUrl').value = savedUrl;
+      document.getElementById('inputText').addEventListener('input', updateCharCount);
+      loadSavedBackground();
+      checkUserLogin();
+    });
+
+    function checkUserLogin() {
+      const savedName = localStorage.getItem('game_username');
+      if (savedName) {
+        currentPlayerName = savedName;
+        document.getElementById('activePlayerDisplay').textContent = savedName;
+        document.getElementById('loginModal').classList.add('hidden');
+      } else {
+        document.getElementById('loginModal').classList.remove('hidden');
+      }
+    }
+
+    function saveUsername() {
+      const input = document.getElementById('usernameInput').value.trim();
+      if (!input) return alert('Sebutkan nama / julukan Anda dulu!');
+      localStorage.setItem('game_username', input);
+      currentPlayerName = input;
+      document.getElementById('activePlayerDisplay').textContent = input;
+      document.getElementById('loginModal').classList.add('hidden');
+    }
+
+    function changeUsername() {
+      localStorage.removeItem('game_username');
+      document.getElementById('usernameInput').value = currentPlayerName;
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    // --- SINKRONISASI REALTIME & SUPABASE STORAGE ---
+    bgChannel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
+      }
+    });
+
+    bgChannel.on('broadcast', { event: 'update_bg' }, ({ payload }) => {
+      if (payload.mediaUrl) {
+        applyBackground(payload.mediaUrl, payload.mediaType);
+        localStorage.setItem('custom_app_bg', payload.mediaUrl);
+        localStorage.setItem('custom_app_bg_type', payload.mediaType);
+      } else {
+        resetBackgroundLocal();
+      }
+    });
+
+    bgChannel.on('broadcast', { event: 'request_bg' }, () => {
+      const currentBg = localStorage.getItem('custom_app_bg');
+      const currentType = localStorage.getItem('custom_app_bg_type');
+      if (currentBg) {
+        bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { mediaUrl: currentBg, mediaType: currentType } });
+      }
+    });
+
+    async function uploadAndSyncBackground(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      showStatus('Mengunggah file ke Supabase Storage...', 'info');
+
+      const isVideo = file.type.startsWith('video/');
+      const fileExt = file.name.split('.').pop();
+      const fileName = `bg_${Date.now()}.${fileExt}`;
+
+      // Upload ke Bucket Supabase bernama 'backgrounds'
+      const { data, error } = await client.storage
+        .from('backgrounds')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+      if (error) {
+        alert('Gagal mengunggah file: ' + error.message);
+        showStatus('Gagal mengunggah background.', 'error');
+        return;
+      }
+
+      // Ambil Public URL dari file yang di-upload
+      const { data: publicURLData } = client.storage
+        .from('backgrounds')
+        .getPublicUrl(fileName);
+
+      const publicUrl = publicURLData.publicUrl;
+      const mediaType = isVideo ? 'video' : 'image';
+
+      applyBackground(publicUrl, mediaType);
+      localStorage.setItem('custom_app_bg', publicUrl);
+      localStorage.setItem('custom_app_bg_type', mediaType);
+
+      // Broadcast link URL publik ke semua perangkat
+      bgChannel.send({
+        type: 'broadcast',
+        event: 'update_bg',
+        payload: { mediaUrl: publicUrl, mediaType: mediaType }
+      });
+
+      showStatus('Background berhasil disinkronkan ke SEMUA perangkat!', 'success');
+    }
+
+    function resetAndSyncBackground() {
+      resetBackgroundLocal();
+      bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { mediaUrl: null, mediaType: null } });
+      showStatus('Background di-reset untuk semua perangkat.', 'info');
+    }
+
+    function resetBackgroundLocal() {
+      document.body.style.backgroundImage = 'none';
+      const videoEl = document.getElementById('bgVideo');
+      videoEl.pause();
+      videoEl.classList.add('hidden');
+      localStorage.removeItem('custom_app_bg');
+      localStorage.removeItem('custom_app_bg_type');
+      document.getElementById('btnResetBg').classList.add('hidden');
+      document.getElementById('bgUploader').value = '';
+    }
+
+    function applyBackground(mediaUrl, mediaType) {
+      const videoEl = document.getElementById('bgVideo');
+      const sourceEl = document.getElementById('videoSource');
+
+      if (mediaType === 'video') {
+        document.body.style.backgroundImage = 'none';
+        sourceEl.src = mediaUrl;
+        videoEl.load();
+        videoEl.classList.remove('hidden');
+        videoEl.play().catch(err => console.log("Autoplay dicegah browser:", err));
+      } else {
+        videoEl.pause();
+        videoEl.classList.add('hidden');
+        document.body.style.backgroundImage = `url('${mediaUrl}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+      }
+      document.getElementById('btnResetBg').classList.remove('hidden');
+    }
+
+    function loadSavedBackground() {
+      const savedBg = localStorage.getItem('custom_app_bg');
+      const savedType = localStorage.getItem('custom_app_bg_type') || 'image';
+      if (savedBg) applyBackground(savedBg, savedType);
+    }
+
+    // --- REALTIME GAME FAMILY 100 LOGIC ---
+    gameChannel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        gameChannel.send({ type: 'broadcast', event: 'request_game_state', payload: {} });
+      }
+    });
+
+    gameChannel.on('broadcast', { event: 'update_game_state' }, ({ payload }) => {
+      currentQuestionData = payload.questionData;
+      renderGameUI();
+    });
+
+    gameChannel.on('broadcast', { event: 'request_game_state' }, () => {
+      if (currentQuestionData) {
+        gameChannel.send({ type: 'broadcast', event: 'update_game_state', payload: { questionData: currentQuestionData } });
+      }
+    });
+
+    function nextGameQuestion() {
+      const randomIndex = Math.floor(Math.random() * questionBank.length);
+      const selected = JSON.parse(JSON.stringify(questionBank[randomIndex]));
+      
+      currentQuestionData = selected;
+
+      gameChannel.send({
+        type: 'broadcast',
+        event: 'update_game_state',
+        payload: { questionData: currentQuestionData }
+      });
+
+      renderGameUI();
+      showStatus('Soal Family 100 baru dimuat!', 'success');
+    }
+
+    function revealAllAnswers() {
+      if (!currentQuestionData) return;
+      currentQuestionData.answers.forEach(ans => {
+        ans.revealed = true;
+        if (!ans.answeredBy) ans.answeredBy = "Sistem (Menyerah)";
+      });
+
+      gameChannel.send({
+        type: 'broadcast',
+        event: 'update_game_state',
+        payload: { questionData: currentQuestionData }
+      });
+
+      renderGameUI();
+      showStatus('Semua jawaban dibuka!', 'error');
+    }
+
+    function renderGameUI() {
+      if (!currentQuestionData) return;
+      document.getElementById('gameQuestion').textContent = currentQuestionData.q;
+
+      const container = document.getElementById('gameAnswersContainer');
+      container.innerHTML = '';
+
+      currentQuestionData.answers.forEach((ans, index) => {
+        const div = document.createElement('div');
+        if (ans.revealed) {
+          const winnerText = ans.answeredBy ? `<span class="text-[10px] bg-slate-900 border border-emerald-500/50 text-emerald-300 px-1.5 py-0.5 rounded font-sans ml-1">Dijawab: <b>${ans.answeredBy}</b></span>` : '';
+          div.className = "bg-emerald-950/80 border border-emerald-600 rounded-lg p-2.5 text-xs text-emerald-200 font-mono flex justify-between items-center animate-pulse";
+          div.innerHTML = `<div class="flex flex-col"><span>${index + 1}. ${ans.text}</span>${winnerText}</div> <span class="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold">${ans.points}</span>`;
+        } else {
+          div.className = "bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between items-center";
+          div.innerHTML = `<span>${index + 1}. [Tersembunyi]</span> <span>...</span>`;
+        }
+        container.appendChild(div);
+      });
+    }
+
+    function sendGameGuess() {
+      const guessInput = document.getElementById('playerGuess');
+      const guess = guessInput.value.trim().toLowerCase();
+      if (!guess) return;
+
+      if (!currentPlayerName) {
+        checkUserLogin();
+        return;
+      }
+
+      if (!currentQuestionData) {
+        alert('Belum ada soal yang aktif!');
+        return;
+      }
+
+      let foundExact = false;
+      let foundAlmost = false;
+
+      currentQuestionData.answers.forEach(ans => {
+        if (!ans.revealed) {
+          const isMatchExact = ans.text.toLowerCase().includes(guess) || ans.keywords.some(kw => kw.includes(guess));
+          
+          if (isMatchExact) {
+            if (guess.length <= 2 && ans.keywords.some(kw => kw.startsWith(guess))) {
+              foundAlmost = true;
             } else {
-                videoEl.style.display = 'none';
-                imageEl.style.display = 'block';
-                imageEl.src = url;
+              ans.revealed = true;
+              ans.answeredBy = currentPlayerName;
+              foundExact = true;
             }
+          }
         }
+      });
 
-        // Fungsi Upload file ke Supabase Storage + Fitur Auto-Delete File Lama
-        async function uploadAndSyncBackground(file) {
-            const statusText = document.getElementById('status-text');
-            statusText.innerText = "Mengunggah...";
+      guessInput.value = '';
 
-            const fileExt = file.name.split('.').pop();
-            const fileName = `bg_${Date.now()}.${fileExt}`;
-            const filePath = `${fileName}`;
+      if (foundExact) {
+        gameChannel.send({
+          type: 'broadcast',
+          event: 'update_game_state',
+          payload: { questionData: currentQuestionData }
+        });
+        renderGameUI();
+        showStatus(`Hebat ${currentPlayerName}! Tebakan benar!`, 'success');
+      } else if (foundAlmost) {
+        showStatus(`Sedikit lagi... tebakanmu hampir benar, coba perjelas!`, 'info');
+      } else {
+        showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
+      }
+    }
 
-            // 1. Ambil daftar file lama di bucket backgrounds untuk dibersihkan
-            const { data: existingFiles, error: listError } = await supabase.storage
-                .from('backgrounds')
-                .list();
+    // --- LOGIKA FORMAT TRANSAKSI KERJA ---
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.getElementById('currentTabLabel').textContent = tabName;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-300 hover:text-white hover:bg-slate-900";
+      });
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      if (activeBtn) activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
+      showStatus(`Aktif di ${tabName}`, 'info');
+    }
 
-            if (listError) {
-                console.error("Gagal mengambil list file lama:", listError.message);
-            }
+    function updateCharCount() {
+      document.getElementById('charCount').textContent = document.getElementById('inputText').value.length;
+    }
 
-            // 2. Upload file baru ke Supabase Storage
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('backgrounds')
-                .upload(filePath, file);
+    function toggleSettings() {
+      document.getElementById('settingsPanel').classList.toggle('hidden');
+    }
 
-            if (uploadError) {
-                alert("Gagal mengunggah file: " + uploadError.message);
-                statusText.innerText = "Gagal upload";
-                return;
-            }
+    function saveSettings() {
+      const url = document.getElementById('scriptUrl').value.trim();
+      if (!url) return alert('URL tidak boleh kosong!');
+      localStorage.setItem('gs_script_url', url);
+      showStatus('URL Pengaturan berhasil disimpan!', 'success');
+      toggleSettings();
+    }
 
-            // 3. Ambil Public URL dari file yang baru di-upload
-            const { data: publicUrlData } = supabase.storage
-                .from('backgrounds')
-                .getPublicUrl(filePath);
-            
-            const newBackgroundUrl = publicUrlData.publicUrl;
+    async function pasteFromClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('inputText').value = text;
+        updateCharCount();
+        showStatus('Teks berhasil ditempel dari clipboard!', 'info');
+      } catch (err) { alert('Gagal membaca clipboard.'); }
+    }
 
-            // 4. Broadcast URL baru secara realtime ke perangkat lain
-            channel.send({
-                type: 'broadcast',
-                event: 'background_update',
-                payload: { url: newBackgroundUrl }
-            });
+    function hapusWebDanSheet() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      document.getElementById('inputText').value = '';
+      updateCharCount();
+      closeModal();
+      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
+      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: "clearSheet", sheetName: currentTab }) })
+      .then(() => showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error'))
+      .finally(() => setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS'));
+    }
 
-            // 5. Terapkan langsung ke perangkat pengirim
-            applyBackground(newBackgroundUrl);
-            statusText.innerText = "Berhasil Disinkron!";
+    function sendToSheet() {
+      const text = document.getElementById('inputText').value;
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      if (!text.trim()) return showStatus('Isi teks terlebih dahulu!', 'error');
 
-            // 6. AUTO-DELETE: Hapus file video/gambar lama di server secara otomatis
-            if (existingFiles && existingFiles.length > 0) {
-                const filesToDelete = existingFiles
-                    .map(f => f.name)
-                    .filter(name => name !== fileName); // Kecualikan file yang baru di-upload
+      setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
+      hideStatus();
+      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, sheetName: currentTab }) })
+      .then(() => { showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); setTimeout(fetchFormatOnly, 1200); })
+      .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
+    }
 
-                if (filesToDelete.length > 0) {
-                    const { error: deleteError } = await supabase.storage
-                        .from('backgrounds')
-                        .remove(filesToDelete);
-                        
-                    if (deleteError) {
-                        console.error("Gagal menghapus file lama:", deleteError.message);
-                    } else {
-                        console.log("File background lama berhasil dibersihkan otomatis dari server!");
-                    }
-                }
-            }
+    function fetchFormatOnly() {
+      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      setLoading(true, 'fetchBtn', null, null);
+      showStatus(`Memuat format dari ${currentTab}...`, 'info');
+      fetch(url, { method: 'POST', redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "getFormat", sheetName: currentTab }) })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.isiA1 !== undefined) {
+          document.getElementById('modalTabTitle').textContent = currentTab;
+          displayFormatResult(data);
+          openModal();
+          showStatus(`Format ${currentTab} dimuat!`, 'success');
         }
+      })
+      .finally(() => setLoading(false, 'fetchBtn', null, null));
+    }
 
-        // Handler saat memilih file dari tombol
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                uploadAndSyncBackground(file);
-            }
-        }
+    function displayFormatResult(data) {
+      document.getElementById('boxA1').textContent = data.isiA1 || '-';
+      const wrapA2 = document.getElementById('wrapperA2');
+      if (data.adaWithdrawDiatas100Jt) { wrapA2.classList.remove('hidden'); document.getElementById('boxA2').textContent = data.isiA2; } else wrapA2.classList.add('hidden');
+      const wrapA3 = document.getElementById('wrapperA3');
+      if (data.adaWithdrawDiatas50Jt) { wrapA3.classList.remove('hidden'); document.getElementById('boxA3').textContent = data.isiA3; } else wrapA3.classList.add('hidden');
+    }
 
-        // Contoh fungsi cek transaksi/format Anda
-        function checkTransaction() {
-            const text = document.getElementById('transaction-input').value;
-            const output = document.getElementById('result-output');
-            if (!text.trim()) {
-                output.style.color = '#f87171';
-                output.innerText = "Mohon masukkan data teks terlebih dahulu!";
-                return;
-            }
-            output.style.color = '#4ade80';
-            output.innerText = "Format / Transaksi Berhasil Dicek & Valid!";
-        }
+    function openModal() {
+      const modal = document.getElementById('resultModal');
+      modal.classList.remove('hidden');
+      setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('modalContent').classList.remove('scale-95'); }, 10);
+    }
 
-        // --- SETUP SUPABASE REALTIME LISTENER ---
-        channel
-            .on('broadcast', { event: 'background_update' }, (payload) => {
-                console.log("Menerima background baru dari broadcast:", payload.payload.url);
-                applyBackground(payload.payload.url);
-            })
-            .subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    console.log('Terhubung ke Supabase Realtime Channel!');
-                }
-            });
-    </script>
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      modal.classList.add('opacity-0');
+      document.getElementById('modalContent').classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function copyToClipboard(boxId, toastId) {
+      navigator.clipboard.writeText(document.getElementById(boxId).textContent).then(() => {
+        const toast = document.getElementById(toastId);
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2000);
+      });
+    }
+
+    function setLoading(isLoading, btnId, textId, htmlContent) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = isLoading;
+      if (isLoading) btn.classList.add('opacity-75', 'cursor-not-allowed');
+      else btn.classList.remove('opacity-75', 'cursor-not-allowed');
+      if (textId) document.getElementById(textId).innerHTML = htmlContent;
+    }
+
+    function showStatus(msg, type) {
+      const box = document.getElementById('statusBox');
+      box.classList.remove('hidden', 'bg-emerald-950', 'text-emerald-300', 'border-emerald-600', 'bg-rose-950', 'text-rose-300', 'border-rose-600', 'bg-sky-950', 'text-sky-300', 'border-sky-600');
+      let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
+      box.classList.add(type === 'success' ? 'bg-emerald-950' : (type === 'error' ? 'bg-rose-950' : 'bg-sky-950'), type === 'success' ? 'border-emerald-600' : (type === 'error' ? 'border-rose-600' : 'border-sky-600'));
+      box.innerHTML = `${icon} <span class="text-white">${msg}</span>`;
+    }
+
+    function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
+  </script>
 </body>
 </html>
