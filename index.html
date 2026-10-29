@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORMAT CEK TRANSAKSI - SUPABASE SYNC BG</title>
+  <title>FORMAT TRANSAKSI & FAMILY 100 - SUPABASE REALTIME</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -32,7 +32,7 @@
 
   <div class="max-w-3xl w-full space-y-6">
 
-    <!-- CONTAINER UTAMA / TEPI (Transparan tapi agak gelap / tidak terlalu tembus pandang) -->
+    <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
     <div class="bg-slate-950/80 border-2 border-slate-600 shadow-2xl rounded-2xl p-6 md:p-8 transition-all">
       
       <!-- Header & Fitur Ganti Background -->
@@ -68,7 +68,7 @@
         </div>
       </div>
 
-      <!-- TAB NAVIGASI GRUPING 1 - 5 (Bagian Tengah: Lebih hitam/pekat dari kotak tepi) -->
+      <!-- TAB NAVIGASI GRUPING 1 - 5 -->
       <div class="mb-5">
         <label class="block text-xs font-semibold text-slate-300 mb-2">Pilih Tab Gruping:</label>
         <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-black/95 border border-slate-700 rounded-xl text-[11px] shadow-inner">
@@ -89,7 +89,7 @@
         </div>
       </div>
 
-      <!-- Textarea Input (Bagian Tengah: Lebih hitam/pekat dari kotak tepi) -->
+      <!-- Textarea Input -->
       <div class="space-y-2 mb-4">
         <div class="flex justify-between items-center text-xs text-slate-300">
           <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
@@ -101,7 +101,7 @@
         </div>
 
         <div class="relative">
-          <textarea id="inputText" rows="6" class="w-full bg-black/95 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-400 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed shadow-inner"></textarea>
+          <textarea id="inputText" rows="5" class="w-full bg-black/95 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-400 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed shadow-inner"></textarea>
           <div class="absolute bottom-3 right-3 text-xs text-slate-400 pointer-events-none font-mono">
             <span id="charCount">0</span> karakter
           </div>
@@ -113,19 +113,16 @@
 
       <!-- ACTION BUTTONS -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-        <!-- 1. Tombol Kirim -->
         <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
           <i class="fa-solid fa-paper-plane"></i>
           <span id="btnText">Kirim Transaksi</span>
         </button>
 
-        <!-- 2. Tombol Click Here (Format) -->
         <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
           <i class="fa-solid fa-bolt"></i>
           <span>CLICK HERE (Format)</span>
         </button>
 
-        <!-- 3. TOMBOL HAPUS TEKS -->
         <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
           <i class="fa-solid fa-trash-can"></i>
           <span id="btnClearSheetText">HAPUS TEKS</span>
@@ -134,13 +131,49 @@
 
     </div>
 
+    <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
+    <div class="bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4">
+      <div class="flex items-center justify-between border-b border-indigo-900/50 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-gamepad text-indigo-400 text-xl"></i>
+          <h2 class="text-base font-bold text-white">Family 100 Arena (Realtime)</h2>
+        </div>
+        <span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-700 px-2 py-1 rounded-full font-mono">Multiplayer</span>
+      </div>
+
+      <!-- Kotak Pertanyaan Aktif -->
+      <div class="bg-black/80 border border-indigo-900/60 rounded-xl p-4 text-center space-y-1">
+        <span class="text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Pertanyaan Saat Ini:</span>
+        <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Menunggu soal dari host / bot...</h3>
+      </div>
+
+      <!-- Kotak Daftar Jawaban (Tebakan) -->
+      <div id="gameAnswers" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between">
+          <span>1. [Tersembunyi]</span>
+          <span>...</span>
+        </div>
+        <div class="bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between">
+          <span>2. [Tersembunyi]</span>
+          <span>...</span>
+        </div>
+      </div>
+
+      <!-- Form Kirim Tebakan -->
+      <div class="flex gap-2 pt-2">
+        <input type="text" id="playerGuess" placeholder="Ketik jawaban tebakanmu di sini..." class="flex-1 bg-black/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+        <button onclick="sendGameGuess()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-xl text-xs transition shadow">
+          <i class="fa-solid fa-paper-plane mr-1"></i> Tebak
+        </button>
+      </div>
+    </div>
+
   </div>
 
   <!-- POP-UP MODAL HASIL FORMAT -->
   <div id="resultModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
     <div id="modalContent" class="bg-slate-950 border border-slate-700 shadow-2xl rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col transform scale-95 transition-all duration-200 overflow-hidden">
       
-      <!-- Modal Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-black">
         <div class="flex items-center space-x-2.5">
           <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-xl"></i>
@@ -151,11 +184,8 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 space-y-5 overflow-y-auto">
-        
-        <!-- Format A1 -->
-        <div class="bg-black/95 border border-slate-700 rounded-xl p-4 space-y-2.5 shadow-md">
+        <div class="bg-black border border-slate-700 rounded-xl p-4 space-y-2.5 shadow-md">
           <div class="flex justify-between items-center text-sm font-semibold text-slate-300">
             <span>Format Standar (A1):</span>
             <button onclick="copyToClipboard('boxA1', 'toastA1')" class="bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500 px-3 py-1 rounded-lg transition flex items-center gap-1.5 font-bold text-xs">
@@ -165,8 +195,7 @@
           <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm md:text-base font-mono text-slate-100 whitespace-pre-wrap max-h-48 overflow-y-auto shadow-inner leading-relaxed"></div>
         </div>
 
-        <!-- Format A2 -->
-        <div id="wrapperA2" class="hidden bg-black/95 border border-amber-700 rounded-xl p-4 space-y-2.5 shadow-md">
+        <div id="wrapperA2" class="hidden bg-black border border-amber-700 rounded-xl p-4 space-y-2.5 shadow-md">
           <div class="flex justify-between items-center text-sm font-semibold text-amber-400">
             <span>Format WD Di Atas 100Jt (A2):</span>
             <button onclick="copyToClipboard('boxA2', 'toastA2')" class="bg-amber-700 hover:bg-amber-600 text-white border border-amber-500 px-3 py-1 rounded-lg transition flex items-center gap-1.5 font-bold text-xs">
@@ -176,8 +205,7 @@
           <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm md:text-base font-mono text-slate-100 whitespace-pre-wrap max-h-48 overflow-y-auto shadow-inner leading-relaxed"></div>
         </div>
 
-        <!-- Format A3 -->
-        <div id="wrapperA3" class="hidden bg-black/95 border border-sky-700 rounded-xl p-4 space-y-2.5 shadow-md">
+        <div id="wrapperA3" class="hidden bg-black border border-sky-700 rounded-xl p-4 space-y-2.5 shadow-md">
           <div class="flex justify-between items-center text-sm font-semibold text-sky-400">
             <span>Format WD Di Atas 50Jt (A3):</span>
             <button onclick="copyToClipboard('boxA3', 'toastA3')" class="bg-sky-700 hover:bg-sky-600 text-white border border-sky-500 px-3 py-1 rounded-lg transition flex items-center gap-1.5 font-bold text-xs">
@@ -186,10 +214,8 @@
           </div>
           <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm md:text-base font-mono text-slate-100 whitespace-pre-wrap max-h-48 overflow-y-auto shadow-inner leading-relaxed"></div>
         </div>
-
       </div>
 
-      <!-- Modal Footer -->
       <div class="px-6 py-4 border-t border-slate-700 bg-black flex justify-end">
         <button onclick="closeModal()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs md:text-sm font-semibold rounded-xl transition shadow">
           Tutup
@@ -204,9 +230,10 @@
     const SUPABASE_KEY = 'sb_publishable__dXhUS3eSgSx6Op3hVIYpQ_IKMhqMos';
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const bgChannel = client.channel('app-bg-sync', {
-      config: { broadcast: { self: true } }
-    });
+    
+    // Channel Supabase untuk Background & Game
+    const bgChannel = client.channel('app-bg-sync', { config: { broadcast: { self: true } } });
+    const gameChannel = client.channel('family100-room', { config: { broadcast: { self: true } } });
 
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
     let currentTab = 'GRUPING 1';
@@ -215,11 +242,10 @@
       const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       document.getElementById('scriptUrl').value = savedUrl;
       document.getElementById('inputText').addEventListener('input', updateCharCount);
-
       loadSavedBackground();
     });
 
-    // --- SINKRONISASI REALTIME BACKGROUND SUPABASE ---
+    // --- SINKRONISASI REALTIME BACKGROUND ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -303,6 +329,29 @@
     function loadSavedBackground() {
       const savedBg = localStorage.getItem('custom_app_bg');
       if (savedBg) applyBackground(savedBg);
+    }
+
+
+    // --- REALTIME GAME FAMILY 100 LOGIC ---
+    gameChannel.subscribe();
+
+    gameChannel.on('broadcast', { event: 'player_guess' }, ({ payload }) => {
+      showStatus(`Tebakan masuk dari teman: "${payload.guess}"`, 'info');
+    });
+
+    function sendGameGuess() {
+      const guessInput = document.getElementById('playerGuess');
+      const guess = guessInput.value.trim();
+      if (!guess) return;
+
+      gameChannel.send({
+        type: 'broadcast',
+        event: 'player_guess',
+        payload: { guess: guess }
+      });
+
+      showStatus(`Tebakan "${guess}" dikirim ke pemain lain!`, 'success');
+      guessInput.value = '';
     }
 
 
