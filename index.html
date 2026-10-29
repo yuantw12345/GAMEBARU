@@ -3,436 +3,332 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORMAT CEK TRANSAKSI & CATUR REALTIME SUPABASE</title>
+  <title>STICKMAN FIGHTING 1V1 REALTIME SUPABASE</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Library Papan Catur & Logika Catur -->
-  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-
   <!-- Supabase JS Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    @keyframes modalShow {
-      from { opacity: 0; transform: scale(0.95) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .modal-animate {
-      animation: modalShow 0.2s ease-out forwards;
-    }
+    body { font-family: 'Inter', sans-serif; user-select: none; }
+    canvas { background: linear-gradient(to bottom, #0f172a, #1e293b); }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-  <div class="max-w-2xl w-full space-y-6">
+  <div class="max-w-3xl w-full space-y-4">
 
-    <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
-    <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 transition-all">
-      
-      <!-- Header -->
-      <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
-        <div class="flex items-center space-x-3">
-          <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
-            <i class="fa-solid fa-list-check text-2xl"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-bold text-white">FORMAT CEK TRANSAKSI</h1>
-            <p class="text-xs text-slate-400">Otomatis Proses ke <span id="currentTabLabel" class="bg-emerald-900/60 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">GRUPING 1</span></p>
-          </div>
+    <!-- HEADER & STATUS LOBBY -->
+    <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl">
+          <i class="fa-solid fa-hand-fist text-2xl"></i>
         </div>
-        <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition" title="Pengaturan URL">
-          <i class="fa-solid fa-gear text-lg"></i>
-        </button>
-      </div>
-
-      <!-- TAB NAVIGASI GRUPING 1 - 5 -->
-      <div class="mb-5">
-        <label class="block text-xs font-semibold text-slate-400 mb-2">Pilih Tab Gruping:</label>
-        <div class="grid grid-cols-5 gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-700 text-[11px]">
-          <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow">GRUPING 1</button>
-          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 2</button>
-          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 3</button>
-          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 4</button>
-          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800">GRUPING 5</button>
+        <div>
+          <h1 class="text-lg font-bold text-white">Stickman Brawl 1v1 Realtime</h1>
+          <p id="statusGame" class="text-xs text-amber-400">Menghubungkan ke Supabase...</p>
         </div>
       </div>
-
-      <!-- Panel Pengaturan URL -->
-      <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-900 border border-slate-700 rounded-xl space-y-2">
-        <label class="block text-xs font-semibold text-slate-300">URL Web App Server:</label>
-        <input type="text" id="scriptUrl" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
-        <div class="flex justify-end space-x-2 pt-2">
-          <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
-        </div>
+      <div class="text-right">
+        <span id="playerRoleBadge" class="bg-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Penonton</span>
       </div>
-
-      <!-- Textarea Input -->
-      <div class="space-y-2 mb-4">
-        <div class="flex justify-between items-center text-xs text-slate-400">
-          <label for="inputText" class="font-medium">Tempel Data Transaksi:</label>
-          <div>
-            <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-semibold">
-              <i class="fa-regular fa-clipboard"></i> Paste
-            </button>
-          </div>
-        </div>
-
-        <div class="relative">
-          <textarea id="inputText" rows="5" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 text-slate-100 placeholder-slate-500 rounded-xl p-4 focus:outline-none transition resize-none font-sans text-sm leading-relaxed" placeholder="Tempelkan tulisan transaksi di sini..."></textarea>
-          <div class="absolute bottom-3 right-3 text-xs text-slate-500 pointer-events-none font-mono">
-            <span id="charCount">0</span> karakter
-          </div>
-        </div>
-      </div>
-
-      <!-- Status Alert -->
-      <div id="statusBox" class="hidden mb-4 p-3.5 rounded-xl text-xs flex items-center gap-2 font-medium"></div>
-
-      <!-- ACTION BUTTONS -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-        <!-- 1. Tombol Kirim -->
-        <button id="sendBtn" onclick="sendToSheet()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-emerald-900/30 flex items-center justify-center space-x-1.5 text-xs">
-          <i class="fa-solid fa-paper-plane"></i>
-          <span id="btnText">Kirim Transaksi</span>
-        </button>
-
-        <!-- 2. Tombol Click Here (Format) -->
-        <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-sky-900/30 flex items-center justify-center space-x-1.5 text-xs">
-          <i class="fa-solid fa-bolt"></i>
-          <span>CLICK HERE (Format)</span>
-        </button>
-
-        <!-- 3. TOMBOL HAPUS TEKS -->
-        <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold py-3 px-3 rounded-xl transition-all shadow-md shadow-rose-900/30 flex items-center justify-center space-x-1.5 text-xs">
-          <i class="fa-solid fa-trash-can"></i>
-          <span id="btnClearSheetText">HAPUS TEKS</span>
-        </button>
-      </div>
-
     </div>
 
-    <!-- ================= SECTION CATUR 1V1 SUPABASE REALTIME ================= -->
-    <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 flex flex-col items-center">
-      
-      <!-- Header Room -->
-      <div class="flex items-center justify-between w-full border-b border-slate-700 pb-4 mb-4">
-        <div class="flex items-center space-x-3">
-          <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl">
-            <i class="fa-solid fa-chess text-2xl"></i>
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-white">Lobby Catur 1v1 (Supabase)</h2>
-            <p id="statusGame" class="text-xs text-indigo-400">Menghubungkan ke Supabase...</p>
-          </div>
-        </div>
-        <div class="text-right">
-          <span id="playerRoleBadge" class="bg-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Penonton</span>
-        </div>
-      </div>
-
-      <!-- PANEL PILIH PERAN & PLAYER (LOBBY) -->
-      <div id="lobbyPanel" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 mb-4 space-y-3">
-        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider text-center">Pilih Warna Bidak Anda (Maks. 2 Pemain)</h3>
+    <!-- PANEL PILIH PERAN -->
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-3">
+      <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider text-center">Pilih Slot Karakter Anda</h3>
+      <div class="grid grid-cols-2 gap-3">
         
-        <div class="grid grid-cols-2 gap-3">
-          <!-- Slot Pemain Putih -->
-          <div class="bg-slate-800 border border-slate-700 p-3 rounded-lg flex flex-col items-center justify-center text-center space-y-2">
-            <span class="text-xs font-semibold text-slate-200">⚪ Pemain Putih</span>
-            <span id="labelWhite" class="text-[11px] text-slate-400 italic">Kosong</span>
-            <button id="btnJoinWhite" onclick="joinRole('white')" class="text-xs bg-indigo-600 hover:bg-indigo-500 font-bold px-3 py-1.5 rounded-lg text-white transition w-full">Pilih Putih</button>
-          </div>
-
-          <!-- Slot Pemain Hitam -->
-          <div class="bg-slate-800 border border-slate-700 p-3 rounded-lg flex flex-col items-center justify-center text-center space-y-2">
-            <span class="text-xs font-semibold text-slate-200">⚫ Pemain Hitam</span>
-            <span id="labelBlack" class="text-[11px] text-slate-400 italic">Kosong</span>
-            <button id="btnJoinBlack" onclick="joinRole('black')" class="text-xs bg-slate-700 hover:bg-slate-600 font-bold px-3 py-1.5 rounded-lg text-white transition w-full">Pilih Hitam</button>
-          </div>
+        <!-- Slot Pemain 1 -->
+        <div class="bg-slate-900 border border-slate-700 p-3 rounded-xl flex flex-col items-center space-y-2">
+          <span class="text-xs font-bold text-rose-400">🔴 Pemain 1 (Kiri)</span>
+          <span id="labelP1" class="text-[11px] text-slate-400 italic">Kosong</span>
+          <button id="btnJoinP1" onclick="joinRole('p1')" class="text-xs bg-rose-600 hover:bg-rose-500 font-bold px-3 py-1.5 rounded-lg text-white transition w-full">Pilih Pemain 1</button>
+          <p class="text-[10px] text-slate-400">Kontrol: <kbd class="bg-slate-800 px-1 rounded">A</kbd> <kbd class="bg-slate-800 px-1 rounded">D</kbd> <kbd class="bg-slate-800 px-1 rounded">W</kbd> | Pukul: <kbd class="bg-slate-800 px-1 rounded">F</kbd></p>
         </div>
 
-        <button id="btnStartGame" onclick="resetGameRoom()" class="w-full bg-emerald-600 font-bold text-xs text-white py-2.5 rounded-lg transition shadow-lg">
-          RESET / MULAI PERMAINAN BARU
-        </button>
-      </div>
-
-      <!-- CONTAINER BOARD CATUR & CHAT (Side-by-side) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-        
-        <!-- Papan Catur -->
-        <div class="md:col-span-2 flex flex-col items-center justify-center bg-slate-900 border border-slate-700 p-3 rounded-xl">
-          <div id="board" class="w-full max-w-[300px]"></div>
-        </div>
-
-        <!-- KOLOM CHAT REALTIME -->
-        <div class="flex flex-col bg-slate-900 border border-slate-700 rounded-xl h-[340px] overflow-hidden">
-          <div class="bg-slate-800 px-3 py-2 border-b border-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5">
-            <i class="fa-solid fa-comments text-indigo-400"></i> Obrolan Room
-          </div>
-
-          <!-- Pesan Chat -->
-          <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-2 text-xs font-sans">
-            <div class="text-[11px] text-slate-500 italic text-center">Selamat datang di Room Catur!</div>
-          </div>
-
-          <!-- Input Chat -->
-          <div class="p-2 border-t border-slate-700 bg-slate-800/50 flex gap-1.5">
-            <input type="text" id="chatInput" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="Ketik pesan..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
-            <button onclick="sendChatMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-              <i class="fa-solid fa-paper-plane"></i>
-            </button>
-          </div>
+        <!-- Slot Pemain 2 -->
+        <div class="bg-slate-900 border border-slate-700 p-3 rounded-xl flex flex-col items-center space-y-2">
+          <span class="text-xs font-bold text-sky-400">🔵 Pemain 2 (Kanan)</span>
+          <span id="labelP2" class="text-[11px] text-slate-400 italic">Kosong</span>
+          <button id="btnJoinP2" onclick="joinRole('p2')" class="text-xs bg-sky-600 hover:bg-sky-500 font-bold px-3 py-1.5 rounded-lg text-white transition w-full">Pilih Pemain 2</button>
+          <p class="text-[10px] text-slate-400">Kontrol: <kbd class="bg-slate-800 px-1 rounded">←</kbd> <kbd class="bg-slate-800 px-1 rounded">→</kbd> <kbd class="bg-slate-800 px-1 rounded">↑</kbd> | Pukul: <kbd class="bg-slate-800 px-1 rounded">L</kbd></p>
         </div>
 
       </div>
-
+      <button onclick="resetGame()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 rounded-lg transition">
+        RESET REMATCH PERTANDINGAN
+      </button>
     </div>
 
-  </div>
-
-  <!-- ================= POP-UP MODAL GELAP & ELEGAN ================= -->
-  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-    <div id="modalContent" class="bg-slate-800 border border-slate-700 shadow-2xl rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col transform scale-95 transition-all duration-200 overflow-hidden">
+    <!-- CANVAS ARENA PERTARUNGAN & CHAT -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-lg"></i>
-          <h2 class="text-sm font-bold text-white">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-400">GRUPING 1</span>)</h2>
-        </div>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-700 transition">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+      <!-- Canvas Arena Stickman -->
+      <div class="md:col-span-2 relative bg-slate-900 border border-slate-700 rounded-2xl p-2 flex justify-center items-center overflow-hidden">
+        <canvas id="gameCanvas" width="460" height="280" class="rounded-xl border border-slate-800 w-full"></canvas>
       </div>
 
-      <!-- Modal Body -->
-      <div class="p-6 space-y-4 overflow-y-auto">
-        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
-            <span>Format Standar (A1):</span>
-            <button onclick="copyToClipboard('boxA1', 'toastA1')" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1 font-bold">
-              <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-xs text-emerald-300 hidden">✓ Disalin!</span>
-            </button>
-          </div>
-          <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+      <!-- KOLOM CHAT REALTIME -->
+      <div class="flex flex-col bg-slate-800 border border-slate-700 rounded-2xl h-[296px] overflow-hidden">
+        <div class="bg-slate-900 px-3 py-2 border-b border-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-comments text-amber-400"></i> Obrolan Room
         </div>
-
-        <div id="wrapperA2" class="hidden bg-slate-900 border border-amber-700/50 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
-            <span>Format WD Di Atas 100Jt (A2):</span>
-            <button onclick="copyToClipboard('boxA2', 'toastA2')" class="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-bold">
-              <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-xs text-amber-300 hidden">✓ Disalin!</span>
-            </button>
-          </div>
-          <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+        <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-2 text-xs">
+          <div class="text-[11px] text-slate-500 italic text-center">Selamat datang di Arena Pukul Stickman!</div>
         </div>
-
-        <div id="wrapperA3" class="hidden bg-slate-900 border border-sky-700/50 rounded-xl p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
-            <span>Format WD Di Atas 50Jt (A3):</span>
-            <button onclick="copyToClipboard('boxA3', 'toastA3')" class="text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-bold">
-              <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-xs text-sky-300 hidden">✓ Disalin!</span>
-            </button>
-          </div>
-          <div id="boxA3" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
+        <div class="p-2 border-t border-slate-700 bg-slate-900 flex gap-1.5">
+          <input type="text" id="chatInput" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="Ketik pesan..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+          <button onclick="sendChatMessage()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
         </div>
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-700 bg-slate-900 flex justify-end">
-        <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-xl transition">
-          Tutup
-        </button>
       </div>
 
     </div>
+
   </div>
 
   <script>
-    // --- Skrip Utama Format Transaksi ---
-    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
-    let currentTab = 'GRUPING 1';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      document.getElementById('scriptUrl').value = savedUrl;
-      document.getElementById('inputText').addEventListener('input', updateCharCount);
-    });
-
-    function switchTab(tabName) {
-      currentTab = tabName;
-      document.getElementById('currentTabLabel').textContent = tabName;
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800";
-      });
-      const activeBtn = document.getElementById(`tab-${tabName}`);
-      if (activeBtn) activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
-      showStatus(`Aktif di ${tabName}`, 'info');
-    }
-
-    function updateCharCount() {
-      document.getElementById('charCount').textContent = document.getElementById('inputText').value.length;
-    }
-
-    function toggleSettings() {
-      document.getElementById('settingsPanel').classList.toggle('hidden');
-    }
-
-    function saveSettings() {
-      const url = document.getElementById('scriptUrl').value.trim();
-      if (!url) return alert('URL tidak boleh kosong!');
-      localStorage.setItem('gs_script_url', url);
-      showStatus('URL Pengaturan berhasil disimpan!', 'success');
-      toggleSettings();
-    }
-
-    async function pasteFromClipboard() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById('inputText').value = text;
-        updateCharCount();
-        showStatus('Teks berhasil ditempel dari clipboard!', 'info');
-      } catch (err) { alert('Gagal membaca clipboard.'); }
-    }
-
-    function hapusWebDanSheet() {
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      document.getElementById('inputText').value = '';
-      updateCharCount();
-      closeModal();
-      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
-      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: "clearSheet", sheetName: currentTab }) })
-      .then(() => showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error'))
-      .finally(() => setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS'));
-    }
-
-    function sendToSheet() {
-      const text = document.getElementById('inputText').value;
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      if (!text.trim()) return showStatus('Isi teks terlebih dahulu!', 'error');
-
-      setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
-      hideStatus();
-      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, sheetName: currentTab }) })
-      .then(() => { showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); setTimeout(fetchFormatOnly, 1200); })
-      .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
-    }
-
-    function fetchFormatOnly() {
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      setLoading(true, 'fetchBtn', null, null);
-      showStatus(`Memuat format dari ${currentTab}...`, 'info');
-      fetch(url, { method: 'POST', redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "getFormat", sheetName: currentTab }) })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.isiA1 !== undefined) {
-          document.getElementById('modalTabTitle').textContent = currentTab;
-          displayFormatResult(data);
-          openModal();
-          showStatus(`Format ${currentTab} dimuat!`, 'success');
-        }
-      })
-      .finally(() => setLoading(false, 'fetchBtn', null, null));
-    }
-
-    function displayFormatResult(data) {
-      document.getElementById('boxA1').textContent = data.isiA1 || '-';
-      const wrapA2 = document.getElementById('wrapperA2');
-      if (data.adaWithdrawDiatas100Jt) { wrapA2.classList.remove('hidden'); document.getElementById('boxA2').textContent = data.isiA2; } else wrapA2.classList.add('hidden');
-      const wrapA3 = document.getElementById('wrapperA3');
-      if (data.adaWithdrawDiatas50Jt) { wrapA3.classList.remove('hidden'); document.getElementById('boxA3').textContent = data.isiA3; } else wrapA3.classList.add('hidden');
-    }
-
-    function openModal() {
-      const modal = document.getElementById('resultModal');
-      modal.classList.remove('hidden');
-      setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('modalContent').classList.remove('scale-95'); }, 10);
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('resultModal');
-      modal.classList.add('opacity-0');
-      document.getElementById('modalContent').classList.add('scale-95');
-      setTimeout(() => modal.classList.add('hidden'), 200);
-    }
-
-    function copyToClipboard(boxId, toastId) {
-      navigator.clipboard.writeText(document.getElementById(boxId).textContent).then(() => {
-        const toast = document.getElementById(toastId);
-        toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 2000);
-      });
-    }
-
-    function setLoading(isLoading, btnId, textId, htmlContent) {
-      const btn = document.getElementById(btnId);
-      btn.disabled = isLoading;
-      if (isLoading) btn.classList.add('opacity-75', 'cursor-not-allowed');
-      else btn.classList.remove('opacity-75', 'cursor-not-allowed');
-      if (textId) document.getElementById(textId).innerHTML = htmlContent;
-    }
-
-    function showStatus(msg, type) {
-      const box = document.getElementById('statusBox');
-      box.classList.remove('hidden', 'bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700', 'bg-rose-900/40', 'text-rose-300', 'border-rose-700', 'bg-sky-900/40', 'text-sky-300', 'border-sky-700');
-      box.classList.add('border');
-      let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
-      box.classList.add(type === 'success' ? 'bg-emerald-900/40' : (type === 'error' ? 'bg-rose-900/40' : 'bg-sky-900/40'));
-      box.innerHTML = `${icon} <span>${msg}</span>`;
-    }
-
-    function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
-
-
-    // ================= SKRIP CATUR 1V1 SUPABASE REALTIME =================
+    // --- KONFIGURASI SUPABASE ---
     const SUPABASE_URL = 'https://keadrtohkrjoltcissqj.supabase.co';
     const SUPABASE_KEY = 'sb_publishable__dXhUS3eSgSx6Op3hVIYpQ_IKMhqMos';
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const roomChannel = client.channel('catur-room-1v1', {
+    const roomChannel = client.channel('stickman-room-1v1', {
       config: { broadcast: { self: true } }
     });
 
-    let board = null;
-    let game = new Chess();
-    let myRole = 'spectator'; // 'white', 'black', 'spectator'
-    let roomState = { white: false, black: false };
-    const processedMessages = new Set(); // Melacak pesan unik agar tidak terjadi ganda/dobel
+    let myRole = 'spectator'; // 'p1', 'p2', 'spectator'
+    let roomState = { p1: false, p2: false };
+    const processedMessages = new Set();
 
-    let chessConfig = {
-      draggable: true,
-      position: 'start',
-      pieceTheme: 'https://raw.githubusercontent.com/oakmac/chessboardjs/master/website/img/chesspieces/wikipedia/{piece}.png',
-      onDragStart: onDragStart,
-      onDrop: onDrop,
-      onSnapEnd: onSnapEnd
+    // --- SETUP CANVAS GAME ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const GROUND_Y = 230;
+
+    // Data Karakter Stickman
+    let players = {
+      p1: { x: 80, y: GROUND_Y, vx: 0, vy: 0, isGrounded: true, isAttacking: false, health: 100, color: '#f43f5e', name: 'Pemain 1' },
+      p2: { x: 380, y: GROUND_Y, vx: 0, vy: 0, isGrounded: true, isAttacking: false, health: 100, color: '#38bdf8', name: 'Pemain 2' }
     };
-    board = Chessboard('board', chessConfig);
 
-    // --- KONEKSI CHANNEL SUPABASE ---
+    let keysPressed = {};
+
+    // --- LOGIKA UTAMA & ANIMASI ENGINE ---
+    document.addEventListener('keydown', (e) => {
+      keysPressed[e.key.toLowerCase()] = true;
+      handleAttackInput(e.key.toLowerCase());
+    });
+
+    document.addEventListener('keyup', (e) => {
+      keysPressed[e.key.toLowerCase()] = false;
+    });
+
+    function handleAttackInput(key) {
+      if (myRole === 'p1' && key === 'f' && !players.p1.isAttacking) {
+        players.p1.isAttacking = true;
+        checkHit('p1', 'p2');
+        setTimeout(() => { players.p1.isAttacking = false; }, 200);
+      }
+      if (myRole === 'p2' && key === 'l' && !players.p2.isAttacking) {
+        players.p2.isAttacking = true;
+        checkHit('p2', 'p1');
+        setTimeout(() => { players.p2.isAttacking = false; }, 200);
+      }
+    }
+
+    function checkHit(attackerKey, defenderKey) {
+      const atk = players[attackerKey];
+      const def = players[defenderKey];
+
+      // Jarak jangkauan pukulan
+      const distance = Math.abs(atk.x - def.x);
+      if (distance < 55 && Math.abs(atk.y - def.y) < 30) {
+        def.health = Math.max(0, def.health - 10);
+        
+        // Broadcast kena pukulan
+        roomChannel.send({
+          type: 'broadcast',
+          event: 'player_hit',
+          payload: { defender: defenderKey, health: def.health }
+        });
+      }
+    }
+
+    function updatePhysics() {
+      // Pergerakan Pemain 1
+      if (myRole === 'p1' && players.p1.health > 0) {
+        if (keysPressed['a']) players.p1.x = Math.max(20, players.p1.x - 3);
+        if (keysPressed['d']) players.p1.x = Math.min(440, players.p1.x + 3);
+        if (keysPressed['w'] && players.p1.isGrounded) {
+          players.p1.vy = -9;
+          players.p1.isGrounded = false;
+        }
+      }
+
+      // Pergerakan Pemain 2
+      if (myRole === 'p2' && players.p2.health > 0) {
+        if (keysPressed['arrowleft']) players.p2.x = Math.max(20, players.p2.x - 3);
+        if (keysPressed['arrowright']) players.p2.x = Math.min(440, players.p2.x + 3);
+        if (keysPressed['arrowup'] && players.p2.isGrounded) {
+          players.p2.vy = -9;
+          players.p2.isGrounded = false;
+        }
+      }
+
+      // Gravitasi Pemain
+      ['p1', 'p2'].forEach(pKey => {
+        let p = players[pKey];
+        if (!p.isGrounded) {
+          p.vy += 0.5; // gravitasi
+          p.y += p.vy;
+          if (p.y >= GROUND_Y) {
+            p.y = GROUND_Y;
+            p.vy = 0;
+            p.isGrounded = true;
+          }
+        }
+      });
+
+      // Siarkan koordinat posisi ke Supabase jika peran aktif
+      if (myRole !== 'spectator') {
+        roomChannel.send({
+          type: 'broadcast',
+          event: 'sync_pos',
+          payload: { role: myRole, x: players[myRole].x, y: players[myRole].y, isAttacking: players[myRole].isAttacking }
+        });
+      }
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Gambar Pijakan Ring
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(0, GROUND_Y + 10, canvas.width, canvas.height - GROUND_Y);
+      ctx.strokeStyle = '#64748b';
+      ctx.strokeRect(0, GROUND_Y + 10, canvas.width, 2);
+
+      // Gambar Kedua Stickman
+      drawStickman(players.p1, players.p1.x < players.p2.x ? 1 : -1);
+      drawStickman(players.p2, players.p2.x < players.p1.x ? 1 : -1);
+
+      // Gambar Health Bar di Atas
+      drawHealthBar(15, 15, 160, 12, players.p1.health, '#f43f5e', '🔴 P1');
+      drawHealthBar(285, 15, 160, 12, players.p2.health, '#38bdf8', '🔵 P2');
+
+      // Cek Kondisi Menang / KO
+      if (players.p1.health <= 0) drawKO('PEMAIN 2 MENANG!');
+      else if (players.p2.health <= 0) drawKO('PEMAIN 1 MENANG!');
+    }
+
+    function drawStickman(p, dir) {
+      if (p.health <= 0) {
+        // Tampilan Stickman Kalah (Tergeletak)
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y + 5, 8, 0, Math.PI * 2);
+        ctx.moveTo(p.x - 8, p.y + 5); ctx.lineTo(p.x + 20, p.y + 5);
+        ctx.stroke();
+        return;
+      }
+
+      ctx.strokeStyle = p.color;
+      ctx.fillStyle = p.color;
+      ctx.lineWidth = 3;
+
+      // Kepala
+      ctx.beginPath();
+      ctx.arc(p.x, p.y - 35, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Badan
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - 27);
+      ctx.lineTo(p.x, p.y - 10);
+      ctx.stroke();
+
+      // Kaki
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - 10); ctx.lineTo(p.x - 8, p.y);
+      ctx.moveTo(p.x, p.y - 10); ctx.lineTo(p.x + 8, p.y);
+      ctx.stroke();
+
+      // Tangan & Animasi Pukul
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y - 22);
+      if (p.isAttacking) {
+        // Tangan Memanjang Memukul
+        ctx.lineTo(p.x + (dir * 28), p.y - 22);
+        // Efek Pukulan
+        ctx.arc(p.x + (dir * 30), p.y - 22, 4, 0, Math.PI * 2);
+      } else {
+        ctx.lineTo(p.x - 8, p.y - 14);
+        ctx.moveTo(p.x, p.y - 22);
+        ctx.lineTo(p.x + 8, p.y - 14);
+      }
+      ctx.stroke();
+    }
+
+    function drawHealthBar(x, y, w, h, health, color, label) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, (health / 100) * w, h);
+      ctx.strokeStyle = '#475569';
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '10px Inter, sans-serif';
+      ctx.fillText(label, x, y - 4);
+    }
+
+    function drawKO(winnerText) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 20px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(winnerText, canvas.width / 2, canvas.height / 2);
+      ctx.textAlign = 'start';
+    }
+
+    function gameLoop() {
+      updatePhysics();
+      render();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // --- KONEKSI SUPABASE REALTIME ---
     roomChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
-        document.getElementById('statusGame').textContent = 'Terhubung ke Supabase! Pilih Peran.';
+        document.getElementById('statusGame').textContent = 'Terhubung ke Supabase Arena! Pilih slot Pemain.';
         roomChannel.send({ type: 'broadcast', event: 'request_state', payload: {} });
       }
     });
 
-    // Menerima siaran (broadcast) dari Supabase
-    roomChannel.on('broadcast', { event: 'chess_move' }, ({ payload }) => {
-      game.load(payload.fen);
-      board.position(payload.fen);
-      updateChessStatus();
+    roomChannel.on('broadcast', { event: 'sync_pos' }, ({ payload }) => {
+      if (payload.role !== myRole && players[payload.role]) {
+        players[payload.role].x = payload.x;
+        players[payload.role].y = payload.y;
+        players[payload.role].isAttacking = payload.isAttacking;
+      }
+    });
+
+    roomChannel.on('broadcast', { event: 'player_hit' }, ({ payload }) => {
+      if (players[payload.defender]) {
+        players[payload.defender].health = payload.health;
+      }
     });
 
     roomChannel.on('broadcast', { event: 'player_join' }, ({ payload }) => {
       updateLobbyUI(payload.role, true);
     });
 
-    // Menerima siaran chat realtime dengan filter ID unik
     roomChannel.on('broadcast', { event: 'chat_msg' }, ({ payload }) => {
       addChatMessage(payload.sender, payload.message, payload.id);
     });
@@ -443,99 +339,58 @@
       }
     });
 
-    roomChannel.on('broadcast', { event: 'reset_room' }, () => {
-      game.reset();
-      board.start();
+    roomChannel.on('broadcast', { event: 'reset_game' }, () => {
+      players.p1.x = 80; players.p1.y = GROUND_Y; players.p1.health = 100;
+      players.p2.x = 380; players.p2.y = GROUND_Y; players.p2.health = 100;
       myRole = 'spectator';
-      roomState = { white: false, black: false };
+      roomState = { p1: false, p2: false };
       document.getElementById('playerRoleBadge').textContent = 'Penonton';
-      document.getElementById('playerRoleBadge').className = 'bg-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
-      document.getElementById('labelWhite').textContent = 'Kosong';
-      document.getElementById('btnJoinWhite').disabled = false;
-      document.getElementById('btnJoinWhite').classList.remove('opacity-50', 'cursor-not-allowed');
-      document.getElementById('labelBlack').textContent = 'Kosong';
-      document.getElementById('btnJoinBlack').disabled = false;
-      document.getElementById('btnJoinBlack').classList.remove('opacity-50', 'cursor-not-allowed');
-      board.orientation('white');
-      updateChessStatus();
-      addChatMessage('Sistem', '🔄 Game di-reset oleh pemain.', 'sys-' + Date.now());
+      document.getElementById('labelP1').textContent = 'Kosong';
+      document.getElementById('btnJoinP1').disabled = false;
+      document.getElementById('labelP2').textContent = 'Kosong';
+      document.getElementById('btnJoinP2').disabled = false;
+      addChatMessage('Sistem', '🔄 Game di-reset untuk rematch!', 'sys-' + Date.now());
     });
 
     function joinRole(role) {
-      if (myRole !== 'spectator') return alert('Anda sudah memilih peran!');
-      if (role === 'white' && roomState.white) return alert('Pemain Putih sudah terisi!');
-      if (role === 'black' && roomState.black) return alert('Pemain Hitam sudah terisi!');
+      if (myRole !== 'spectator') return alert('Anda sudah memilih slot!');
+      if (role === 'p1' && roomState.p1) return alert('Pemain 1 sudah terisi!');
+      if (role === 'p2' && roomState.p2) return alert('Pemain 2 sudah terisi!');
 
       myRole = role;
       updateLobbyUI(role, true);
 
-      document.getElementById('playerRoleBadge').textContent = role === 'white' ? 'Pemain Putih' : 'Pemain Hitam';
-      document.getElementById('playerRoleBadge').className = role === 'white' ? 'bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase' : 'bg-slate-100 text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
-
-      if (role === 'black') board.orientation('black');
+      document.getElementById('playerRoleBadge').textContent = role === 'p1' ? 'Pemain 1 (Kiri)' : 'Pemain 2 (Kanan)';
+      document.getElementById('playerRoleBadge').className = role === 'p1' ? 'bg-rose-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase' : 'bg-sky-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
 
       roomChannel.send({ type: 'broadcast', event: 'player_join', payload: { role: role } });
     }
 
     function updateLobbyUI(role, isTaken) {
-      if (role === 'white') {
-        roomState.white = isTaken;
-        document.getElementById('labelWhite').textContent = isTaken ? 'Terisi' : 'Kosong';
-        document.getElementById('btnJoinWhite').disabled = isTaken;
-        if(isTaken) document.getElementById('btnJoinWhite').classList.add('opacity-50', 'cursor-not-allowed');
-      } else if (role === 'black') {
-        roomState.black = isTaken;
-        document.getElementById('labelBlack').textContent = isTaken ? 'Terisi' : 'Kosong';
-        document.getElementById('btnJoinBlack').disabled = isTaken;
-        if(isTaken) document.getElementById('btnJoinBlack').classList.add('opacity-50', 'cursor-not-allowed');
+      if (role === 'p1') {
+        roomState.p1 = isTaken;
+        document.getElementById('labelP1').textContent = isTaken ? 'Terisi' : 'Kosong';
+        document.getElementById('btnJoinP1').disabled = isTaken;
+      } else if (role === 'p2') {
+        roomState.p2 = isTaken;
+        document.getElementById('labelP2').textContent = isTaken ? 'Terisi' : 'Kosong';
+        document.getElementById('btnJoinP2').disabled = isTaken;
       }
     }
 
-    function onDragStart(source, piece, position, orientation) {
-      if (game.game_over()) return false;
-      if ((myRole === 'white' && piece.search(/^b/) !== -1) ||
-          (myRole === 'black' && piece.search(/^w/) !== -1) ||
-          myRole === 'spectator') {
-        return false;
-      }
+    function resetGame() {
+      if (!confirm('Yakin ingin mereset pertandingan?')) return;
+      roomChannel.send({ type: 'broadcast', event: 'reset_game', payload: {} });
     }
 
-    function onDrop(source, target) {
-      let move = game.move({ from: source, to: target, promotion: 'q' });
-      if (move === null) return 'snapback';
-
-      roomChannel.send({
-        type: 'broadcast',
-        event: 'chess_move',
-        payload: { fen: game.fen() }
-      });
-
-      updateChessStatus();
-    }
-
-    function onSnapEnd() { board.position(game.fen()); }
-
-    function updateChessStatus() {
-      let turno = game.turn() === 'w' ? 'Putih' : 'Hitam';
-      let status = `Giliran Pemain: ${turno}`;
-      if (game.in_checkmate()) status = `Game Over, ${turno} skakmat!`;
-      document.getElementById('statusGame').textContent = status;
-    }
-
-    function resetGameRoom() {
-      if (!confirm('Yakin ingin mereset permainan?')) return;
-      roomChannel.send({ type: 'broadcast', event: 'reset_room', payload: {} });
-    }
-
-    // --- FITUR CHAT REALTIME TANPA DOBEL ---
+    // --- CHAT SYSTEM ---
     function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const msg = input.value.trim();
       if (!msg) return;
 
-      let senderName = myRole === 'white' ? 'Putih' : (myRole === 'black' ? 'Hitam' : 'Penonton');
+      let senderName = myRole === 'p1' ? 'P1 (Kiri)' : (myRole === 'p2' ? 'P2 (Kanan)' : 'Penonton');
       
-      // Kirim siaran ke Supabase dilengkapi ID unik berbasis timestamp + angka acak
       roomChannel.send({
         type: 'broadcast',
         event: 'chat_msg',
@@ -546,14 +401,13 @@
     }
 
     function addChatMessage(sender, message, msgId) {
-      // Tolak penambahan pesan jika ID pesan sudah pernah diproses/ditampilkan
       if (msgId && processedMessages.has(msgId)) return;
       if (msgId) processedMessages.add(msgId);
 
       const container = document.getElementById('chatMessages');
       const msgDiv = document.createElement('div');
       
-      let badgeColor = sender === 'Putih' ? 'text-emerald-400 font-bold' : (sender === 'Hitam' ? 'text-sky-400 font-bold' : 'text-amber-400 font-bold');
+      let badgeColor = sender === 'P1 (Kiri)' ? 'text-rose-400 font-bold' : (sender === 'P2 (Kanan)' ? 'text-sky-400 font-bold' : 'text-amber-400 font-bold');
       msgDiv.innerHTML = `<span class="${badgeColor}">${sender}:</span> <span class="text-slate-200">${escapeHtml(message)}</span>`;
       
       container.appendChild(msgDiv);
@@ -565,6 +419,9 @@
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s];
       });
     }
+
+    // Jalankan Game Loop Loop
+    gameLoop();
   </script>
 </body>
 </html>
