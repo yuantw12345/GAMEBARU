@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORMAT CEK TRANSAKSI & CATUR REALTIME FIREBASE</title>
+  <title>FORMAT CEK TRANSAKSI & CATUR REALTIME SUPABASE</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -13,9 +13,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
   <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
-  <!-- Firebase SDK (Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     body { font-family: 'Inter', sans-serif; }
@@ -117,7 +116,7 @@
 
     </div>
 
-    <!-- ================= SECTION CATUR 1V1 FIREBASE REALTIME ================= -->
+    <!-- ================= SECTION CATUR 1V1 SUPABASE REALTIME ================= -->
     <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 flex flex-col items-center">
       
       <!-- Header Room -->
@@ -127,8 +126,8 @@
             <i class="fa-solid fa-chess text-2xl"></i>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-white">Lobby Catur 1v1 (Firebase)</h2>
-            <p id="statusGame" class="text-xs text-indigo-400">Menghubungkan ke database...</p>
+            <h2 class="text-lg font-bold text-white">Lobby Catur 1v1 (Supabase)</h2>
+            <p id="statusGame" class="text-xs text-indigo-400">Menghubungkan ke Supabase...</p>
           </div>
         </div>
         <div class="text-right">
@@ -389,17 +388,19 @@
     function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
 
 
-    // ================= SKRIP CATUR 1V1 REALTIME (MENGGUNAKAN FIREBASE) =================
-    // Menggunakan database publik publik bawaan gratis dari Firebase demo/public instance
-    const firebaseConfig = {
-      databaseURL: "https://catur-realtime-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // ================= SKRIP CATUR 1V1 SUPABASE REALTIME =================
+    const SUPABASE_URL = 'https://keadrtohkrjoltcissqj.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable__dXhUS3eSgSx6Op3hVIYpQ_IKMhqMos';
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const roomChannel = client.channel('catur-room-1v1', {
+      config: { broadcast: { self: true } }
+    });
 
     let board = null;
     let game = new Chess();
     let myRole = 'spectator'; // 'white', 'black', 'spectator'
+    let roomState = { white: false, black: false };
 
     let chessConfig = {
       draggable: true,
@@ -411,71 +412,82 @@
     };
     board = Chessboard('board', chessConfig);
 
-    // --- SYNC ROOM DARI FIREBASE ---
-    db.ref('room/players').on('value', (snapshot) => {
-      const players = snapshot.val() || {};
-      
-      // Update Slot Putih
-      if (players.white) {
-        document.getElementById('labelWhite').textContent = 'Terisi';
-        document.getElementById('btnJoinWhite').disabled = true;
-        document.getElementById('btnJoinWhite').classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        document.getElementById('labelWhite').textContent = 'Kosong';
-        document.getElementById('btnJoinWhite').disabled = false;
-        document.getElementById('btnJoinWhite').classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-
-      // Update Slot Hitam
-      if (players.black) {
-        document.getElementById('labelBlack').textContent = 'Terisi';
-        document.getElementById('btnJoinBlack').disabled = true;
-        document.getElementById('btnJoinBlack').classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        document.getElementById('labelBlack').textContent = 'Kosong';
-        document.getElementById('btnJoinBlack').disabled = false;
-        document.getElementById('btnJoinBlack').classList.remove('opacity-50', 'cursor-not-allowed');
+    // --- KONEKSI CHANNEL SUPABASE ---
+    roomChannel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        document.getElementById('statusGame').textContent = 'Terhubung ke Supabase! Pilih Peran.';
+        // Minta status room terbaru dari pemain lain
+        roomChannel.send({ type: 'broadcast', event: 'request_state', payload: {} });
       }
     });
 
-    // --- SYNC PAPAN CATUR ---
-    db.ref('room/game/fen').on('value', (snapshot) => {
-      const fen = snapshot.val();
-      if (fen) {
-        game.load(fen);
-        board.position(fen);
-        updateChessStatus();
+    // Menerima siaran (broadcast) dari Supabase
+    roomChannel.on('broadcast', { event: 'chess_move' }, ({ payload }) => {
+      game.load(payload.fen);
+      board.position(payload.fen);
+      updateChessStatus();
+    });
+
+    roomChannel.on('broadcast', { event: 'player_join' }, ({ payload }) => {
+      updateLobbyUI(payload.role, true);
+    });
+
+    roomChannel.on('broadcast', { event: 'chat_msg' }, ({ payload }) => {
+      addChatMessage(payload.sender, payload.message);
+    });
+
+    roomChannel.on('broadcast', { event: 'request_state' }, () => {
+      if (myRole !== 'spectator') {
+        roomChannel.send({ type: 'broadcast', event: 'player_join', payload: { role: myRole } });
       }
     });
 
-    // --- SYNC CHAT ---
-    db.ref('room/chats').limitToLast(20).on('child_added', (snapshot) => {
-      const chat = snapshot.val();
-      if (chat) {
-        addChatMessage(chat.sender, chat.message);
-      }
+    roomChannel.on('broadcast', { event: 'reset_room' }, () => {
+      game.reset();
+      board.start();
+      myRole = 'spectator';
+      roomState = { white: false, black: false };
+      document.getElementById('playerRoleBadge').textContent = 'Penonton';
+      document.getElementById('playerRoleBadge').className = 'bg-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
+      document.getElementById('labelWhite').textContent = 'Kosong';
+      document.getElementById('btnJoinWhite').disabled = false;
+      document.getElementById('btnJoinWhite').classList.remove('opacity-50', 'cursor-not-allowed');
+      document.getElementById('labelBlack').textContent = 'Kosong';
+      document.getElementById('btnJoinBlack').disabled = false;
+      document.getElementById('btnJoinBlack').classList.remove('opacity-50', 'cursor-not-allowed');
+      board.orientation('white');
+      updateChessStatus();
+      addChatMessage('Sistem', '🔄 Game di-reset oleh pemain.');
     });
 
     function joinRole(role) {
       if (myRole !== 'spectator') return alert('Anda sudah memilih peran!');
-      
-      db.ref(`room/players/${role}`).transaction((current) => {
-        if (current) {
-          return; // Sudah terisi
-        }
-        return true;
-      }, (error, committed) => {
-        if (committed) {
-          myRole = role;
-          document.getElementById('playerRoleBadge').textContent = role === 'white' ? 'Pemain Putih' : 'Pemain Hitam';
-          document.getElementById('playerRoleBadge').className = role === 'white' ? 'bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase' : 'bg-slate-100 text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
+      if (role === 'white' && roomState.white) return alert('Pemain Putih sudah terisi!');
+      if (role === 'black' && roomState.black) return alert('Pemain Hitam sudah terisi!');
 
-          if (role === 'black') board.orientation('black');
-          alert(`Berhasil masuk sebagai pemain ${role === 'white' ? 'Putih' : 'Hitam'}!`);
-        } else {
-          alert('Maaf, slot warna tersebut sudah dipilih pemain lain!');
-        }
-      });
+      myRole = role;
+      updateLobbyUI(role, true);
+
+      document.getElementById('playerRoleBadge').textContent = role === 'white' ? 'Pemain Putih' : 'Pemain Hitam';
+      document.getElementById('playerRoleBadge').className = role === 'white' ? 'bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase' : 'bg-slate-100 text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
+
+      if (role === 'black') board.orientation('black');
+
+      roomChannel.send({ type: 'broadcast', event: 'player_join', payload: { role: role } });
+    }
+
+    function updateLobbyUI(role, isTaken) {
+      if (role === 'white') {
+        roomState.white = isTaken;
+        document.getElementById('labelWhite').textContent = isTaken ? 'Terisi' : 'Kosong';
+        document.getElementById('btnJoinWhite').disabled = isTaken;
+        if(isTaken) document.getElementById('btnJoinWhite').classList.add('opacity-50', 'cursor-not-allowed');
+      } else if (role === 'black') {
+        roomState.black = isTaken;
+        document.getElementById('labelBlack').textContent = isTaken ? 'Terisi' : 'Kosong';
+        document.getElementById('btnJoinBlack').disabled = isTaken;
+        if(isTaken) document.getElementById('btnJoinBlack').classList.add('opacity-50', 'cursor-not-allowed');
+      }
     }
 
     function onDragStart(source, piece, position, orientation) {
@@ -491,8 +503,12 @@
       let move = game.move({ from: source, to: target, promotion: 'q' });
       if (move === null) return 'snapback';
 
-      // Simpan posisi terbaru ke Firebase
-      db.ref('room/game/fen').set(game.fen());
+      roomChannel.send({
+        type: 'broadcast',
+        event: 'chess_move',
+        payload: { fen: game.fen() }
+      });
+
       updateChessStatus();
     }
 
@@ -506,16 +522,8 @@
     }
 
     function resetGameRoom() {
-      if (!confirm('Yakin ingin mereset permainan dan mengosongkan room?')) return;
-      game.reset();
-      db.ref('room/game/fen').set(game.fen());
-      db.ref('room/players').set(null);
-      myRole = 'spectator';
-      document.getElementById('playerRoleBadge').textContent = 'Penonton';
-      document.getElementById('playerRoleBadge').className = 'bg-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
-      board.orientation('white');
-      board.start();
-      alert('Room berhasil direset!');
+      if (!confirm('Yakin ingin mereset permainan?')) return;
+      roomChannel.send({ type: 'broadcast', event: 'reset_room', payload: {} });
     }
 
     // --- FITUR CHAT ---
@@ -526,10 +534,11 @@
 
       let senderName = myRole === 'white' ? 'Putih' : (myRole === 'black' ? 'Hitam' : 'Penonton');
       
-      db.ref('room/chats').push({
-        sender: senderName,
-        message: msg,
-        time: Date.now()
+      addChatMessage(senderName, msg);
+      roomChannel.send({
+        type: 'broadcast',
+        event: 'chat_msg',
+        payload: { sender: senderName, message: msg }
       });
 
       input.value = '';
@@ -551,15 +560,6 @@
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s];
       });
     }
-
-    // Status koneksi firebase
-    db.ref('.info/connected').on('value', (snap) => {
-      if (snap.val() === true) {
-        document.getElementById('statusGame').textContent = 'Terhubung ke Database! Pilih Peran.';
-      } else {
-        document.getElementById('statusGame').textContent = 'Menghubungkan ulang...';
-      }
-    });
   </script>
 </body>
 </html>
