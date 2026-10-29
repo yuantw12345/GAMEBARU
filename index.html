@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORMAT CEK TRANSAKSI & CATUR REALTIME</title>
+  <title>FORMAT CEK TRANSAKSI & CATUR REALTIME MULTIPLAYER</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -115,24 +115,80 @@
 
     </div>
 
-    <!-- ================= SECTION TAMBAHAN: MAIN CATUR REALTIME ================= -->
+    <!-- ================= SECTION CATUR REALTIME MULTIPLAYER ================= -->
     <div class="bg-slate-800 border border-slate-700 shadow-xl rounded-2xl p-6 md:p-8 flex flex-col items-center">
-      <div class="flex items-center space-x-3 w-full border-b border-slate-700 pb-4 mb-4">
-        <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl">
-          <i class="fa-solid fa-chess text-2xl"></i>
+      
+      <!-- Header Room -->
+      <div class="flex items-center justify-between w-full border-b border-slate-700 pb-4 mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl">
+            <i class="fa-solid fa-chess text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Lobby Catur 1v1</h2>
+            <p id="statusGame" class="text-xs text-indigo-400">Menghubungkan ke server...</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-lg font-bold text-white">Main Catur Realtime</h2>
-          <p id="statusGame" class="text-xs text-indigo-400">Menghubungkan ke server Pusher...</p>
+        <div class="text-right">
+          <span id="playerRoleBadge" class="bg-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Penonton</span>
         </div>
       </div>
 
-      <!-- Papan Catur Container -->
-      <div id="board" class="w-full max-w-[320px] mb-4"></div>
+      <!-- PANEL PILIH PERAN & PLAYER (LOBBY) -->
+      <div id="lobbyPanel" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 mb-4 space-y-3">
+        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider text-center">Pilih Warna Bidak Anda (Maks. 2 Pemain)</h3>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Slot Pemain Putih -->
+          <div id="slotWhite" class="bg-slate-800 border border-slate-700 p-3 rounded-lg flex flex-col items-center justify-center text-center space-y-2">
+            <span class="text-xs font-semibold text-slate-200">⚪ Pemain Putih</span>
+            <span id="labelWhite" class="text-[11px] text-slate-400 italic">Kosong</span>
+            <button id="btnJoinWhite" onclick="joinRole('white')" class="text-xs bg-indigo-600 hover:bg-indigo-500 font-bold px-3 py-1.5 rounded-lg text-white transition w-full">Pilih Putih</button>
+          </div>
 
-      <div class="text-xs text-slate-400 text-center bg-slate-900 border border-slate-700 p-3 rounded-xl w-full">
-        Geser bidak catur Anda, kawan Anda di perangkat/tab lain akan langsung melihat pergerakannya secara instan!
+          <!-- Slot Pemain Hitam -->
+          <div id="slotBlack" class="bg-slate-800 border border-slate-700 p-3 rounded-lg flex flex-col items-center justify-center text-center space-y-2">
+            <span class="text-xs font-semibold text-slate-200">⚫ Pemain Hitam</span>
+            <span id="labelBlack" class="text-[11px] text-slate-400 italic">Kosong</span>
+            <button id="btnJoinBlack" onclick="joinRole('black')" class="text-xs bg-slate-700 hover:bg-slate-600 font-bold px-3 py-1.5 rounded-lg text-white transition w-full">Pilih Hitam</button>
+          </div>
+        </div>
+
+        <button id="btnStartGame" onclick="startGame()" disabled class="w-full bg-emerald-600 opacity-50 cursor-not-allowed font-bold text-xs text-white py-2.5 rounded-lg transition shadow-lg">
+          GAS BERMAIN (Menunggu 2 Pemain)
+        </button>
       </div>
+
+      <!-- CONTAINER BOARD CATUR & CHAT (Side-by-side) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+        
+        <!-- Papan Catur -->
+        <div class="md:col-span-2 flex flex-col items-center justify-center bg-slate-900 border border-slate-700 p-3 rounded-xl">
+          <div id="board" class="w-full max-w-[300px]"></div>
+        </div>
+
+        <!-- KOLOM CHAT REALTIME -->
+        <div class="flex flex-col bg-slate-900 border border-slate-700 rounded-xl h-[340px] overflow-hidden">
+          <div class="bg-slate-800 px-3 py-2 border-b border-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-comments text-indigo-400"></i> Obrolan Room
+          </div>
+
+          <!-- Pesan Chat -->
+          <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-2 text-xs font-sans">
+            <div class="text-[11px] text-slate-500 italic text-center">Selamat datang di Room Catur! Silakan mengobrol.</div>
+          </div>
+
+          <!-- Input Chat -->
+          <div class="p-2 border-t border-slate-700 bg-slate-800/50 flex gap-1.5">
+            <input type="text" id="chatInput" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="Ketik pesan..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <button onclick="sendChatMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
   </div>
@@ -154,7 +210,6 @@
 
       <!-- Modal Body -->
       <div class="p-6 space-y-4 overflow-y-auto">
-        <!-- Format A1 -->
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
             <span>Format Standar (A1):</span>
@@ -165,7 +220,6 @@
           <div id="boxA1" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
-        <!-- Format A2 (WD > 100Jt) -->
         <div id="wrapperA2" class="hidden bg-slate-900 border border-amber-700/50 rounded-xl p-4 space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
             <span>Format WD Di Atas 100Jt (A2):</span>
@@ -176,7 +230,6 @@
           <div id="boxA2" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 whitespace-pre-wrap max-h-32 overflow-y-auto"></div>
         </div>
 
-        <!-- Format A3 (WD > 50Jt) -->
         <div id="wrapperA3" class="hidden bg-slate-900 border border-sky-700/50 rounded-xl p-4 space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
             <span>Format WD Di Atas 50Jt (A3):</span>
@@ -212,22 +265,16 @@
     function switchTab(tabName) {
       currentTab = tabName;
       document.getElementById('currentTabLabel').textContent = tabName;
-      
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.className = "tab-btn py-2 font-bold rounded-lg transition text-slate-400 hover:text-white hover:bg-slate-800";
       });
-
       const activeBtn = document.getElementById(`tab-${tabName}`);
-      if (activeBtn) {
-        activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
-      }
-
+      if (activeBtn) activeBtn.className = "tab-btn py-2 font-bold rounded-lg transition bg-emerald-600 text-white shadow";
       showStatus(`Aktif di ${tabName}`, 'info');
     }
 
     function updateCharCount() {
-      const text = document.getElementById('inputText').value;
-      document.getElementById('charCount').textContent = text.length;
+      document.getElementById('charCount').textContent = document.getElementById('inputText').value.length;
     }
 
     function toggleSettings() {
@@ -248,9 +295,7 @@
         document.getElementById('inputText').value = text;
         updateCharCount();
         showStatus('Teks berhasil ditempel dari clipboard!', 'info');
-      } catch (err) {
-        alert('Gagal membaca clipboard.');
-      }
+      } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
     function hapusWebDanSheet() {
@@ -258,67 +303,29 @@
       document.getElementById('inputText').value = '';
       updateCharCount();
       closeModal();
-
       setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
-
-      fetch(url, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: "clearSheet", sheetName: currentTab })
-      })
-      .then(() => {
-        showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error');
-      })
-      .catch(error => {
-        showStatus('Gagal menghapus: ' + error.message, 'error');
-      })
-      .finally(() => {
-        setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS');
-      });
+      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: "clearSheet", sheetName: currentTab }) })
+      .then(() => showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error'))
+      .finally(() => setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS'));
     }
 
     function sendToSheet() {
       const text = document.getElementById('inputText').value;
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-
-      if (!text.trim()) {
-        showStatus('Isi teks terlebih dahulu sebelum mengirim!', 'error');
-        return;
-      }
+      if (!text.trim()) return showStatus('Isi teks terlebih dahulu!', 'error');
 
       setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
       hideStatus();
-
-      fetch(url, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text, sheetName: currentTab })
-      })
-      .then(() => {
-        showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success');
-        setTimeout(fetchFormatOnly, 1200);
-      })
-      .catch(error => {
-        showStatus('Gagal mengirim: ' + error.message, 'error');
-      })
-      .finally(() => {
-        setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi');
-      });
+      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, sheetName: currentTab }) })
+      .then(() => { showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); setTimeout(fetchFormatOnly, 1200); })
+      .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
     }
 
     function fetchFormatOnly() {
       const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       setLoading(true, 'fetchBtn', null, null);
       showStatus(`Memuat format dari ${currentTab}...`, 'info');
-
-      fetch(url, {
-        method: 'POST',
-        redirect: "follow",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "getFormat", sheetName: currentTab })
-      })
+      fetch(url, { method: 'POST', redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "getFormat", sheetName: currentTab }) })
       .then(res => res.json())
       .then(data => {
         if (data && data.isiA1 !== undefined) {
@@ -326,59 +333,34 @@
           displayFormatResult(data);
           openModal();
           showStatus(`Format ${currentTab} dimuat!`, 'success');
-        } else {
-          showStatus('Gagal membaca format.', 'error');
         }
       })
-      .catch(err => {
-        showStatus(`Selesai diproses di ${currentTab}!`, 'success');
-      })
-      .finally(() => {
-        setLoading(false, 'fetchBtn', null, null);
-      });
+      .finally(() => setLoading(false, 'fetchBtn', null, null));
     }
 
     function displayFormatResult(data) {
       document.getElementById('boxA1').textContent = data.isiA1 || '-';
       const wrapA2 = document.getElementById('wrapperA2');
-      if (data.adaWithdrawDiatas100Jt) {
-        wrapA2.classList.remove('hidden');
-        document.getElementById('boxA2').textContent = data.isiA2;
-      } else {
-        wrapA2.classList.add('hidden');
-      }
+      if (data.adaWithdrawDiatas100Jt) { wrapA2.classList.remove('hidden'); document.getElementById('boxA2').textContent = data.isiA2; } else wrapA2.classList.add('hidden');
       const wrapA3 = document.getElementById('wrapperA3');
-      if (data.adaWithdrawDiatas50Jt) {
-        wrapA3.classList.remove('hidden');
-        document.getElementById('boxA3').textContent = data.isiA3;
-      } else {
-        wrapA3.classList.add('hidden');
-      }
+      if (data.adaWithdrawDiatas50Jt) { wrapA3.classList.remove('hidden'); document.getElementById('boxA3').textContent = data.isiA3; } else wrapA3.classList.add('hidden');
     }
 
     function openModal() {
       const modal = document.getElementById('resultModal');
-      const content = document.getElementById('modalContent');
       modal.classList.remove('hidden');
-      setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        content.classList.remove('scale-95');
-        content.classList.add('scale-100');
-      }, 10);
+      setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('modalContent').classList.remove('scale-95'); }, 10);
     }
 
     function closeModal() {
       const modal = document.getElementById('resultModal');
-      const content = document.getElementById('modalContent');
       modal.classList.add('opacity-0');
-      content.classList.remove('scale-100');
-      content.classList.add('scale-95');
-      setTimeout(() => { modal.classList.add('hidden'); }, 200);
+      document.getElementById('modalContent').classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 200);
     }
 
     function copyToClipboard(boxId, toastId) {
-      const text = document.getElementById(boxId).textContent;
-      navigator.clipboard.writeText(text).then(() => {
+      navigator.clipboard.writeText(document.getElementById(boxId).textContent).then(() => {
         const toast = document.getElementById(toastId);
         toast.classList.remove('hidden');
         setTimeout(() => toast.classList.add('hidden'), 2000);
@@ -387,100 +369,38 @@
 
     function setLoading(isLoading, btnId, textId, htmlContent) {
       const btn = document.getElementById(btnId);
-      if (isLoading) {
-        btn.disabled = true;
-        btn.classList.add('opacity-75', 'cursor-not-allowed');
-        if (textId) document.getElementById(textId).innerHTML = htmlContent;
-      } else {
-        btn.disabled = false;
-        btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        if (textId) document.getElementById(textId).innerHTML = htmlContent;
-      }
+      btn.disabled = isLoading;
+      if (isLoading) btn.classList.add('opacity-75', 'cursor-not-allowed');
+      else btn.classList.remove('opacity-75', 'cursor-not-allowed');
+      if (textId) document.getElementById(textId).innerHTML = htmlContent;
     }
 
     function showStatus(msg, type) {
       const box = document.getElementById('statusBox');
       box.classList.remove('hidden', 'bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700', 'bg-rose-900/40', 'text-rose-300', 'border-rose-700', 'bg-sky-900/40', 'text-sky-300', 'border-sky-700');
       box.classList.add('border');
-
-      let icon = '';
-      if (type === 'success') {
-        box.classList.add('bg-emerald-900/40', 'text-emerald-300', 'border-emerald-700');
-        icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
-      } else if (type === 'error') {
-        box.classList.add('bg-rose-900/40', 'text-rose-300', 'border-rose-700');
-        icon = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
-      } else {
-        box.classList.add('bg-sky-900/40', 'text-sky-300', 'border-sky-700');
-        icon = '<i class="fa-solid fa-circle-info text-sky-400"></i>';
-      }
+      let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
+      box.classList.add(type === 'success' ? 'bg-emerald-900/40' : (type === 'error' ? 'bg-rose-900/40' : 'bg-sky-900/40'));
       box.innerHTML = `${icon} <span>${msg}</span>`;
     }
 
-    function hideStatus() {
-      document.getElementById('statusBox').classList.add('hidden');
-    }
+    function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
 
 
-    // --- Skrip Game Catur Realtime (Pusher dengan Public Broadcast Workaround) ---
+    // ================= SKRIP CATUR 1V1 REALTIME & CHAT (PUSHER) =================
     const PUSHER_KEY = '1122180a3c61546c1717';
     const PUSHER_CLUSTER = 'ap1';
 
     let board = null;
     let game = new Chess();
+    let myRole = 'spectator'; // 'white', 'black', 'spectator'
+    let isGameStarted = false;
+    let roomState = { white: false, black: false };
 
-    const pusher = new Pusher(PUSHER_KEY, {
-      cluster: PUSHER_CLUSTER
-    });
-    // Menggunakan event channel publik dengan nama unik agar langsung tembus tanpa auth
-    const channel = pusher.subscribe('public-catur-room-v1');
+    const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
+    const channel = pusher.subscribe('catur-lobby-room');
 
-    function onDragStart (source, piece, position, orientation) {
-      if (game.game_over()) return false;
-    }
-
-    function onDrop (source, target) {
-      let move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q'
-      });
-
-      if (move === null) return 'snapback';
-
-      // Menggunakan event standar publik
-      channel.trigger('client-move', {
-        fen: game.fen()
-      });
-
-      updateChessStatus();
-    }
-
-    function onSnapEnd () {
-      board.position(game.fen());
-    }
-
-    function updateChessStatus() {
-      let status = '';
-      let turno = game.turn() === 'w' ? 'Putih' : 'Hitam';
-      
-      if (game.in_checkmate()) {
-        status = `Game Over, ${turno} skakmat!`;
-      } else if (game.in_draw()) {
-        status = `Game Over, Draw!`;
-      } else {
-        status = `Giliran pemain: ${turno}`;
-      }
-      document.getElementById('statusGame').textContent = status;
-    }
-
-    // Menerima langkah dari perangkat kawan secara realtime
-    channel.bind('client-move', function(data) {
-      game.load(data.fen);
-      board.position(data.fen);
-      updateChessStatus();
-    });
-
+    // Inisialisasi Papan
     let chessConfig = {
       draggable: true,
       position: 'start',
@@ -489,13 +409,141 @@
       onDrop: onDrop,
       onSnapEnd: onSnapEnd
     };
-
     board = Chessboard('board', chessConfig);
-    updateChessStatus();
+
+    function onDragStart(source, piece, position, orientation) {
+      if (!isGameStarted || game.game_over()) return false;
+      // Hanya izinkan menggerakkan bidak sesuai warna peran pemain
+      if ((myRole === 'white' && piece.search(/^b/) !== -1) ||
+          (myRole === 'black' && piece.search(/^w/) !== -1) ||
+          myRole === 'spectator') {
+        return false;
+      }
+    }
+
+    function onDrop(source, target) {
+      let move = game.move({ from: source, to: target, promotion: 'q' });
+      if (move === null) return 'snapback';
+
+      // Kirim gerakan ke Pusher
+      channel.trigger('client-move', { fen: game.fen(), role: myRole });
+      updateChessStatus();
+    }
+
+    function onSnapEnd() { board.position(game.fen()); }
+
+    function updateChessStatus() {
+      let turno = game.turn() === 'w' ? 'Putih' : 'Hitam';
+      let status = isGameStarted ? `Papan Aktif - Giliran: ${turno}` : 'Menunggu Game Dimulai...';
+      if (game.in_checkmate()) status = `Game Over, ${turno} skakmat!`;
+      document.getElementById('statusGame').textContent = status;
+    }
+
+    // --- PILIH SLOT PERAN (WHITE / BLACK) ---
+    function joinRole(role) {
+      if (myRole !== 'spectator') return alert('Anda sudah memilih peran!');
+      myRole = role;
+
+      document.getElementById('playerRoleBadge').textContent = role === 'white' ? 'Pemain Putih' : 'Pemain Hitam';
+      document.getElementById('playerRoleBadge').className = role === 'white' ? 'bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase' : 'bg-slate-100 text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase';
+
+      if (role === 'black') board.orientation('black');
+
+      // Siarkan pilihan slot ke pemain lain
+      channel.trigger('client-room-sync', { role: role, action: 'take_slot' });
+      updateLobbyUI(role, true);
+    }
+
+    function updateLobbyUI(role, isTaken) {
+      if (role === 'white') {
+        roomState.white = isTaken;
+        document.getElementById('labelWhite').textContent = isTaken ? 'Terisi (Pemain 1)' : 'Kosong';
+        document.getElementById('btnJoinWhite').disabled = isTaken;
+        if(isTaken) document.getElementById('btnJoinWhite').classList.add('opacity-50', 'cursor-not-allowed');
+      } else if (role === 'black') {
+        roomState.black = isTaken;
+        document.getElementById('labelBlack').textContent = isTaken ? 'Terisi (Pemain 2)' : 'Kosong';
+        document.getElementById('btnJoinBlack').disabled = isTaken;
+        if(isTaken) document.getElementById('btnJoinBlack').classList.add('opacity-50', 'cursor-not-allowed');
+      }
+
+      // Aktifkan tombol GAS BERMAIN jika 2 slot terisi
+      const startBtn = document.getElementById('btnStartGame');
+      if (roomState.white && roomState.black) {
+        startBtn.disabled = false;
+        startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        startBtn.textContent = 'GAS BERMAIN NOW!';
+      }
+    }
+
+    function startGame() {
+      if (!roomState.white || !roomState.black) return alert('Room butuh 2 pemain (Putih & Hitam)!');
+      channel.trigger('client-start-game', { start: true });
+      initGameStart();
+    }
+
+    function initGameStart() {
+      isGameStarted = true;
+      game.reset();
+      board.start();
+      if(myRole === 'black') board.orientation('black');
+      updateChessStatus();
+      addChatMessage('Sistem', '🚀 Permainan Catur Dimulai! Selamat bertanding.');
+    }
+
+    // --- REALTIME LISTENERS (PUSHER) ---
+    channel.bind('client-move', function(data) {
+      game.load(data.fen);
+      board.position(data.fen);
+      updateChessStatus();
+    });
+
+    channel.bind('client-room-sync', function(data) {
+      updateLobbyUI(data.role, true);
+    });
+
+    channel.bind('client-start-game', function(data) {
+      initGameStart();
+    });
+
+    channel.bind('client-chat', function(data) {
+      addChatMessage(data.sender, data.message);
+    });
 
     pusher.connection.bind('connected', () => {
-      document.getElementById('statusGame').textContent = 'Terhubung! Siap bermain.';
+      document.getElementById('statusGame').textContent = 'Terhubung! Silakan pilih peran.';
     });
+
+    // --- FITUR CHAT REALTIME ---
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      let senderName = myRole === 'white' ? 'Putih' : (myRole === 'black' ? 'Hitam' : 'Penonton');
+      addChatMessage(senderName, msg);
+
+      // Broadcast Chat ke Pusher
+      channel.trigger('client-chat', { sender: senderName, message: msg });
+      input.value = '';
+    }
+
+    function addChatMessage(sender, message) {
+      const container = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      
+      let badgeColor = sender === 'Putih' ? 'text-emerald-400 font-bold' : (sender === 'Hitam' ? 'text-sky-400 font-bold' : 'text-amber-400 font-bold');
+      msgDiv.innerHTML = `<span class="${badgeColor}">${sender}:</span> <span class="text-slate-200">${escapeHtml(message)}</span>`;
+      
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(string) {
+      return String(string).replace(/[&<>"']/g, function (s) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s];
+      });
+    }
   </script>
 </body>
 </html>
