@@ -30,25 +30,6 @@
 </head>
 <body id="bgTarget" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-  <!-- ================= MODAL LOGIN NAMA PEMAIN ================= -->
-  <div id="loginModal" class="fixed inset-0 bg-slate-950/95 z-[60] flex items-center justify-center p-4">
-    <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-2xl max-w-md w-full p-6 text-center space-y-5 modal-animate">
-      <div class="p-4 bg-indigo-500/20 text-indigo-400 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-        <i class="fa-solid fa-user-astronaut text-3xl"></i>
-      </div>
-      <div>
-        <h2 class="text-xl font-bold text-white">Masukkan Nama Pemain</h2>
-        <p class="text-xs text-slate-400 mt-1">Nama ini akan dicatat saat Anda berhasil menjawab soal Family 100 secara realtime.</p>
-      </div>
-      <div class="space-y-3">
-        <input type="text" id="usernameInput" placeholder="Ketik nama / julukan Anda..." class="w-full bg-black border border-slate-700 focus:border-indigo-500 text-white placeholder-slate-500 rounded-xl p-3.5 text-sm text-center focus:outline-none font-semibold">
-        <button onclick="saveUsername()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2">
-          <i class="fa-solid fa-right-to-bracket"></i> Masuk Arena Game
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div class="max-w-3xl w-full space-y-6">
 
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
@@ -151,7 +132,27 @@
     </div>
 
     <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
-    <div class="bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4">
+    <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden">
+      
+      <!-- MODAL LOGIN KHUSUS DI DALAM PANEL GAME -->
+      <div id="loginModal" class="absolute inset-0 bg-slate-950/95 z-20 flex items-center justify-center p-6">
+        <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-xl max-w-sm w-full p-6 text-center space-y-4 modal-animate">
+          <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
+            <i class="fa-solid fa-user-astronaut text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Masukkan Nama Anda</h3>
+            <p class="text-[11px] text-slate-400 mt-1">Agar tebakan benar tercatat di papan skor.</p>
+          </div>
+          <div class="space-y-2.5">
+            <input type="text" id="usernameInput" placeholder="Ketik nama panggilan..." class="w-full bg-black border border-slate-700 focus:border-indigo-500 text-white placeholder-slate-500 rounded-lg p-2.5 text-xs text-center focus:outline-none font-semibold">
+            <button onclick="saveUsername()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold py-2.5 px-3 rounded-lg transition shadow text-xs flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-right-to-bracket"></i> Mulai Main
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="flex items-center justify-between border-b border-indigo-900/50 pb-3 flex-wrap gap-2">
         <div class="flex items-center space-x-2.5">
           <i class="fa-solid fa-gamepad text-indigo-400 text-xl"></i>
@@ -159,14 +160,14 @@
         </div>
         
         <div class="flex items-center gap-2">
-          <!-- Indikator Nama Pemain yang Login -->
-          <div class="bg-indigo-950 border border-indigo-700 text-indigo-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-bold">
+          <!-- Indikator Nama Pemain -->
+          <div class="bg-indigo-950 border border-indigo-700 text-indigo-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1 font-bold">
             <i class="fa-solid fa-user-check text-emerald-400"></i>
             <span id="activePlayerDisplay">Pemain</span>
             <button onclick="changeUsername()" class="text-slate-400 hover:text-white ml-1" title="Ganti Nama"><i class="fa-solid fa-pen-to-square"></i></button>
           </div>
 
-          <!-- Tombol Aksa Game -->
+          <!-- Tombol Aksi Game -->
           <button onclick="revealAllAnswers()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
             <i class="fa-solid fa-eye"></i> Menyerah
           </button>
@@ -305,11 +306,10 @@
       document.getElementById('inputText').addEventListener('input', updateCharCount);
       loadSavedBackground();
 
-      // Cek Nama Pemain
       checkUserLogin();
     });
 
-    // --- SISTEM LOGIN NAMA PEMAIN ---
+    // --- SISTEM LOGIN NAMA PEMAIN (DALAM PANEL GAME) ---
     function checkUserLogin() {
       const savedName = localStorage.getItem('game_username');
       if (savedName) {
@@ -514,7 +514,7 @@
       currentQuestionData.answers.forEach(ans => {
         if (!ans.revealed && ans.text.toLowerCase().includes(guess)) {
           ans.revealed = true;
-          ans.answeredBy = currentPlayerName; // Mencatat nama yang menjawab
+          ans.answeredBy = currentPlayerName;
           found = true;
         }
       });
