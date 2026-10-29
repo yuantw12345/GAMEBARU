@@ -387,7 +387,7 @@
     function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
 
 
-    // ================= SKRIP CATUR 1V1 REALTIME & CHAT (PUSHER) =================
+    // ================= SKRIP CATUR 1V1 REALTIME & CHAT (PUSHER FIX) =================
     const PUSHER_KEY = '1122180a3c61546c1717';
     const PUSHER_CLUSTER = 'ap1';
 
@@ -398,9 +398,9 @@
     let roomState = { white: false, black: false };
 
     const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
-    const channel = pusher.subscribe('catur-lobby-room');
+    // Menggunakan public channel agar event chat dan trigger langsung diterima kedua belah pihak tanpa pembatasan ketat
+    const channel = pusher.subscribe('catur-lobby-room-v2');
 
-    // Inisialisasi Papan
     let chessConfig = {
       draggable: true,
       position: 'start',
@@ -413,7 +413,6 @@
 
     function onDragStart(source, piece, position, orientation) {
       if (!isGameStarted || game.game_over()) return false;
-      // Hanya izinkan menggerakkan bidak sesuai warna peran pemain
       if ((myRole === 'white' && piece.search(/^b/) !== -1) ||
           (myRole === 'black' && piece.search(/^w/) !== -1) ||
           myRole === 'spectator') {
@@ -425,8 +424,7 @@
       let move = game.move({ from: source, to: target, promotion: 'q' });
       if (move === null) return 'snapback';
 
-      // Kirim gerakan ke Pusher
-      channel.trigger('client-move', { fen: game.fen(), role: myRole });
+      channel.trigger('client-move', { fen: game.fen() });
       updateChessStatus();
     }
 
@@ -439,7 +437,6 @@
       document.getElementById('statusGame').textContent = status;
     }
 
-    // --- PILIH SLOT PERAN (WHITE / BLACK) ---
     function joinRole(role) {
       if (myRole !== 'spectator') return alert('Anda sudah memilih peran!');
       myRole = role;
@@ -449,25 +446,24 @@
 
       if (role === 'black') board.orientation('black');
 
-      // Siarkan pilihan slot ke pemain lain
-      channel.trigger('client-room-sync', { role: role, action: 'take_slot' });
+      // Kirim sinyal ambil slot
+      channel.trigger('client-room-sync', { role: role });
       updateLobbyUI(role, true);
     }
 
     function updateLobbyUI(role, isTaken) {
       if (role === 'white') {
         roomState.white = isTaken;
-        document.getElementById('labelWhite').textContent = isTaken ? 'Terisi (Pemain 1)' : 'Kosong';
+        document.getElementById('labelWhite').textContent = isTaken ? 'Terisi' : 'Kosong';
         document.getElementById('btnJoinWhite').disabled = isTaken;
         if(isTaken) document.getElementById('btnJoinWhite').classList.add('opacity-50', 'cursor-not-allowed');
       } else if (role === 'black') {
         roomState.black = isTaken;
-        document.getElementById('labelBlack').textContent = isTaken ? 'Terisi (Pemain 2)' : 'Kosong';
+        document.getElementById('labelBlack').textContent = isTaken ? 'Terisi' : 'Kosong';
         document.getElementById('btnJoinBlack').disabled = isTaken;
         if(isTaken) document.getElementById('btnJoinBlack').classList.add('opacity-50', 'cursor-not-allowed');
       }
 
-      // Aktifkan tombol GAS BERMAIN jika 2 slot terisi
       const startBtn = document.getElementById('btnStartGame');
       if (roomState.white && roomState.black) {
         startBtn.disabled = false;
@@ -477,7 +473,7 @@
     }
 
     function startGame() {
-      if (!roomState.white || !roomState.black) return alert('Room butuh 2 pemain (Putih & Hitam)!');
+      if (!roomState.white || !roomState.black) return alert('Room butuh 2 pemain!');
       channel.trigger('client-start-game', { start: true });
       initGameStart();
     }
@@ -491,7 +487,7 @@
       addChatMessage('Sistem', '🚀 Permainan Catur Dimulai! Selamat bertanding.');
     }
 
-    // --- REALTIME LISTENERS (PUSHER) ---
+    // --- PUSHER LISTENERS ---
     channel.bind('client-move', function(data) {
       game.load(data.fen);
       board.position(data.fen);
@@ -507,6 +503,7 @@
     });
 
     channel.bind('client-chat', function(data) {
+      // Pastikan pesan dari pengirim lain tidak double tertulis
       addChatMessage(data.sender, data.message);
     });
 
@@ -514,16 +511,18 @@
       document.getElementById('statusGame').textContent = 'Terhubung! Silakan pilih peran.';
     });
 
-    // --- FITUR CHAT REALTIME ---
+    // --- FITUR CHAT ---
     function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const msg = input.value.trim();
       if (!msg) return;
 
       let senderName = myRole === 'white' ? 'Putih' : (myRole === 'black' ? 'Hitam' : 'Penonton');
+      
+      // Tampilkan langsung di layar sendiri
       addChatMessage(senderName, msg);
 
-      // Broadcast Chat ke Pusher
+      // Kirim ke Pusher agar muncul di layar lawan
       channel.trigger('client-chat', { sender: senderName, message: msg });
       input.value = '';
     }
