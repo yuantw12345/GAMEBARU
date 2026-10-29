@@ -134,7 +134,7 @@
     <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
     <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden">
       
-      <!-- MODAL LOGIN KHUSUS DI DALAM PANEL GAME -->
+      <!-- MODAL LOGIN DALAM PANEL GAME -->
       <div id="loginModal" class="absolute inset-0 bg-slate-950/95 z-20 flex items-center justify-center p-6">
         <div class="bg-slate-900 border-2 border-indigo-500/80 shadow-2xl rounded-xl max-w-sm w-full p-6 text-center space-y-4 modal-animate">
           <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
@@ -267,33 +267,51 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- BANK SOAL FAMILY 100 ---
+    // --- BANK SOAL FAMILY 100 (DIPERBANYAK) ---
     const questionBank = [
       {
         q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
         answers: [
-          { text: "Menguap / Meregangkan Badan", points: 45, revealed: false, answeredBy: null },
-          { text: "Mengecek HP / Notifikasi", points: 30, revealed: false, answeredBy: null },
-          { text: "Ke Kamar Mandi / Buang Air", points: 15, revealed: false, answeredBy: null },
-          { text: "Minum Air Putih", points: 10, revealed: false, answeredBy: null }
+          { text: "Menguap / Meregangkan Badan", keywords: ["menguap", "regang", "liat", "liyat", "geliat"], points: 45, revealed: false, answeredBy: null },
+          { text: "Mengecek HP / Notifikasi", keywords: ["hp", "handphone", "ponsel", "notif", "pesan"], points: 30, revealed: false, answeredBy: null },
+          { text: "Ke Kamar Mandi / Buang Air", keywords: ["kamar mandi", "wc", "toilet", "mandi", "buang air", "kencing", "BAB"], points: 15, revealed: false, answeredBy: null },
+          { text: "Minum Air Putih", keywords: ["minum", "air putih", "haus"], points: 10, revealed: false, answeredBy: null }
         ]
       },
       {
         q: "Apa yang dicari orang ketika kelaparan di malam hari?",
         answers: [
-          { text: "Mi Instan", points: 50, revealed: false, answeredBy: null },
-          { text: "Nasi Goreng / Makanan Sisa", points: 25, revealed: false, answeredBy: null },
-          { text: "Roti Bakar / Snack", points: 15, revealed: false, answeredBy: null },
-          { text: "Air Putih (Nahan Lapar)", points: 10, revealed: false, answeredBy: null }
+          { text: "Mi Instan", keywords: ["mi", "mie", "indomie", "instan", "rebus"], points: 50, revealed: false, answeredBy: null },
+          { text: "Nasi Goreng / Makanan Sisa", keywords: ["nasi goreng", "nasgor", "sisa", "makanan sisa"], points: 25, revealed: false, answeredBy: null },
+          { text: "Roti Bakar / Snack", keywords: ["roti", "snack", "camilan", "biskuit"], points: 15, revealed: false, answeredBy: null },
+          { text: "Air Putih (Nahan Lapar)", keywords: ["air", "tidur", "puasa"], points: 10, revealed: false, answeredBy: null }
         ]
       },
       {
         q: "Sebutkan alasan orang sering terlambat masuk kerja atau kuliah!",
         answers: [
-          { text: "Bangun Kesiangan", points: 40, revealed: false, answeredBy: null },
-          { text: "Macet di Jalan", points: 30, revealed: false, answeredBy: null },
-          { text: "Ban Bocor / Kendaraan Rusak", points: 15, revealed: false, answeredBy: null },
-          { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", points: 15, revealed: false, answeredBy: null }
+          { text: "Bangun Kesiangan", keywords: ["kesiangan", "telat bangun", "bangun siang", "kesiangan"], points: 40, revealed: false, answeredBy: null },
+          { text: "Macet di Jalan", keywords: ["macet", "lalin", "jalanan"], points: 30, revealed: false, answeredBy: null },
+          { text: "Ban Bocor / Kendaraan Rusak", keywords: ["ban", "bocor", "rusak", "motor", "mobil"], points: 15, revealed: false, answeredBy: null },
+          { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", keywords: ["dandan", "mandi", "persiapan", "lama"], points: 15, revealed: false, answeredBy: null }
+        ]
+      },
+      {
+        q: "Sebutkan benda yang selalu dibawa saat bepergian keluar rumah!",
+        answers: [
+          { text: "Handphone / HP", keywords: ["hp", "handphone", "smartphone", "ponsel"], points: 45, revealed: false, answeredBy: null },
+          { text: "Dompet / Uang", keywords: ["dompet", "uang", "kartu", "atm"], points: 30, revealed: false, answeredBy: null },
+          { text: "Kunci (Rumah/Motor/Mobil)", keywords: ["kunci", "kontak"], points: 15, revealed: false, answeredBy: null },
+          { text: "Masker / Tisu", keywords: ["masker", "tisu", "tissue"], points: 10, revealed: false, answeredBy: null }
+        ]
+      },
+      {
+        q: "Apa yang biasa dilakukan orang saat bosan menunggu antrean panjang?",
+        answers: [
+          { text: "Main HP / Scroll Media Sosial", keywords: ["hp", "medsos", "game", "tiktok", "instagram", "scroll"], points: 50, revealed: false, answeredBy: null },
+          { text: "Menguap / Melamun", keywords: ["lamun", "melamun", "ngantuk"], points: 25, revealed: false, answeredBy: null },
+          { text: "Melihat Sekitar / Mondar-mandir", keywords: ["lihat", "keliling", "jalan"], points: 15, revealed: false, answeredBy: null },
+          { text: "Mengeluh / Marah-marah", keywords: ["ngeluh", "marah", "gerutu"], points: 10, revealed: false, answeredBy: null }
         ]
       }
     ];
@@ -309,7 +327,7 @@
       checkUserLogin();
     });
 
-    // --- SISTEM LOGIN NAMA PEMAIN (DALAM PANEL GAME) ---
+    // --- SISTEM LOGIN NAMA PEMAIN ---
     function checkUserLogin() {
       const savedName = localStorage.getItem('game_username');
       if (savedName) {
@@ -510,16 +528,28 @@
         return;
       }
 
-      let found = false;
+      let foundExact = false;
+      let foundAlmost = false;
+
       currentQuestionData.answers.forEach(ans => {
-        if (!ans.revealed && ans.text.toLowerCase().includes(guess)) {
-          ans.revealed = true;
-          ans.answeredBy = currentPlayerName;
-          found = true;
+        if (!ans.revealed) {
+          // Cek kecocokan persis via teks atau keywords
+          const isMatchExact = ans.text.toLowerCase().includes(guess) || ans.keywords.some(kw => kw.includes(guess));
+          
+          if (isMatchExact) {
+            // Jika tebakan terlalu pendek tapi mendekati (misal cuma 2-3 huruf tapi ada di keyword)
+            if (guess.length <= 2 && ans.keywords.some(kw => kw.startsWith(guess))) {
+              foundAlmost = true;
+            } else {
+              ans.revealed = true;
+              ans.answeredBy = currentPlayerName;
+              foundExact = true;
+            }
+          }
         }
       });
 
-      if (found) {
+      if (foundExact) {
         gameChannel.send({
           type: 'broadcast',
           event: 'update_game_state',
@@ -527,6 +557,8 @@
         });
         renderGameUI();
         showStatus(`Hebat ${currentPlayerName}! Tebakan benar!`, 'success');
+      } else if (foundAlmost) {
+        showStatus(`Sedikit lagi... tebakanmu hampir benar, coba perjelas!`, 'info');
       } else {
         showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
       }
