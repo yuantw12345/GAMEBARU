@@ -138,30 +138,28 @@
           <i class="fa-solid fa-gamepad text-indigo-400 text-xl"></i>
           <h2 class="text-base font-bold text-white">Family 100 Arena (Realtime)</h2>
         </div>
-        <span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-700 px-2 py-1 rounded-full font-mono">Multiplayer</span>
+        <div class="flex items-center gap-2">
+          <button onclick="nextGameQuestion()" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow">
+            <i class="fa-solid fa-rotate"></i> Soal Baru
+          </button>
+          <span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-700 px-2 py-1 rounded-full font-mono">Multiplayer</span>
+        </div>
       </div>
 
       <!-- Kotak Pertanyaan Aktif -->
       <div class="bg-black/80 border border-indigo-900/60 rounded-xl p-4 text-center space-y-1">
         <span class="text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Pertanyaan Saat Ini:</span>
-        <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Menunggu soal dari host / bot...</h3>
+        <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Klik tombol "Soal Baru" untuk mulai bermain!</h3>
       </div>
 
       <!-- Kotak Daftar Jawaban (Tebakan) -->
-      <div id="gameAnswers" class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div class="bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between">
-          <span>1. [Tersembunyi]</span>
-          <span>...</span>
-        </div>
-        <div class="bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between">
-          <span>2. [Tersembunyi]</span>
-          <span>...</span>
-        </div>
+      <div id="gameAnswersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <!-- Terisi otomatis via JS -->
       </div>
 
       <!-- Form Kirim Tebakan -->
       <div class="flex gap-2 pt-2">
-        <input type="text" id="playerGuess" placeholder="Ketik jawaban tebakanmu di sini..." class="flex-1 bg-black/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+        <input type="text" id="playerGuess" placeholder="Ketik jawaban tebakanmu di sini..." class="flex-1 bg-black/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" onkeypress="if(event.key === 'Enter') sendGameGuess()">
         <button onclick="sendGameGuess()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-xl text-xs transition shadow">
           <i class="fa-solid fa-paper-plane mr-1"></i> Tebak
         </button>
@@ -231,12 +229,44 @@
 
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    // Channel Supabase untuk Background & Game
     const bgChannel = client.channel('app-bg-sync', { config: { broadcast: { self: true } } });
     const gameChannel = client.channel('family100-room', { config: { broadcast: { self: true } } });
 
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
     let currentTab = 'GRUPING 1';
+
+    // --- BANK SOAL FAMILY 100 ---
+    const questionBank = [
+      {
+        q: "Sebutkan hal yang sering dilakukan orang saat pertama kali bangun tidur!",
+        answers: [
+          { text: "Menguap / Meregangkan Badan", points: 45, revealed: false },
+          { text: "Mengecek HP / Notifikasi", points: 30, revealed: false },
+          { text: "Ke Kamar Mandi / Buang Air", points: 15, revealed: false },
+          { text: "Minum Air Putih", points: 10, revealed: false }
+        ]
+      },
+      {
+        q: "Apa yang dicari orang ketika kelaparan di malam hari?",
+        answers: [
+          { text: "Mi Instan", points: 50, revealed: false },
+          { text: "Nasi Goreng / Makanan Sisa", points: 25, revealed: false },
+          { text: "Roti Bakar / Snack", points: 15, revealed: false },
+          { text: "Air Putih (Nahan Lapar)", points: 10, revealed: false }
+        ]
+      },
+      {
+        q: "Sebutkan alasan orang sering terlambat masuk kerja atau kuliah!",
+        answers: [
+          { text: "Bangun Kesiangan", points: 40, revealed: false },
+          { text: "Macet di Jalan", points: 30, revealed: false },
+          { text: "Ban Bocor / Kendaraan Rusak", points: 15, revealed: false },
+          { text: "Kesiapan Berangkat Lama (Dandan/Mandi)", points: 15, revealed: false }
+        ]
+      }
+    ];
+
+    let currentQuestionData = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       const savedUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
@@ -333,24 +363,94 @@
 
 
     // --- REALTIME GAME FAMILY 100 LOGIC ---
-    gameChannel.subscribe();
-
-    gameChannel.on('broadcast', { event: 'player_guess' }, ({ payload }) => {
-      showStatus(`Tebakan masuk dari teman: "${payload.guess}"`, 'info');
+    gameChannel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        gameChannel.send({ type: 'broadcast', event: 'request_game_state', payload: {} });
+      }
     });
+
+    // Menerima update status game dari pemain lain / host
+    gameChannel.on('broadcast', { event: 'update_game_state' }, ({ payload }) => {
+      currentQuestionData = payload.questionData;
+      renderGameUI();
+    });
+
+    gameChannel.on('broadcast', { event: 'request_game_state' }, () => {
+      if (currentQuestionData) {
+        gameChannel.send({ type: 'broadcast', event: 'update_game_state', payload: { questionData: currentQuestionData } });
+      }
+    });
+
+    function nextGameQuestion() {
+      // Pilih soal secara acak dari bank soal
+      const randomIndex = Math.floor(Math.random() * questionBank.length);
+      // Salin struktur soal agar status 'revealed' baru
+      const selected = JSON.parse(JSON.stringify(questionBank[randomIndex]));
+      
+      currentQuestionData = selected;
+
+      // Broadcast soal baru ke semua perangkat via Supabase
+      gameChannel.send({
+        type: 'broadcast',
+        event: 'update_game_state',
+        payload: { questionData: currentQuestionData }
+      });
+
+      renderGameUI();
+      showStatus('Soal Family 100 baru dimuat!', 'success');
+    }
+
+    function renderGameUI() {
+      if (!currentQuestionData) return;
+      document.getElementById('gameQuestion').textContent = currentQuestionData.q;
+
+      const container = document.getElementById('gameAnswersContainer');
+      container.innerHTML = '';
+
+      currentQuestionData.answers.forEach((ans, index) => {
+        const div = document.createElement('div');
+        if (ans.revealed) {
+          div.className = "bg-emerald-950/80 border border-emerald-600 rounded-lg p-2.5 text-xs text-emerald-200 font-mono flex justify-between items-center animate-pulse";
+          div.innerHTML = `<span>${index + 1}. ${ans.text}</span> <span class="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold">${ans.points}</span>`;
+        } else {
+          div.className = "bg-black/60 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-400 font-mono flex justify-between items-center";
+          div.innerHTML = `<span>${index + 1}. [Tersembunyi]</span> <span>...</span>`;
+        }
+        container.appendChild(div);
+      });
+    }
 
     function sendGameGuess() {
       const guessInput = document.getElementById('playerGuess');
-      const guess = guessInput.value.trim();
+      const guess = guessInput.value.trim().toLowerCase();
       if (!guess) return;
 
-      gameChannel.send({
-        type: 'broadcast',
-        event: 'player_guess',
-        payload: { guess: guess }
+      if (!currentQuestionData) {
+        alert('Belum ada soal yang aktif!');
+        return;
+      }
+
+      let found = false;
+      currentQuestionData.answers.forEach(ans => {
+        if (!ans.revealed && ans.text.toLowerCase().includes(guess)) {
+          ans.revealed = true;
+          found = true;
+        }
       });
 
-      showStatus(`Tebakan "${guess}" dikirim ke pemain lain!`, 'success');
+      if (found) {
+        // Broadcast pembaruan jawaban yang terbuka ke semua perangkat
+        gameChannel.send({
+          type: 'broadcast',
+          event: 'update_game_state',
+          payload: { questionData: currentQuestionData }
+        });
+        renderGameUI();
+        showStatus(`Tebakan benar! Jawaban terbuka.`, 'success');
+      } else {
+        showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
+      }
+
       guessInput.value = '';
     }
 
