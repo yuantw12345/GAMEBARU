@@ -133,16 +133,19 @@
 
     <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
     <div class="bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4">
-      <div class="flex items-center justify-between border-b border-indigo-900/50 pb-3">
+      <div class="flex items-center justify-between border-b border-indigo-900/50 pb-3 flex-wrap gap-2">
         <div class="flex items-center space-x-2.5">
           <i class="fa-solid fa-gamepad text-indigo-400 text-xl"></i>
           <h2 class="text-base font-bold text-white">Family 100 Arena (Realtime)</h2>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="nextGameQuestion()" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow">
+          <!-- Tombol Menyerah / Buka Semua -->
+          <button onclick="revealAllAnswers()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
+            <i class="fa-solid fa-eye"></i> Buka Semua (Menyerah)
+          </button>
+          <button onclick="nextGameQuestion()" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
             <i class="fa-solid fa-rotate"></i> Soal Baru
           </button>
-          <span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-700 px-2 py-1 rounded-full font-mono">Multiplayer</span>
         </div>
       </div>
 
@@ -369,7 +372,6 @@
       }
     });
 
-    // Menerima update status game dari pemain lain / host
     gameChannel.on('broadcast', { event: 'update_game_state' }, ({ payload }) => {
       currentQuestionData = payload.questionData;
       renderGameUI();
@@ -382,14 +384,11 @@
     });
 
     function nextGameQuestion() {
-      // Pilih soal secara acak dari bank soal
       const randomIndex = Math.floor(Math.random() * questionBank.length);
-      // Salin struktur soal agar status 'revealed' baru
       const selected = JSON.parse(JSON.stringify(questionBank[randomIndex]));
       
       currentQuestionData = selected;
 
-      // Broadcast soal baru ke semua perangkat via Supabase
       gameChannel.send({
         type: 'broadcast',
         event: 'update_game_state',
@@ -398,6 +397,21 @@
 
       renderGameUI();
       showStatus('Soal Family 100 baru dimuat!', 'success');
+    }
+
+    // Fitur Menyerah / Buka Semua Jawaban
+    function revealAllAnswers() {
+      if (!currentQuestionData) return;
+      currentQuestionData.answers.forEach(ans => ans.revealed = true);
+
+      gameChannel.send({
+        type: 'broadcast',
+        event: 'update_game_state',
+        payload: { questionData: currentQuestionData }
+      });
+
+      renderGameUI();
+      showStatus('Semua jawaban dibuka (Menyerah)!', 'error');
     }
 
     function renderGameUI() {
@@ -439,7 +453,6 @@
       });
 
       if (found) {
-        // Broadcast pembaruan jawaban yang terbuka ke semua perangkat
         gameChannel.send({
           type: 'broadcast',
           event: 'update_game_state',
