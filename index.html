@@ -292,8 +292,8 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- INTEGRASI GEMINI AI API KEY ---
-    const GEMINI_API_KEY = 'MASUKKAN_API_KEY_GEMINI_ANDA'; // Ganti teks ini dengan API Key yang baru saja Anda salin!
+    // --- INTEGRASI GEMINI AI API KEY (SUDAH DIISI) ---
+    const GEMINI_API_KEY = 'AQ.Ab8RN6K9owUBCYjuOiozYYKGfHTlD_xI40I3M8s61cqvGRh7NQ';
 
     const questionBank = [
       {
@@ -632,10 +632,6 @@
       const promptText = inputEl.value.trim();
 
       if (!promptText) return;
-      if (GEMINI_API_KEY === 'AQ.Ab8RN6K0CokFOoRQo5l_d6V5HbHahGHMBjxEjls30vnK3QSiVw' || !GEMINI_API_KEY) {
-        alert('Mohon masukkan Gemini API Key terlebih dahulu di dalam kode script!');
-        return;
-      }
 
       responseBox.textContent = "Gemini sedang berpikir...";
       sendBtn.disabled = true;
@@ -658,7 +654,8 @@
           const aiAnswer = data.candidates[0].content.parts[0].text;
           responseBox.textContent = aiAnswer;
         } else {
-          responseBox.textContent = "Maaf, Gemini gagal merespons atau terjadi kesalahan pada API Key.";
+          console.error("Respon API:", data);
+          responseBox.textContent = "Maaf, Gemini gagal merespons. Periksa kembali API Key Anda.";
         }
       } catch (error) {
         console.error("Error Gemini API:", error);
