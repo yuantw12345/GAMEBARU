@@ -64,10 +64,16 @@
         </div>
       </div>
 
-      <button id="btnCekMl" onclick="cekNicknameML()" class="w-full bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center space-x-2 text-xs">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <span id="btnCekMlText">Cek Nickname Akun</span>
-      </button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <button id="btnCekMl" onclick="cekNicknameML()" class="md:col-span-2 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center space-x-2 text-xs">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span id="btnCekMlText">Cek Nickname Akun</span>
+        </button>
+        <button onclick="bukaCekIdExternal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3 px-3 rounded-xl transition shadow flex items-center justify-center space-x-1.5 text-xs border border-slate-600">
+          <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i>
+          <span>Cek Resmi VIP</span>
+        </button>
+      </div>
 
       <!-- KOTAK HASIL CEK ID -->
       <div id="resultCekBox" class="hidden mt-4 p-4 rounded-xl bg-black/95 border border-slate-700 space-y-1.5 text-xs font-mono">
@@ -344,7 +350,7 @@
       checkUserLogin();
     });
 
-    // --- FUNGSI UTAMA CEK NICKNAME MLBB VIA TOKOVOUCHER API ---
+    // --- FUNGSI CEK NICKNAME MLBB VIA APPS SCRIPT ---
     async function cekNicknameML() {
       const userId = document.getElementById('mlUserId').value.trim();
       const zoneId = document.getElementById('mlZoneId').value.trim();
@@ -360,7 +366,6 @@
         return;
       }
 
-      // Animasi Loading
       btnCek.disabled = true;
       btnCek.classList.add('opacity-75', 'cursor-not-allowed');
       btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa ID...';
@@ -405,6 +410,10 @@
       }
     }
 
+    function bukaCekIdExternal() {
+      window.open('https://vip-reseller.co.id/page/stalk-ml', '_blank');
+    }
+
     function checkUserLogin() {
       const savedName = localStorage.getItem('game_username');
       if (savedName) {
@@ -422,7 +431,7 @@
       localStorage.setItem('game_username', input);
       currentPlayerName = input;
       document.getElementById('activePlayerDisplay').textContent = input;
-      document.getElementById('loginModal').classList.remove('hidden');
+      document.getElementById('loginModal').classList.add('hidden');
     }
 
     function changeUsername() {
@@ -431,7 +440,7 @@
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
-    // --- SINKRONISASI REALTIME & SUPABASE STORAGE DENGAN AUTO-DELETE ---
+    // --- SINKRONISASI REALTIME & SUPABASE STORAGE ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -470,10 +479,6 @@
         .from('backgrounds')
         .list();
 
-      if (listError) {
-        console.error("Gagal mengambil list file lama:", listError.message);
-      }
-
       const { data, error } = await client.storage
         .from('backgrounds')
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
@@ -501,7 +506,7 @@
         payload: { mediaUrl: publicUrl, mediaType: mediaType }
       });
 
-      showStatus('Background berhasil disinkronkan & dibersihkan otomatis!', 'success');
+      showStatus('Background berhasil disinkronkan!', 'success');
 
       if (existingFiles && existingFiles.length > 0) {
         const filesToDelete = existingFiles
@@ -509,13 +514,7 @@
           .filter(name => name !== fileName);
 
         if (filesToDelete.length > 0) {
-          const { error: deleteError } = await client.storage
-            .from('backgrounds')
-            .remove(filesToDelete);
-            
-          if (deleteError) {
-            console.error("Gagal menghapus file lama:", deleteError.message);
-          }
+          await client.storage.from('backgrounds').remove(filesToDelete);
         }
       }
     }
