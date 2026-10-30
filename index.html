@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORMAT TRANSAKSI, FAMILY 100 & GEMINI AI</title>
+  <title>FORMAT TRANSAKSI & FAMILY 100</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -201,27 +201,6 @@
       </div>
     </div>
 
-    <!-- ================= PANEL AI GEMINI ASSISTANT ================= -->
-    <div class="bg-slate-950/90 border-2 border-cyan-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 backdrop-blur-md">
-      <div class="flex items-center space-x-2.5 border-b border-cyan-900/50 pb-3">
-        <i class="fa-solid fa-robot text-cyan-400 text-xl"></i>
-        <h2 class="text-base font-bold text-white">Gemini AI Assistant</h2>
-      </div>
-
-      <!-- Kotak Output / Percakapan AI -->
-      <div id="aiResponseBox" class="bg-black/80 border border-cyan-900/60 rounded-xl p-4 text-xs text-slate-300 min-h-[100px] max-h-48 overflow-y-auto font-mono whitespace-pre-wrap leading-relaxed">
-        Halo! Ketik pertanyaan atau perintah Anda di bawah untuk mulai mengobrol dengan Gemini AI...
-      </div>
-
-      <!-- Form Input Pertanyaan ke AI -->
-      <div class="flex gap-2 pt-2">
-        <input type="text" id="aiPromptInput" placeholder="Tanya sesuatu ke Gemini (misal: analisis teks transaksi, ide soal, dll)..." class="flex-1 bg-black/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500" onkeypress="if(event.key === 'Enter') askGeminiAI()">
-        <button onclick="askGeminiAI()" id="aiSendBtn" class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
-          <i class="fa-solid fa-paper-plane"></i> Kirim
-        </button>
-      </div>
-    </div>
-
   </div>
 
   <!-- POP-UP MODAL HASIL FORMAT -->
@@ -291,9 +270,6 @@
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
-
-    // --- TOKEN AQ... TERBARU ANDA ---
-    const GEMINI_API_KEY = 'AQ.Ab8RN6JjUB-2YsGlG0q3jhAdAkvlimETVOLmDPVH1hOYqp9g';
 
     const questionBank = [
       {
@@ -614,51 +590,6 @@
         showStatus(`Sedikit lagi... tebakanmu hampir benar, coba perjelas!`, 'info');
       } else {
         showStatus(`Tebakan "${guess}" salah atau sudah terbuka.`, 'error');
-      }
-    }
-
-    // --- INTEGRASI GEMINI AI CHAT (MENGGUNAKAN BEARER AUTH UNTUK TOKEN AQ...) ---
-    async function askGeminiAI() {
-      const inputEl = document.getElementById('aiPromptInput');
-      const responseBox = document.getElementById('aiResponseBox');
-      const sendBtn = document.getElementById('aiSendBtn');
-      const promptText = inputEl.value.trim();
-
-      if (!promptText) return;
-
-      responseBox.textContent = "Gemini sedang berpikir...";
-      sendBtn.disabled = true;
-      sendBtn.classList.add('opacity-75', 'cursor-not-allowed');
-
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
-
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${GEMINI_API_KEY}`
-          },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }]
-          })
-        });
-
-        const data = await response.json();
-        
-        if (data.candidates && data.candidates[0].content) {
-          responseBox.textContent = data.candidates[0].content.parts[0].text;
-        } else {
-          console.error("Respon API:", data);
-          responseBox.textContent = "Gagal merespons: " + (data.error?.message || JSON.stringify(data));
-        }
-      } catch (error) {
-        console.error("Error Gemini API:", error);
-        responseBox.textContent = "Terjadi kesalahan jaringan saat menghubungi server Gemini AI.";
-      } finally {
-        sendBtn.disabled = false;
-        sendBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-        inputEl.value = '';
       }
     }
 
