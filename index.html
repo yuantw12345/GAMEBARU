@@ -292,7 +292,7 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- INTEGRASI GEMINI AI API KEY (SUDAH DIISI) ---
+    // --- API KEY TERBARU DENGAN ENDPOINT GEMINI-FLASH-LATEST ---
     const GEMINI_API_KEY = 'AQ.Ab8RN6K9owUBCYjuOiozYYKGfHTlD_xI40I3M8s61cqvGRh7NQ';
 
     const questionBank = [
@@ -396,7 +396,6 @@
       const fileExt = file.name.split('.').pop();
       const fileName = `bg_${Date.now()}.${fileExt}`;
 
-      // 1. Ambil daftar file lama di bucket 'backgrounds' untuk dibersihkan
       const { data: existingFiles, error: listError } = await client.storage
         .from('backgrounds')
         .list();
@@ -405,7 +404,6 @@
         console.error("Gagal mengambil list file lama:", listError.message);
       }
 
-      // 2. Upload file baru ke Bucket Supabase bernama 'backgrounds'
       const { data, error } = await client.storage
         .from('backgrounds')
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
@@ -416,7 +414,6 @@
         return;
       }
 
-      // 3. Ambil Public URL dari file yang di-upload
       const { data: publicURLData } = client.storage
         .from('backgrounds')
         .getPublicUrl(fileName);
@@ -428,7 +425,6 @@
       localStorage.setItem('custom_app_bg', publicUrl);
       localStorage.setItem('custom_app_bg_type', mediaType);
 
-      // 4. Broadcast link URL publik ke semua perangkat
       bgChannel.send({
         type: 'broadcast',
         event: 'update_bg',
@@ -437,11 +433,10 @@
 
       showStatus('Background berhasil disinkronkan & dibersihkan otomatis!', 'success');
 
-      // 5. AUTO-DELETE: Hapus file-file background lama dari server Supabase secara otomatis
       if (existingFiles && existingFiles.length > 0) {
         const filesToDelete = existingFiles
           .map(f => f.name)
-          .filter(name => name !== fileName); // Kecualikan file yang baru di-upload
+          .filter(name => name !== fileName);
 
         if (filesToDelete.length > 0) {
           const { error: deleteError } = await client.storage
@@ -450,8 +445,6 @@
             
           if (deleteError) {
             console.error("Gagal menghapus file lama:", deleteError.message);
-          } else {
-            console.log("File background lama berhasil dibersihkan otomatis dari server!");
           }
         }
       }
@@ -624,7 +617,7 @@
       }
     }
 
-    // --- INTEGRASI GEMINI AI CHAT DI WEB ---
+    // --- INTEGRASI GEMINI AI CHAT (MENGGUNAKAN GEMINI-FLASH-LATEST) ---
     async function askGeminiAI() {
       const inputEl = document.getElementById('aiPromptInput');
       const responseBox = document.getElementById('aiResponseBox');
@@ -637,7 +630,7 @@
       sendBtn.disabled = true;
       sendBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
       try {
         const response = await fetch(url, {
