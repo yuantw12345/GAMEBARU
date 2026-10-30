@@ -292,7 +292,7 @@
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
-    // --- API KEY TERBARU DENGAN ENDPOINT GEMINI-FLASH-LATEST ---
+    // --- API KEY BARU ANDA (BEARER / OAUTH COMPATIBLE) ---
     const GEMINI_API_KEY = 'AQ.Ab8RN6K9owUBCYjuOiozYYKGfHTlD_xI40I3M8s61cqvGRh7NQ';
 
     const questionBank = [
@@ -617,7 +617,7 @@
       }
     }
 
-    // --- INTEGRASI GEMINI AI CHAT (MENGGUNAKAN GEMINI-FLASH-LATEST) ---
+    // --- INTEGRASI GEMINI AI CHAT (DENGAN BEARER AUTH & FALLBACK) ---
     async function askGeminiAI() {
       const inputEl = document.getElementById('aiPromptInput');
       const responseBox = document.getElementById('aiResponseBox');
@@ -630,25 +630,38 @@
       sendBtn.disabled = true;
       sendBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
 
       try {
-        const response = await fetch(url, {
+        let response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GEMINI_API_KEY}`
+          },
           body: JSON.stringify({
             contents: [{ parts: [{ text: promptText }] }]
           })
         });
 
-        const data = await response.json();
+        let data = await response.json();
         
         if (data.candidates && data.candidates[0].content) {
-          const aiAnswer = data.candidates[0].content.parts[0].text;
-          responseBox.textContent = aiAnswer;
+          responseBox.textContent = data.candidates[0].content.parts[0].text;
         } else {
-          console.error("Respon API:", data);
-          responseBox.textContent = "Maaf, Gemini gagal merespons. Periksa kembali API Key Anda.";
+          // Coba metode parameter query alternatif jika Bearer gagal
+          const altResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+          });
+          const altData = await altResponse.json();
+          if (altData.candidates && altData.candidates[0].content) {
+            responseBox.textContent = altData.candidates[0].content.parts[0].text;
+          } else {
+            console.error("Respon API:", altData);
+            responseBox.textContent = "Gagal merespons: Token atau API Key memerlukan izin akses Cloud/IAM yang valid.";
+          }
         }
       } catch (error) {
         console.error("Error Gemini API:", error);
