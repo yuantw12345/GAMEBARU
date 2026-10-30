@@ -41,44 +41,6 @@
 
   <div class="max-w-3xl w-full space-y-6 z-10 py-8">
 
-    <!-- CONTAINER FITUR CEK NICKNAME GAME LANGSUNG DI WEB -->
-    <div class="bg-slate-950/80 border-2 border-sky-500/50 shadow-2xl rounded-2xl p-6 md:p-8 transition-all backdrop-blur-md">
-      <div class="flex items-center space-x-3 border-b border-slate-700 pb-4 mb-4">
-        <div class="p-3 bg-sky-500/20 text-sky-400 rounded-xl">
-          <i class="fa-solid fa-id-card text-2xl"></i>
-        </div>
-        <div>
-          <h2 class="text-xl font-bold text-white">CEK NICKNAME MOBILE LEGENDS</h2>
-          <p class="text-xs text-slate-300">Verifikasi User ID & Server ID secara otomatis langsung di web</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">User ID:</label>
-          <input type="number" id="mlUserId" placeholder="Contoh: 1420800074" class="w-full bg-black/95 border border-slate-700 focus:border-sky-500 rounded-xl p-3 text-xs text-slate-100 focus:outline-none font-mono">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Server ID / Zone ID:</label>
-          <input type="number" id="mlZoneId" placeholder="Contoh: 15910" class="w-full bg-black/95 border border-slate-700 focus:border-sky-500 rounded-xl p-3 text-xs text-slate-100 focus:outline-none font-mono">
-        </div>
-      </div>
-
-      <button id="btnCekMl" onclick="cekNicknameML()" class="w-full bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center space-x-2 text-xs">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <span id="btnCekMlText">Cek Nickname Akun</span>
-      </button>
-
-      <!-- KOTAK HASIL CEK ID (LANGSUNG MUNCUL DI SINI) -->
-      <div id="resultCekBox" class="hidden mt-4 p-4 rounded-xl bg-black/95 border border-slate-700 space-y-1.5 text-xs font-mono">
-        <div class="flex items-center gap-2">
-          <i id="resultIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
-          <span id="resultStatusText" class="font-bold text-sm text-white">Hasil Pengecekan</span>
-        </div>
-        <div id="resultDetail" class="text-slate-300 leading-relaxed pt-1 border-t border-slate-800"></div>
-      </div>
-    </div>
-
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
     <div class="bg-slate-950/80 border-2 border-slate-600 shadow-2xl rounded-2xl p-6 md:p-8 transition-all backdrop-blur-md">
       
@@ -175,7 +137,7 @@
 
     </div>
 
-    <!-- PANEL MINI GAME FAMILY 100 REALTIME -->
+    <!-- ================= PANEL MINI GAME FAMILY 100 REALTIME ================= -->
     <div class="relative bg-slate-950/90 border-2 border-indigo-500/50 shadow-2xl rounded-2xl p-6 md:p-8 space-y-4 overflow-hidden backdrop-blur-md">
       
       <!-- MODAL LOGIN DALAM PANEL GAME -->
@@ -204,12 +166,14 @@
         </div>
         
         <div class="flex items-center gap-2">
+          <!-- Indikator Nama Pemain -->
           <div class="bg-indigo-950 border border-indigo-700 text-indigo-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1 font-bold">
             <i class="fa-solid fa-user-check text-emerald-400"></i>
             <span id="activePlayerDisplay">Pemain</span>
             <button onclick="changeUsername()" class="text-slate-400 hover:text-white ml-1" title="Ganti Nama"><i class="fa-solid fa-pen-to-square"></i></button>
           </div>
 
+          <!-- Tombol Aksi Game -->
           <button onclick="revealAllAnswers()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow flex items-center gap-1">
             <i class="fa-solid fa-eye"></i> Menyerah
           </button>
@@ -219,13 +183,16 @@
         </div>
       </div>
 
+      <!-- Kotak Pertanyaan Aktif -->
       <div class="bg-black/80 border border-indigo-900/60 rounded-xl p-4 text-center space-y-1">
         <span class="text-[10px] uppercase tracking-wider text-indigo-400 font-bold">Pertanyaan Saat Ini:</span>
         <h3 id="gameQuestion" class="text-sm md:text-base font-semibold text-white">Klik tombol "Soal Baru" untuk mulai bermain!</h3>
       </div>
 
+      <!-- Kotak Daftar Jawaban -->
       <div id="gameAnswersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
 
+      <!-- Form Kirim Tebakan -->
       <div class="flex gap-2 pt-2">
         <input type="text" id="playerGuess" placeholder="Ketik jawaban tebakanmu di sini..." class="flex-1 bg-black/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" onkeypress="if(event.key === 'Enter') sendGameGuess()">
         <button onclick="sendGameGuess()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-xl text-xs transition shadow">
@@ -300,7 +267,7 @@
     const bgChannel = client.channel('app-bg-sync', { config: { broadcast: { self: true } } });
     const gameChannel = client.channel('family100-room', { config: { broadcast: { self: true } } });
 
-    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzj1T86qxVi5m2RQ3CJ5A_5M6ziqjkSzVYZwpe_yW1ysWcAfJpml2HPiFuSlId9hPl6/exec';
+    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
@@ -344,69 +311,6 @@
       checkUserLogin();
     });
 
-    // --- FUNGSI CEK NICKNAME LANGSUNG DI DALAM WEB (TANPA PINDAH HALAMAN) ---
-    async function cekNicknameML() {
-      const userId = document.getElementById('mlUserId').value.trim();
-      const zoneId = document.getElementById('mlZoneId').value.trim();
-      const resultBox = document.getElementById('resultCekBox');
-      const resultIcon = document.getElementById('resultIcon');
-      const resultStatusText = document.getElementById('resultStatusText');
-      const resultDetail = document.getElementById('resultDetail');
-      const btnCek = document.getElementById('btnCekMl');
-      const btnText = document.getElementById('btnCekMlText');
-
-      if (!userId || !zoneId) {
-        alert('Mohon isi User ID dan Server ID secara lengkap!');
-        return;
-      }
-
-      btnCek.disabled = true;
-      btnCek.classList.add('opacity-75', 'cursor-not-allowed');
-      btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang Mengecek...';
-
-      resultBox.classList.remove('hidden');
-      resultIcon.className = 'fa-solid fa-spinner fa-spin text-sky-400 text-base';
-      resultStatusText.className = 'font-bold text-sm text-sky-400';
-      resultStatusText.textContent = 'Memeriksa Akun...';
-      resultDetail.innerHTML = 'Menghubungkan ke server pengecekan game...';
-
-      try {
-        // Menggunakan API checker publik yang stabil untuk melacak nickname MLBB
-        const response = await fetch(`https://vipay.my.id/api/game/mobile-legends?user_id=${encodeURIComponent(userId)}&zone_id=${encodeURIComponent(zoneId)}`);
-        const json = await response.json();
-
-        if (json && (json.status === true || json.success === true || json.username)) {
-          const nickname = json.username || json.data?.username || json.nickname || "Berhasil Ditemukan";
-          
-          resultIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-base';
-          resultStatusText.className = 'font-bold text-sm text-emerald-400';
-          resultStatusText.textContent = 'Akun Ditemukan!';
-          resultDetail.innerHTML = `
-            <div><b>User ID:</b> ${userId} (${zoneId})</div>
-            <div><b>Nickname:</b> <span class="text-emerald-300 font-bold text-sm">${nickname}</span></div>
-          `;
-        } else {
-          resultIcon.className = 'fa-solid fa-circle-xmark text-rose-400 text-base';
-          resultStatusText.className = 'font-bold text-sm text-rose-400';
-          resultStatusText.textContent = 'ID Tidak Ditemukan';
-          resultDetail.innerHTML = `<b>Pesan:</b> User ID atau Server ID salah / tidak terdaftar di game.`;
-        }
-      } catch (err) {
-        // Fallback jika API publik utama sedang sibuk, arahkan sistem membaca via format alternatif
-        resultIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-base';
-        resultStatusText.className = 'font-bold text-sm text-emerald-400';
-        resultStatusText.textContent = 'Format ID Siap Diproses';
-        resultDetail.innerHTML = `
-          <div><b>User ID:</b> ${userId} (${zoneId})</div>
-          <div class="text-sky-300">Format ID valid dan siap dimasukkan ke data transaksi.</div>
-        `;
-      } finally {
-        btnCek.disabled = false;
-        btnCek.classList.remove('opacity-75', 'cursor-not-allowed');
-        btnText.innerHTML = 'Cek Nickname Akun';
-      }
-    }
-
     function checkUserLogin() {
       const savedName = localStorage.getItem('game_username');
       if (savedName) {
@@ -433,7 +337,7 @@
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
-    // --- SINKRONISASI REALTIME & SUPABASE STORAGE ---
+    // --- SINKRONISASI REALTIME & SUPABASE STORAGE DENGAN AUTO-DELETE ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -472,6 +376,10 @@
         .from('backgrounds')
         .list();
 
+      if (listError) {
+        console.error("Gagal mengambil list file lama:", listError.message);
+      }
+
       const { data, error } = await client.storage
         .from('backgrounds')
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
@@ -499,7 +407,7 @@
         payload: { mediaUrl: publicUrl, mediaType: mediaType }
       });
 
-      showStatus('Background berhasil disinkronkan!', 'success');
+      showStatus('Background berhasil disinkronkan & dibersihkan otomatis!', 'success');
 
       if (existingFiles && existingFiles.length > 0) {
         const filesToDelete = existingFiles
@@ -507,7 +415,13 @@
           .filter(name => name !== fileName);
 
         if (filesToDelete.length > 0) {
-          await client.storage.from('backgrounds').remove(filesToDelete);
+          const { error: deleteError } = await client.storage
+            .from('backgrounds')
+            .remove(filesToDelete);
+            
+          if (deleteError) {
+            console.error("Gagal menghapus file lama:", deleteError.message);
+          }
         }
       }
     }
