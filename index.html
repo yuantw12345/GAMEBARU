@@ -267,7 +267,6 @@
     const bgChannel = client.channel('app-bg-sync', { config: { broadcast: { self: true } } });
     const gameChannel = client.channel('family100-room', { config: { broadcast: { self: true } } });
 
-    // Kosongkan atau arahkan ke domain Vercel Anda
     const DEFAULT_URL = '';
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
@@ -594,7 +593,7 @@
       }
     }
 
-    // --- LOGIKA FORMAT TRANSAKSI NODE.JS BACKEND ---
+    // --- LOGIKA FORMAT TRANSAKSI MENGIKUTI GAS LAMA ---
     function switchTab(tabName) {
       currentTab = tabName;
       document.getElementById('currentTabLabel').textContent = tabName;
@@ -630,35 +629,24 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
-    // Menghapus data via Backend Endpoint /api/clear
     function hapusWebDanSheet() {
       const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       document.getElementById('inputText').value = '';
       updateCharCount();
       closeModal();
-      
       setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
-      
-      fetch(`${baseUrl}/api/clear`, { 
+
+      fetch(`${baseUrl}/api`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ range: `${currentTab}!A:Z` }) 
+        body: JSON.stringify({ action: "clearSheet", sheetName: currentTab }) 
       })
       .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          showStatus(`Teks & Data di ${currentTab} berhasil dibersihkan!`, 'success');
-        } else {
-          showStatus(`Gagal menghapus: ${data.error}`, 'error');
-        }
-      })
-      .catch(err => {
-        showStatus(`Koneksi error: ${err.message}`, 'error');
-      })
+      .then(() => showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error'))
+      .catch(err => showStatus(`Koneksi error: ${err.message}`, 'error'))
       .finally(() => setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS'));
     }
 
-    // Mengirim data via Backend Endpoint /api/append
     function sendToSheet() {
       const text = document.getElementById('inputText').value;
       const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
@@ -667,38 +655,51 @@
       setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
       hideStatus();
 
-      fetch(`${baseUrl}/api/append`, { 
+      fetch(`${baseUrl}/api`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ 
-          range: `${currentTab}!A1`, 
-          values: [[text]] 
-        }) 
+        body: JSON.stringify({ action: "appendSheet", text: text, sheetName: currentTab }) 
       })
       .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); 
-          setTimeout(fetchFormatOnly, 1200);
-        } else {
-          showStatus(`Gagal: ${data.error}`, 'error');
-        }
+      .then(data => { 
+        showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); 
+        setTimeout(fetchFormatOnly, 1200); 
       })
-      .catch(err => {
-        showStatus(`Koneksi error: ${err.message}`, 'error');
-      })
+      .catch(err => showStatus(`Gagal kirim: ${err.message}`, 'error'))
       .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
     }
 
     function fetchFormatOnly() {
-      showStatus(`Format ${currentTab} diproses!`, 'success');
-      const textVal = document.getElementById('inputText').value;
-      document.getElementById('modalTabTitle').textContent = currentTab;
-      
-      document.getElementById('boxA1').textContent = textVal || '-';
-      document.getElementById('wrapperA2').classList.add('hidden');
-      document.getElementById('wrapperA3').classList.add('hidden');
-      openModal();
+      const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      setLoading(true, 'fetchBtn', null, null);
+      showStatus(`Memuat format dari ${currentTab}...`, 'info');
+
+      fetch(`${baseUrl}/api`, { 
+        method: 'POST', 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ action: "getFormat", sheetName: currentTab }) 
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.isiA1 !== undefined) {
+          document.getElementById('modalTabTitle').textContent = currentTab;
+          displayFormatResult(data);
+          openModal();
+          showStatus(`Format ${currentTab} dimuat!`, 'success');
+        } else {
+          showStatus(`Gagal memuat format`, 'error');
+        }
+      })
+      .catch(err => showStatus(`Koneksi error: ${err.message}`, 'error'))
+      .finally(() => setLoading(false, 'fetchBtn', null, null));
+    }
+
+    function displayFormatResult(data) {
+      document.getElementById('boxA1').textContent = data.isiA1 || '-';
+      const wrapA2 = document.getElementById('wrapperA2');
+      if (data.adaWithdrawDiatas100Jt) { wrapA2.classList.remove('hidden'); document.getElementById('boxA2').textContent = data.isiA2; } else wrapA2.classList.add('hidden');
+      const wrapA3 = document.getElementById('wrapperA3');
+      if (data.adaWithdrawDiatas50Jt) { wrapA3.classList.remove('hidden'); document.getElementById('boxA3').textContent = data.isiA3; } else wrapA3.classList.add('hidden');
     }
 
     function openModal() {
