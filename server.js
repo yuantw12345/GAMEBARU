@@ -1,93 +1,80 @@
-require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const { google } = require('googleapis');
-
 const app = express();
+
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 3000;
-const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
-
-// Inisialisasi Google Auth menggunakan Service Account Credentials dari Environment Variables
+// Konfigurasi Google Sheets API menggunakan Service Account dari Environment Variables
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY
-      ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
-      : undefined,
+    private_key: process.env.GOOGLE_PRIVATE_KEY ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
   },
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
-const sheets = google.sheets({ version: 'v4', auth });
-
-// Endpoint untuk Append Data (Format A1, A2, A3, dll)
-app.post('/api/append', async (req, res) => {
+// Endpoint utama yang meniru logika doGet(e) di Google Apps Script
+app.get('/api', async (req, res) => {
   try {
-    const { spreadsheetId, range, values } = req.body;
-    const targetSpreadsheetId = spreadsheetId || SPREADSHEET_ID;
+    const action = req.query.action;
+    const client = await auth.getClient();
+    const sheets = google.sheets({ version: 'v4', auth: client });
+    const spreadsheetId = process.env.SPREADSHEET_ID;
 
-    if (!targetSpreadsheetId || !values) {
-      return res.status(400).json({
-        success: false,
-        message: 'spreadsheetId dan values wajib diisi.',
+    // 1. Logika untuk action == "cek_bot"
+    if (action === 'cek_bot') {
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'Sheet1!A:E',
       });
+      const data = response.data.values || [];
+      const antrean = [];
+
+      // Perulangan mulai dari baris index 1 (baris ke-2 di Sheet, melewati header)
+      for (let i = 1; i < data.length; i++) {
+        const status = data[i][4] ? String(data[i][4]).trim().toUpperCase() : '';
+        
+        if (status === 'BOT') {
+          antrean.push({
+            row: i + 1,
+            bank: data[i][0] || '',      // Kolom A: Jenis Bank
+            nominal: data[i][1] || '',   // Kolom B: Nominal
+            no_rek: data[i][3] || ''     // Kolom D: Nomor Rekening
+          });
+        }
+      }
+      return res.json(antrean);
+    } 
+    
+    // 2. Logika untuk action == "update_status"
+    else if (action === 'update_status') {
+      const row = req.query.row;
+      const status = req.query.status;
+
+      // Mengubah status kembali ke Kolom E (kolom ke-5) pada baris tertentu
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `Sheet1!E${row}`,
+        valueInputOption: 'USER_ENTERED',
+        requestBody: {
+          values: [[status]]
+        }
+      });
+      return res.send('OK');
     }
 
-    const response = await sheets.spreadsheets.values.append({
-      spreadsheetId: targetSpreadsheetId,
-      range: range || 'Sheet1!A1',
-      valueInputOption: 'USER_ENTERED',
-      resource: { values },
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Data transaksi berhasil ditambahkan.',
-      updates: response.data.updates,
-    });
+    return res.status(400).send('Action tidak dikenal');
   } catch (error) {
-    console.error('Error appending data:', error);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error('Error:', error);
+    return res.status(500).send({ error: error.message });
   }
 });
 
-// Endpoint untuk Clear Data / Reset Range
-app.post('/api/clear', async (req, res) => {
-  try {
-    const { spreadsheetId, range } = req.body;
-    const targetSpreadsheetId = spreadsheetId || SPREADSHEET_ID;
-
-    if (!targetSpreadsheetId || !range) {
-      return res.status(400).json({
-        success: false,
-        message: 'spreadsheetId dan range wajib diisi.',
-      });
-    }
-
-    const response = await sheets.spreadsheets.values.clear({
-      spreadsheetId: targetSpreadsheetId,
-      range: range,
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Range data berhasil dibersihkan.',
-      clearedRange: response.data.clearedRange,
-    });
-  } catch (error) {
-    console.error('Error clearing data:', error);
-    return res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.send('Transaction API Server is running.');
-});
-
+// Port untuk Vercel / Local
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;
