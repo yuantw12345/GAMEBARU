@@ -68,7 +68,7 @@
             <i class="fa-solid fa-trash-can"></i>
           </button>
 
-          <button onclick="toggleSettings()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-900 transition border border-transparent hover:border-slate-700" title="Pengaturan URL Web App">
+          <button onclick="toggleSettings()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-900 transition border border-transparent hover:border-slate-700" title="Pengaturan URL Backend">
             <i class="fa-solid fa-gear text-lg"></i>
           </button>
         </div>
@@ -88,8 +88,8 @@
 
       <!-- Panel Pengaturan URL -->
       <div id="settingsPanel" class="hidden mb-6 p-4 bg-black/95 border border-slate-700 rounded-xl space-y-2">
-        <label class="block text-xs font-semibold text-slate-200">URL Web App Server:</label>
-        <input type="text" id="scriptUrl" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://script.google.com/macros/s/.../exec">
+        <label class="block text-xs font-semibold text-slate-200">URL Backend API (Vercel):</label>
+        <input type="text" id="scriptUrl" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-mono" placeholder="https://gamebarumenyenangkan.vercel.app">
         <div class="flex justify-end space-x-2 pt-2">
           <button onclick="saveSettings()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-md transition">Simpan</button>
         </div>
@@ -267,7 +267,8 @@
     const bgChannel = client.channel('app-bg-sync', { config: { broadcast: { self: true } } });
     const gameChannel = client.channel('family100-room', { config: { broadcast: { self: true } } });
 
-    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzZSS4Jv-IoVN_51xZuZ6UmtqTVyI_gmGTWYi6CV9IHUgJs4xTbaGeLj1WXyfaNwCn5SA/exec';
+    // Kosongkan atau arahkan ke domain Vercel Anda
+    const DEFAULT_URL = '';
     let currentTab = 'GRUPING 1';
     let currentPlayerName = '';
 
@@ -593,7 +594,7 @@
       }
     }
 
-    // --- LOGIKA FORMAT TRANSAKSI KERJA ---
+    // --- LOGIKA FORMAT TRANSAKSI NODE.JS BACKEND ---
     function switchTab(tabName) {
       currentTab = tabName;
       document.getElementById('currentTabLabel').textContent = tabName;
@@ -615,9 +616,8 @@
 
     function saveSettings() {
       const url = document.getElementById('scriptUrl').value.trim();
-      if (!url) return alert('URL tidak boleh kosong!');
       localStorage.setItem('gs_script_url', url);
-      showStatus('URL Pengaturan berhasil disimpan!', 'success');
+      showStatus('URL Backend berhasil disimpan!', 'success');
       toggleSettings();
     }
 
@@ -630,52 +630,75 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
+    // Menghapus data via Backend Endpoint /api/clear
     function hapusWebDanSheet() {
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       document.getElementById('inputText').value = '';
       updateCharCount();
       closeModal();
+      
       setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
-      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: "clearSheet", sheetName: currentTab }) })
-      .then(() => showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error'))
+      
+      fetch(`${baseUrl}/api/clear`, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ range: `${currentTab}!A:Z` }) 
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showStatus(`Teks & Data di ${currentTab} berhasil dibersihkan!`, 'success');
+        } else {
+          showStatus(`Gagal menghapus: ${data.error}`, 'error');
+        }
+      })
+      .catch(err => {
+        showStatus(`Koneksi error: ${err.message}`, 'error');
+      })
       .finally(() => setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS'));
     }
 
+    // Mengirim data via Backend Endpoint /api/append
     function sendToSheet() {
       const text = document.getElementById('inputText').value;
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       if (!text.trim()) return showStatus('Isi teks terlebih dahulu!', 'error');
 
       setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
       hideStatus();
-      fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, sheetName: currentTab }) })
-      .then(() => { showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); setTimeout(fetchFormatOnly, 1200); })
+
+      fetch(`${baseUrl}/api/append`, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ 
+          range: `${currentTab}!A1`, 
+          values: [[text]] 
+        }) 
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); 
+          setTimeout(fetchFormatOnly, 1200);
+        } else {
+          showStatus(`Gagal: ${data.error}`, 'error');
+        }
+      })
+      .catch(err => {
+        showStatus(`Koneksi error: ${err.message}`, 'error');
+      })
       .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
     }
 
     function fetchFormatOnly() {
-      const url = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      setLoading(true, 'fetchBtn', null, null);
-      showStatus(`Memuat format dari ${currentTab}...`, 'info');
-      fetch(url, { method: 'POST', redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "getFormat", sheetName: currentTab }) })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.isiA1 !== undefined) {
-          document.getElementById('modalTabTitle').textContent = currentTab;
-          displayFormatResult(data);
-          openModal();
-          showStatus(`Format ${currentTab} dimuat!`, 'success');
-        }
-      })
-      .finally(() => setLoading(false, 'fetchBtn', null, null));
-    }
-
-    function displayFormatResult(data) {
-      document.getElementById('boxA1').textContent = data.isiA1 || '-';
-      const wrapA2 = document.getElementById('wrapperA2');
-      if (data.adaWithdrawDiatas100Jt) { wrapA2.classList.remove('hidden'); document.getElementById('boxA2').textContent = data.isiA2; } else wrapA2.classList.add('hidden');
-      const wrapA3 = document.getElementById('wrapperA3');
-      if (data.adaWithdrawDiatas50Jt) { wrapA3.classList.remove('hidden'); document.getElementById('boxA3').textContent = data.isiA3; } else wrapA3.classList.add('hidden');
+      showStatus(`Format ${currentTab} diproses!`, 'success');
+      const textVal = document.getElementById('inputText').value;
+      document.getElementById('modalTabTitle').textContent = currentTab;
+      
+      document.getElementById('boxA1').textContent = textVal || '-';
+      document.getElementById('wrapperA2').classList.add('hidden');
+      document.getElementById('wrapperA3').classList.add('hidden');
+      openModal();
     }
 
     function openModal() {
