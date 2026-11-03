@@ -57,27 +57,27 @@ app.all('/api', async (req, res) => {
       return res.send('OK');
     }
 
-    // SIMULASI KLIK S1 LALU PASTE (CTRL + SHIFT + V)
+    // SIMULASI PASTE CTRL + SHIFT + V DARI S1 MENYEBAR KE KOLOM KANAN (S SAMPAI Z)
     else if (action === 'appendSheet') {
       const text = body.text || '';
       const sheetName = body.sheetName || 'GRUPING 1';
 
-      // 1. Bersihkan dulu area S1 sampai S200 (seperti kosongkan sel sebelum paste baru)
+      // 1. Bersihkan area lama dari Kolom S sampai Z (baris 1 sampai 200)
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
-        range: `${sheetName}!S1:S200`,
+        range: `${sheetName}!S1:Z200`,
       });
 
-      // 2. Pecah teks berdasarkan baris baru (\n) agar tersusun ke bawah di kolom S
-      const barisTeks = text.split('\n').map(line => [line]);
+      // 2. Pecah teks berdasarkan baris (\n), lalu pecah lagi berdasarkan tab (\t) agar menyebar ke kolom samping
+      const rowsData = text.split('\n').map(line => line.split('\t'));
 
-      // 3. Masukkan data mulai tepat di S1 (seperti klik S1 lalu paste)
+      // 3. Masukkan ke Google Sheets mulai tepat di S1 (menyebar ke kolom S, T, U, V, dst.)
       await sheets.spreadsheets.values.update({
         spreadsheetId,
         range: `${sheetName}!S1`,
         valueInputOption: 'USER_ENTERED',
         requestBody: {
-          values: barisTeks
+          values: rowsData
         }
       });
       return res.json({ success: true });
@@ -88,7 +88,7 @@ app.all('/api', async (req, res) => {
 
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
-        range: `${sheetName}!S1:S200`,
+        range: `${sheetName}!S1:Z200`,
       });
       return res.json({ success: true });
     }
