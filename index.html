@@ -696,10 +696,22 @@
 
     function displayFormatResult(data) {
       document.getElementById('boxA1').textContent = data.isiA1 || '-';
+      
       const wrapA2 = document.getElementById('wrapperA2');
-      if (data.adaWithdrawDiatas100Jt) { wrapA2.classList.remove('hidden'); document.getElementById('boxA2').textContent = data.isiA2; } else wrapA2.classList.add('hidden');
+      if (data.adaWithdrawDiatas100Jt) { 
+        wrapA2.classList.remove('hidden'); 
+        document.getElementById('boxA2').textContent = data.isiA2; 
+      } else { 
+        wrapA2.classList.add('hidden'); 
+      }
+
       const wrapA3 = document.getElementById('wrapperA3');
-      if (data.adaWithdrawDiatas50Jt) { wrapA3.classList.remove('hidden'); document.getElementById('boxA3').textContent = data.isiA3; } else wrapA3.classList.add('hidden');
+      if (data.adaWithdrawDiatas50Jt) { 
+        wrapA3.classList.remove('hidden'); 
+        document.getElementById('boxA3').textContent = data.isiA3; 
+      } else { 
+        wrapA3.classList.add('hidden'); 
+      }
     }
 
     function openModal() {
