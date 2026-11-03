@@ -59,32 +59,33 @@ app.all('/api', async (req, res) => {
       return res.send('OK');
     }
 
-    // 3. LOGIKA: appendSheet
+    // 3. LOGIKA: appendSheet (DIUBAH PRESI KE KOLOM S)
     else if (action === 'appendSheet') {
       const text = body.text;
       const sheetName = body.sheetName || 'GRUPING 1';
 
-      await sheets.spreadsheets.values.append({
+      // Mengisi langsung ke kolom S (misal: S1) atau append khusus ke area kolom S:Z
+      await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `${sheetName}!A1`,
+        range: `${sheetName}!S1`,
         valueInputOption: 'USER_ENTERED',
         requestBody: { values: [[text]] }
       });
       return res.json({ success: true });
     }
 
-    // 4. LOGIKA: clearSheet
+    // 4. LOGIKA: clearSheet (Membersihkan kolom S dan area sekitarnya)
     else if (action === 'clearSheet') {
       const sheetName = body.sheetName || 'GRUPING 1';
 
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
-        range: `${sheetName}!A:Z`,
+        range: `${sheetName}!S1:Z100`,
       });
       return res.json({ success: true });
     }
 
-    // 5. LOGIKA: getFormat (LENGKAP DENGAN SYARAT WITHDRAW & NOMINAL)
+    // 5. LOGIKA: getFormat
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
       
@@ -101,15 +102,12 @@ app.all('/api', async (req, res) => {
       let adaWithdrawDiatas100Jt = false;
       let adaWithdrawDiatas50Jt = false;
 
-      // Memeriksa seluruh baris data untuk mendeteksi kata "withdraw" dan besaran nominalnya
       for (let i = 0; i < rows.length; i++) {
         const barisTeks = rows[i].join(' ').toLowerCase();
         
         if (barisTeks.indexOf("withdraw") !== -1) {
-          // Ekstrak angka/nominal dari baris teks
           const angkaMencuat = barisTeks.match(/\d[\d,\.]*/g);
           if (angkaMencuat) {
-            // Gabungkan atau ambil nilai angka terbesar sebagai representasi nominal (nilaiT)
             for (let a = 0; a < angkaMencuat.length; a++) {
               const bersihAngka = parseFloat(angkaMencuat[a].replace(/,|\./g, ''));
               if (!isNaN(bersihAngka)) {
