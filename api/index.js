@@ -89,7 +89,7 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    // LOGIKA GETFORMAT DENGAN ATURAN RENTANG NOMINAL WD YANG AKURAT
+    // LOGIKA GETFORMAT DENGAN PENCARIAN KHUSUS BARIS "NOMINAL WD"
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
       
@@ -103,36 +103,37 @@ app.all('/api', async (req, res) => {
       const isiA2 = (rows[1] && rows[1][0]) ? rows[1][0] : 'FORMAT WD DI ATAS 100JT';
       const isiA3 = (rows[2] && rows[2][0]) ? rows[2][0] : 'FORMAT WD DI ATAS 50JT';
 
-      let adaWithdrawDiatas100Jt = false;
-      let adaWithdrawDiatas50Jt = false;
       let nominalWD = 0;
 
-      // Cari khusus baris yang mengandung informasi "Nominal WD" atau "Withdraw"
+      // Telusuri baris per baris khusus untuk mencari kata "nominal wd" atau "wd"
       for (let i = 0; i < rows.length; i++) {
         const barisTeks = rows[i].join(' ').toLowerCase();
 
-        if (barisTeks.includes("nominal wd") || barisTeks.includes("withdraw")) {
-          const matchAngka = barisTeks.match(/\d[\d,\.]*/g);
-          if (matchAngka) {
-            for (let a = 0; a < matchAngka.length; a++) {
-              const bersih = parseFloat(matchAngka[a].replace(/,|\./g, ''));
-              if (!isNaN(bersih) && bersih >= 10000) {
+        if (barisTeks.includes("nominal wd") || barisTeks.includes("wd")) {
+          // Ambil teks setelah kata "nominal" atau "wd"
+          const parts = barisTeks.split(/nominal wd|wd/);
+          if (parts.length > 1) {
+            const setelahWd = parts[1];
+            const matchAngka = setelahWd.match(/\d[\d,\.]*/g);
+            if (matchAngka && matchAngka.length > 0) {
+              const bersih = parseFloat(matchAngka[0].replace(/,|\./g, ''));
+              if (!isNaN(bersih)) {
                 nominalWD = bersih;
                 break;
               }
             }
           }
         }
-        if (nominalWD > 0) break;
       }
 
-      // Pengondisian Format Sesuai Ketentuan Anda:
+      let adaWithdrawDiatas100Jt = false;
+      let adaWithdrawDiatas50Jt = false;
+
+      // Pengondisian rentang nominal WD
       if (nominalWD >= 100000000) {
-        // 100 Juta ke atas: A1 + A2
         adaWithdrawDiatas100Jt = true;
         adaWithdrawDiatas50Jt = false;
       } else if (nominalWD >= 50000001 && nominalWD <= 99999999) {
-        // 50.000.001 s/d 99.999.999: A1 + A3
         adaWithdrawDiatas100Jt = false;
         adaWithdrawDiatas50Jt = true;
       }
