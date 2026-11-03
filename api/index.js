@@ -22,9 +22,48 @@ app.all('/api', async (req, res) => {
     const body = req.method === 'POST' ? req.body : req.query;
     const action = body.action;
 
-    if (action === 'appendSheet') {
+    // 1. LOGIKA: cek_bot
+    if (action === 'cek_bot') {
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'Sheet1!A:E',
+      });
+      const data = response.data.values || [];
+      const antrean = [];
+
+      for (let i = 1; i < data.length; i++) {
+        const status = data[i][4] ? String(data[i][4]).trim().toUpperCase() : '';
+        if (status === 'BOT') {
+          antrean.push({
+            row: i + 1,
+            bank: data[i][0] || '',
+            nominal: data[i][1] || '',
+            no_rek: data[i][3] || ''
+          });
+        }
+      }
+      return res.json(antrean);
+    } 
+
+    // 2. LOGIKA: update_status
+    else if (action === 'update_status') {
+      const row = body.row;
+      const status = body.status;
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `Sheet1!E${row}`,
+        valueInputOption: 'USER_ENTERED',
+        requestBody: { values: [[status]] }
+      });
+      return res.send('OK');
+    }
+
+    // 3. LOGIKA: appendSheet
+    else if (action === 'appendSheet') {
       const text = body.text;
       const sheetName = body.sheetName || 'GRUPING 1';
+
       await sheets.spreadsheets.values.append({
         spreadsheetId,
         range: `${sheetName}!A1`,
@@ -34,8 +73,10 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    if (action === 'clearSheet') {
+    // 4. LOGIKA: clearSheet
+    else if (action === 'clearSheet') {
       const sheetName = body.sheetName || 'GRUPING 1';
+
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
         range: `${sheetName}!A:Z`,
@@ -43,22 +84,52 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    if (action === 'getFormat') {
+    // 5. LOGIKA: getFormat (LENGKAP DENGAN SYARAT WITHDRAW & NOMINAL)
+    else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
+      
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range: `${sheetName}!A1:C10`,
       });
       const rows = response.data.values || [];
+
       const isiA1 = rows[0] && rows[0][0] ? rows[0][0] : '-';
       const isiA2 = rows[1] && rows[1][0] ? rows[1][0] : '';
       const isiA3 = rows[2] && rows[2][0] ? rows[2][0] : '';
 
+      let adaWithdrawDiatas100Jt = false;
+      let adaWithdrawDiatas50Jt = false;
+
+      // Memeriksa seluruh baris data untuk mendeteksi kata "withdraw" dan besaran nominalnya
+      for (let i = 0; i < rows.length; i++) {
+        const barisTeks = rows[i].join(' ').toLowerCase();
+        
+        if (barisTeks.indexOf("withdraw") !== -1) {
+          // Ekstrak angka/nominal dari baris teks
+          const angkaMencuat = barisTeks.match(/\d[\d,\.]*/g);
+          if (angkaMencuat) {
+            // Gabungkan atau ambil nilai angka terbesar sebagai representasi nominal (nilaiT)
+            for (let a = 0; a < angkaMencuat.length; a++) {
+              const bersihAngka = parseFloat(angkaMencuat[a].replace(/,|\./g, ''));
+              if (!isNaN(bersihAngka)) {
+                if (bersihAngka >= 100000000) {
+                  adaWithdrawDiatas100Jt = true;
+                }
+                if (bersihAngka >= 50000001) {
+                  adaWithdrawDiatas50Jt = true;
+                }
+              }
+            }
+          }
+        }
+      }
+
       return res.json({
         isiA1: isiA1,
-        adaWithdrawDiatas100Jt: Boolean(isiA2),
+        adaWithdrawDiatas100Jt: adaWithdrawDiatas100Jt,
         isiA2: isiA2,
-        adaWithdrawDiatas50Jt: Boolean(isiA3),
+        adaWithdrawDiatas50Jt: adaWithdrawDiatas50Jt,
         isiA3: isiA3
       });
     }
