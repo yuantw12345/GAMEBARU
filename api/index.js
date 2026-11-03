@@ -89,7 +89,7 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    // LOGIKA GETFORMAT DENGAN PENCARIAN KHUSUS BARIS "NOMINAL WD"
+    // LOGIKA GETFORMAT DENGAN PENCARIAN PRESISI "NOMINAL WD"
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
       
@@ -105,13 +105,12 @@ app.all('/api', async (req, res) => {
 
       let nominalWD = 0;
 
-      // Telusuri baris per baris khusus untuk mencari kata "nominal wd" atau "wd"
+      // Cari baris yang mengandung "nominal wd" secara spesifik
       for (let i = 0; i < rows.length; i++) {
         const barisTeks = rows[i].join(' ').toLowerCase();
 
-        if (barisTeks.includes("nominal wd") || barisTeks.includes("wd")) {
-          // Ambil teks setelah kata "nominal" atau "wd"
-          const parts = barisTeks.split(/nominal wd|wd/);
+        if (barisTeks.includes("nominal wd")) {
+          const parts = barisTeks.split("nominal wd");
           if (parts.length > 1) {
             const setelahWd = parts[1];
             const matchAngka = setelahWd.match(/\d[\d,\.]*/g);
