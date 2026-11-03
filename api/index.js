@@ -59,28 +59,39 @@ app.all('/api', async (req, res) => {
       return res.send('OK');
     }
 
-    // 3. LOGIKA: appendSheet (DIUBAH PRESI KE KOLOM S)
+    // 3. LOGIKA: appendSheet / Kirim Transaksi (DITELITI: TERPECAH BERDASARKAN BARIS SEPERTI CTRL + SHIFT + V)
     else if (action === 'appendSheet') {
-      const text = body.text;
+      const text = body.text || '';
       const sheetName = body.sheetName || 'GRUPING 1';
 
-      // Mengisi langsung ke kolom S (misal: S1) atau append khusus ke area kolom S:Z
+      // Hapus data lama di kolom S lebih dulu dari S1 sampai S200
+      await sheets.spreadsheets.values.clear({
+        spreadsheetId,
+        range: `${sheetName}!S1:S200`,
+      });
+
+      // Pecah teks berdasarkan enter (\n) menjadi array baris kebawah
+      const barisTeks = text.split('\n').map(line => [line]);
+
+      // Masukkan array baris tersebut langsung mulai dari sel S1
       await sheets.spreadsheets.values.update({
         spreadsheetId,
         range: `${sheetName}!S1`,
         valueInputOption: 'USER_ENTERED',
-        requestBody: { values: [[text]] }
+        requestBody: {
+          values: barisTeks
+        }
       });
       return res.json({ success: true });
     }
 
-    // 4. LOGIKA: clearSheet (Membersihkan kolom S dan area sekitarnya)
+    // 4. LOGIKA: clearSheet (Membersihkan kolom S)
     else if (action === 'clearSheet') {
       const sheetName = body.sheetName || 'GRUPING 1';
 
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
-        range: `${sheetName}!S1:Z100`,
+        range: `${sheetName}!S1:S200`,
       });
       return res.json({ success: true });
     }
