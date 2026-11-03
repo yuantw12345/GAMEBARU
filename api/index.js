@@ -22,6 +22,7 @@ app.all('/api', async (req, res) => {
     const body = req.method === 'POST' ? req.body : req.query;
     const action = body.action;
 
+    // 1. LOGIKA: cek_bot
     if (action === 'cek_bot') {
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
@@ -44,6 +45,7 @@ app.all('/api', async (req, res) => {
       return res.json(antrean);
     } 
 
+    // 2. LOGIKA: update_status
     else if (action === 'update_status') {
       const row = body.row;
       const status = body.status;
@@ -57,6 +59,7 @@ app.all('/api', async (req, res) => {
       return res.send('OK');
     }
 
+    // 3. LOGIKA: appendSheet (Menyebar dari Kolom S ke kanan)
     else if (action === 'appendSheet') {
       const text = body.text || '';
       const sheetName = body.sheetName || 'GRUPING 1';
@@ -79,6 +82,7 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
+    // 4. LOGIKA: clearSheet
     else if (action === 'clearSheet') {
       const sheetName = body.sheetName || 'GRUPING 1';
 
@@ -89,7 +93,7 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    // LOGIKA GETFORMAT BERDASARKAN RENTANG NOMINAL KEMENANGAN
+    // 5. LOGIKA: getFormat (FOKUS EKSTRAKSI NOMINAL WD)
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
       
@@ -105,30 +109,38 @@ app.all('/api', async (req, res) => {
 
       let adaWithdrawDiatas100Jt = false;
       let adaWithdrawDiatas50Jt = false;
+      let nominalWD = 0;
 
+      // Cari baris yang khusus berisi "Nominal WD" atau kata "Withdraw"
       for (let i = 0; i < rows.length; i++) {
         const barisTeks = rows[i].join(' ').toLowerCase();
-        
-        if (barisTeks.indexOf("withdraw") !== -1 || barisTeks.indexOf("nominal") !== -1 || barisTeks.indexOf("kemenangan") !== -1) {
-          const angkaMencuat = barisTeks.match(/\d[\d,\.]*/g);
-          if (angkaMencuat) {
-            for (let a = 0; a < angkaMencuat.length; a++) {
-              const bersihAngka = parseFloat(angkaMencuat[a].replace(/,|\./g, ''));
-              if (!isNaN(bersihAngka) && bersihAngka > 10000) { // Filter angka kecil agar tidak salah baca
-                
-                // Jika >= 100.000.001 (atau 100 juta ke atas) -> A2
-                if (bersihAngka >= 100000001) {
-                  adaWithdrawDiatas100Jt = true;
-                }
-                
-                // Jika 50.000.001 sampai 100.000.000 -> A3
-                if (bersihAngka >= 50000001 && bersihAngka <= 100000000) {
-                  adaWithdrawDiatas50Jt = true;
-                }
+
+        // Mengutamakan baris "nominal wd" / "wd"
+        if (barisTeks.includes("nominal wd") || barisTeks.includes("withdraw")) {
+          const matchAngka = barisTeks.match(/\d[\d,\.]*/g);
+          if (matchAngka) {
+            for (let a = 0; a < matchAngka.length; a++) {
+              const bersih = parseFloat(matchAngka[a].replace(/,|\./g, ''));
+              if (!isNaN(bersih) && bersih >= 10000) {
+                nominalWD = bersih;
+                break; // Ambil nilai nominal WD pertama yang ditemukan
               }
             }
           }
         }
+        if (nominalWD > 0) break;
+      }
+
+      // Pengondisian Format berdasarkan Nominal WD:
+      // 1. 100.000.000 ke atas -> A1 + A2 (A3 matikan)
+      if (nominalWD >= 100000000) {
+        adaWithdrawDiatas100Jt = true;
+        adaWithdrawDiatas50Jt = false;
+      } 
+      // 2. 50.000.001 s/d 99.999.999 -> A1 + A3 (A2 matikan)
+      else if (nominalWD >= 50000001 && nominalWD <= 99999999) {
+        adaWithdrawDiatas100Jt = false;
+        adaWithdrawDiatas50Jt = true;
       }
 
       return res.json({
