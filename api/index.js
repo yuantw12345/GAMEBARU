@@ -22,7 +22,6 @@ app.all('/api', async (req, res) => {
     const body = req.method === 'POST' ? req.body : req.query;
     const action = body.action;
 
-    // 1. LOGIKA: cek_bot
     if (action === 'cek_bot') {
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
@@ -45,7 +44,6 @@ app.all('/api', async (req, res) => {
       return res.json(antrean);
     } 
 
-    // 2. LOGIKA: update_status
     else if (action === 'update_status') {
       const row = body.row;
       const status = body.status;
@@ -59,21 +57,21 @@ app.all('/api', async (req, res) => {
       return res.send('OK');
     }
 
-    // 3. LOGIKA: appendSheet / Kirim Transaksi (DITELITI: TERPECAH BERDASARKAN BARIS SEPERTI CTRL + SHIFT + V)
+    // SIMULASI KLIK S1 LALU PASTE (CTRL + SHIFT + V)
     else if (action === 'appendSheet') {
       const text = body.text || '';
       const sheetName = body.sheetName || 'GRUPING 1';
 
-      // Hapus data lama di kolom S lebih dulu dari S1 sampai S200
+      // 1. Bersihkan dulu area S1 sampai S200 (seperti kosongkan sel sebelum paste baru)
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
         range: `${sheetName}!S1:S200`,
       });
 
-      // Pecah teks berdasarkan enter (\n) menjadi array baris kebawah
+      // 2. Pecah teks berdasarkan baris baru (\n) agar tersusun ke bawah di kolom S
       const barisTeks = text.split('\n').map(line => [line]);
 
-      // Masukkan array baris tersebut langsung mulai dari sel S1
+      // 3. Masukkan data mulai tepat di S1 (seperti klik S1 lalu paste)
       await sheets.spreadsheets.values.update({
         spreadsheetId,
         range: `${sheetName}!S1`,
@@ -85,7 +83,6 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    // 4. LOGIKA: clearSheet (Membersihkan kolom S)
     else if (action === 'clearSheet') {
       const sheetName = body.sheetName || 'GRUPING 1';
 
@@ -96,7 +93,6 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
-    // 5. LOGIKA: getFormat
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
       
