@@ -57,21 +57,17 @@ app.all('/api', async (req, res) => {
       return res.send('OK');
     }
 
-    // SIMULASI PASTE CTRL + SHIFT + V DARI S1 MENYEBAR KE KOLOM KANAN (S SAMPAI Z)
     else if (action === 'appendSheet') {
       const text = body.text || '';
       const sheetName = body.sheetName || 'GRUPING 1';
 
-      // 1. Bersihkan area lama dari Kolom S sampai Z (baris 1 sampai 200)
       await sheets.spreadsheets.values.clear({
         spreadsheetId,
         range: `${sheetName}!S1:Z200`,
       });
 
-      // 2. Pecah teks berdasarkan baris (\n), lalu pecah lagi berdasarkan tab (\t) agar menyebar ke kolom samping
       const rowsData = text.split('\n').map(line => line.split('\t'));
 
-      // 3. Masukkan ke Google Sheets mulai tepat di S1 (menyebar ke kolom S, T, U, V, dst.)
       await sheets.spreadsheets.values.update({
         spreadsheetId,
         range: `${sheetName}!S1`,
@@ -93,12 +89,13 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
+    // LOGIKA GETFORMAT BERDASARKAN RENTANG NOMINAL KEMENANGAN
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
       
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: `${sheetName}!A1:C10`,
+        range: `${sheetName}!A1:Z50`,
       });
       const rows = response.data.values || [];
 
@@ -112,16 +109,20 @@ app.all('/api', async (req, res) => {
       for (let i = 0; i < rows.length; i++) {
         const barisTeks = rows[i].join(' ').toLowerCase();
         
-        if (barisTeks.indexOf("withdraw") !== -1) {
+        if (barisTeks.indexOf("withdraw") !== -1 || barisTeks.indexOf("nominal") !== -1 || barisTeks.indexOf("kemenangan") !== -1) {
           const angkaMencuat = barisTeks.match(/\d[\d,\.]*/g);
           if (angkaMencuat) {
             for (let a = 0; a < angkaMencuat.length; a++) {
               const bersihAngka = parseFloat(angkaMencuat[a].replace(/,|\./g, ''));
-              if (!isNaN(bersihAngka)) {
-                if (bersihAngka >= 100000000) {
+              if (!isNaN(bersihAngka) && bersihAngka > 10000) { // Filter angka kecil agar tidak salah baca
+                
+                // Jika >= 100.000.001 (atau 100 juta ke atas) -> A2
+                if (bersihAngka >= 100000001) {
                   adaWithdrawDiatas100Jt = true;
                 }
-                if (bersihAngka >= 50000001) {
+                
+                // Jika 50.000.001 sampai 100.000.000 -> A3
+                if (bersihAngka >= 50000001 && bersihAngka <= 100000000) {
                   adaWithdrawDiatas50Jt = true;
                 }
               }
@@ -133,9 +134,9 @@ app.all('/api', async (req, res) => {
       return res.json({
         isiA1: isiA1,
         adaWithdrawDiatas100Jt: adaWithdrawDiatas100Jt,
-        isiA2: isiA2,
+        isiA2: isiA2 || isiA1,
         adaWithdrawDiatas50Jt: adaWithdrawDiatas50Jt,
-        isiA3: isiA3
+        isiA3: isiA3 || isiA1
       });
     }
 
