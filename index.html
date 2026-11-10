@@ -41,7 +41,7 @@
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(10, 10, 10, 0.8);
     }
     ::-webkit-scrollbar-thumb {
       background: rgba(52, 211, 153, 0.3);
@@ -52,7 +52,7 @@
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden">
+<body class="bg-black text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden">
 
   <!-- ELEMEN VIDEO BACKGROUND -->
   <video id="bgVideo" autoplay muted loop playsinline class="hidden">
@@ -62,23 +62,23 @@
   <div class="max-w-2xl w-full space-y-6 z-10 py-8">
 
     <!-- CONTAINER UTAMA FORMAT TRANSAKSI -->
-    <div class="bg-slate-900/60 backdrop-blur-xl border border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-3xl p-6 md:p-8 transition-all">
+    <div class="bg-zinc-950/80 backdrop-blur-xl border border-zinc-800 shadow-[0_8px_30px_rgb(0,0,0,0.8)] rounded-3xl p-6 md:p-8 transition-all">
       
       <!-- Header & Fitur Ganti Background -->
-      <div class="flex items-center justify-between border-b border-slate-800/80 pb-5 mb-6">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-5 mb-6">
         <div class="flex items-center space-x-3.5">
           <div class="p-3.5 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20 shadow-inner">
             <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
           </div>
           <div>
             <h1 class="text-lg md:text-xl font-bold tracking-tight text-white">FORMAT CEK TRANSAKSI</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Target Proses: <span id="currentTabLabel" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-md font-mono-code font-bold">GRUPING 1</span></p>
+            <p class="text-xs text-zinc-400 mt-0.5">Target Proses: <span id="currentTabLabel" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-md font-mono-code font-bold">GRUPING 1</span></p>
           </div>
         </div>
 
         <!-- OPSI AKSI HEADER -->
         <div class="flex items-center space-x-2">
-          <label class="cursor-pointer bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition border border-slate-700 shadow-sm" title="Upload & Sync Video/BG ke Semua Perangkat">
+          <label class="cursor-pointer bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition border border-zinc-800 shadow-sm" title="Upload & Sync Video/BG ke Semua Perangkat">
             <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
             <span class="hidden sm:inline">Background</span>
             <input type="file" id="bgUploader" accept="video/mp4,image/*" class="hidden" onchange="uploadAndSyncBackground(event)">
@@ -88,7 +88,7 @@
             <i class="fa-solid fa-trash-can"></i>
           </button>
 
-          <button onclick="toggleSettings()" class="text-slate-400 hover:text-white p-2.5 rounded-xl hover:bg-slate-800/80 transition border border-slate-700/50" title="Pengaturan URL Backend">
+          <button onclick="toggleSettings()" class="text-zinc-400 hover:text-white p-2.5 rounded-xl hover:bg-zinc-900 transition border border-zinc-800" title="Pengaturan URL Backend">
             <i class="fa-solid fa-gear text-sm"></i>
           </button>
         </div>
@@ -96,20 +96,20 @@
 
       <!-- TAB NAVIGASI GRUPING 1 - 5 -->
       <div class="mb-6">
-        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Pilih Gruping:</label>
-        <div class="grid grid-cols-5 gap-2 p-1.5 bg-slate-950/60 border border-slate-800/80 rounded-2xl shadow-inner">
+        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2.5">Pilih Gruping:</label>
+        <div class="grid grid-cols-5 gap-2 p-1.5 bg-black border border-zinc-800 rounded-2xl shadow-inner">
           <button onclick="switchTab('GRUPING 1')" id="tab-GRUPING 1" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/20">GRUP 1</button>
-          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-slate-400 hover:text-white hover:bg-slate-800/50">GRUP 2</button>
-          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-slate-400 hover:text-white hover:bg-slate-800/50">GRUP 3</button>
-          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-slate-400 hover:text-white hover:bg-slate-800/50">GRUP 4</button>
-          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-slate-400 hover:text-white hover:bg-slate-800/50">GRUP 5</button>
+          <button onclick="switchTab('GRUPING 2')" id="tab-GRUPING 2" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-zinc-400 hover:text-white hover:bg-zinc-900">GRUP 2</button>
+          <button onclick="switchTab('GRUPING 3')" id="tab-GRUPING 3" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-zinc-400 hover:text-white hover:bg-zinc-900">GRUP 3</button>
+          <button onclick="switchTab('GRUPING 4')" id="tab-GRUPING 4" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-zinc-400 hover:text-white hover:bg-zinc-900">GRUP 4</button>
+          <button onclick="switchTab('GRUPING 5')" id="tab-GRUPING 5" class="tab-btn py-2.5 font-bold rounded-xl transition text-xs text-zinc-400 hover:text-white hover:bg-zinc-900">GRUP 5</button>
         </div>
       </div>
 
       <!-- Panel Pengaturan URL -->
-      <div id="settingsPanel" class="hidden mb-6 p-4 bg-slate-950/90 border border-slate-800 rounded-2xl space-y-3 shadow-xl">
-        <label class="block text-xs font-semibold text-slate-300">URL Backend API (Vercel):</label>
-        <input type="text" id="scriptUrl" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-mono-code transition" placeholder="https://gamebarumenyenangkan.vercel.app">
+      <div id="settingsPanel" class="hidden mb-6 p-4 bg-black border border-zinc-800 rounded-2xl space-y-3 shadow-xl">
+        <label class="block text-xs font-semibold text-zinc-300">URL Backend API (Vercel):</label>
+        <input type="text" id="scriptUrl" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-100 focus:outline-none focus:border-emerald-500 font-mono-code transition" placeholder="https://gamebarumenyenangkan.vercel.app">
         <div class="flex justify-end space-x-2 pt-1">
           <button onclick="saveSettings()" class="px-4 py-2 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition shadow-md shadow-emerald-900/20">Simpan URL</button>
         </div>
@@ -117,7 +117,7 @@
 
       <!-- Textarea Input -->
       <div class="space-y-2.5 mb-5">
-        <div class="flex justify-between items-center text-xs text-slate-300">
+        <div class="flex justify-between items-center text-xs text-zinc-300">
           <label for="inputText" class="font-semibold tracking-wide">Tempel Data Transaksi:</label>
           <div>
             <button onclick="pasteFromClipboard()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1.5 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
@@ -127,31 +127,21 @@
         </div>
 
         <div class="relative">
-          <textarea id="inputText" rows="5" class="w-full bg-slate-950/70 border border-slate-800 focus:border-emerald-500/80 text-slate-100 placeholder-slate-600 rounded-2xl p-4 focus:outline-none transition resize-none text-sm leading-relaxed shadow-inner" placeholder="Tempel atau paste data transaksi di sini..."></textarea>
-          <div class="absolute bottom-3 right-4 text-[11px] text-slate-500 pointer-events-none font-mono-code">
+          <textarea id="inputText" rows="5" class="w-full bg-black border border-zinc-800 focus:border-emerald-500/80 text-zinc-100 placeholder-zinc-600 rounded-2xl p-4 focus:outline-none transition resize-none text-sm leading-relaxed shadow-inner" placeholder="Tempel atau paste data transaksi di sini..."></textarea>
+          <div class="absolute bottom-3 right-4 text-[11px] text-zinc-500 pointer-events-none font-mono-code">
             <span id="charCount">0</span> kar
           </div>
         </div>
       </div>
 
       <!-- Status Alert -->
-      <div id="statusBox" class="hidden mb-5 p-3.5 rounded-2xl text-xs flex items-center gap-2.5 font-medium border bg-slate-950/80 shadow-lg"></div>
+      <div id="statusBox" class="hidden mb-5 p-3.5 rounded-2xl text-xs flex items-center gap-2.5 font-medium border bg-black shadow-lg"></div>
 
-      <!-- ACTION BUTTONS -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <button id="sendBtn" onclick="sendToSheet()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-2xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-2 text-xs">
-          <i class="fa-solid fa-paper-plane text-emerald-200"></i>
+      <!-- ACTION BUTTON (Hanya 1 Tombol Utama Kirim Transaksi) -->
+      <div>
+        <button id="sendBtn" onclick="sendToSheet()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-semibold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-2 text-sm tracking-wide">
+          <i class="fa-solid fa-paper-plane text-emerald-200 text-base"></i>
           <span id="btnText">Kirim Transaksi</span>
-        </button>
-
-        <button id="fetchBtn" onclick="fetchFormatOnly()" class="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-2xl transition-all shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-2 text-xs">
-          <i class="fa-solid fa-bolt text-sky-200"></i>
-          <span>CLICK HERE (Format)</span>
-        </button>
-
-        <button id="clearSheetBtn" onclick="hapusWebDanSheet()" class="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-2xl transition-all shadow-lg shadow-rose-900/30 flex items-center justify-center space-x-2 text-xs">
-          <i class="fa-solid fa-trash-can text-rose-200"></i>
-          <span id="btnClearSheetText">HAPUS TEKS</span>
         </button>
       </div>
 
@@ -160,55 +150,55 @@
   </div>
 
   <!-- POP-UP MODAL HASIL FORMAT -->
-  <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
-    <div id="modalContent" class="bg-slate-900 border border-slate-700/80 shadow-[0_20px_50px_rgba(0,0,0,0.6)] rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col transform scale-95 transition-all duration-300 overflow-hidden">
+  <div id="resultModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+    <div id="modalContent" class="bg-zinc-950 border border-zinc-800 shadow-[0_20px_50px_rgba(0,0,0,0.9)] rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col transform scale-95 transition-all duration-300 overflow-hidden">
       
-      <div class="flex items-center justify-between px-6 py-4.5 border-b border-slate-800 bg-slate-950/60">
+      <div class="flex items-center justify-between px-6 py-4.5 border-b border-zinc-800 bg-black">
         <div class="flex items-center space-x-3">
           <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
             <i class="fa-solid fa-file-lines text-base"></i>
           </div>
           <h2 class="text-sm md:text-base font-bold text-white tracking-tight">Hasil Format Pesanan (<span id="modalTabTitle" class="text-emerald-400">GRUPING 1</span>)</h2>
         </div>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+        <button onclick="closeModal()" class="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-900 transition">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
       <div class="p-6 space-y-4 overflow-y-auto">
-        <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-inner">
-          <div class="flex justify-between items-center text-xs font-semibold text-slate-300">
+        <div class="bg-black border border-zinc-800 rounded-2xl p-4 space-y-2.5 shadow-inner">
+          <div class="flex justify-between items-center text-xs font-semibold text-zinc-300">
             <span class="tracking-wide">Format Standar (A1):</span>
             <button onclick="copyToClipboard('boxA1', 'toastA1')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 font-bold text-[11px]">
               <i class="fa-regular fa-copy"></i> Salin <span id="toastA1" class="text-[10px] text-emerald-200 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA1" class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 text-xs md:text-sm font-mono-code text-slate-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
+          <div id="boxA1" class="bg-zinc-950 border border-zinc-900 rounded-xl p-4 text-xs md:text-sm font-mono-code text-zinc-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
         </div>
 
-        <div id="wrapperA2" class="hidden bg-slate-950/60 border border-amber-500/30 rounded-2xl p-4 space-y-2.5 shadow-inner">
+        <div id="wrapperA2" class="hidden bg-black border border-amber-500/30 rounded-2xl p-4 space-y-2.5 shadow-inner">
           <div class="flex justify-between items-center text-xs font-semibold text-amber-400">
             <span class="tracking-wide">Format WD Di Atas 100Jt (A2):</span>
             <button onclick="copyToClipboard('boxA2', 'toastA2')" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 font-bold text-[11px]">
               <i class="fa-regular fa-copy"></i> Salin <span id="toastA2" class="text-[10px] text-amber-200 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA2" class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 text-xs md:text-sm font-mono-code text-slate-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
+          <div id="boxA2" class="bg-zinc-950 border border-zinc-900 rounded-xl p-4 text-xs md:text-sm font-mono-code text-zinc-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
         </div>
 
-        <div id="wrapperA3" class="hidden bg-slate-950/60 border border-sky-500/30 rounded-2xl p-4 space-y-2.5 shadow-inner">
+        <div id="wrapperA3" class="hidden bg-black border border-sky-500/30 rounded-2xl p-4 space-y-2.5 shadow-inner">
           <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
             <span class="tracking-wide">Format WD Di Atas 50Jt (A3):</span>
             <button onclick="copyToClipboard('boxA3', 'toastA3')" class="bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/30 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 font-bold text-[11px]">
               <i class="fa-regular fa-copy"></i> Salin <span id="toastA3" class="text-[10px] text-sky-200 hidden">✓ Disalin!</span>
             </button>
           </div>
-          <div id="boxA3" class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 text-xs md:text-sm font-mono-code text-slate-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
+          <div id="boxA3" class="bg-zinc-950 border border-zinc-900 rounded-xl p-4 text-xs md:text-sm font-mono-code text-zinc-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
         </div>
       </div>
 
-      <div class="px-6 py-4 border-t border-slate-800 bg-slate-950/60 flex justify-end">
-        <button onclick="closeModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition shadow">
+      <div class="px-6 py-4 border-t border-zinc-800 bg-black flex justify-end">
+        <button onclick="closeModal()" class="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold rounded-xl transition shadow">
           Tutup
         </button>
       </div>
@@ -371,7 +361,7 @@
       currentTab = tabName;
       document.getElementById('currentTabLabel').textContent = tabName;
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn py-2.5 font-bold rounded-xl transition text-xs text-slate-400 hover:text-white hover:bg-slate-800/50";
+        btn.className = "tab-btn py-2.5 font-bold rounded-xl transition text-xs text-zinc-400 hover:text-white hover:bg-zinc-900";
       });
       const activeBtn = document.getElementById(`tab-${tabName}`);
       if (activeBtn) {
@@ -404,30 +394,12 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
-    function hapusWebDanSheet() {
-      const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      document.getElementById('inputText').value = '';
-      updateCharCount();
-      closeModal();
-      setLoading(true, 'clearSheetBtn', 'btnClearSheetText', '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...');
-
-      fetch(`${baseUrl}/api`, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ action: "clearSheet", sheetName: currentTab }) 
-      })
-      .then(res => res.json())
-      .then(() => showStatus(`Teks & Data di ${currentTab} berhasil dihapus!`, 'error'))
-      .catch(err => showStatus(`Koneksi error: ${err.message}`, 'error'))
-      .finally(() => setLoading(false, 'clearSheetBtn', 'btnClearSheetText', 'HAPUS TEKS'));
-    }
-
     function sendToSheet() {
       const text = document.getElementById('inputText').value;
       const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       if (!text.trim()) return showStatus('Isi teks terlebih dahulu!', 'error');
 
-      setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Kirim...');
+      setLoading(true, 'sendBtn', 'btnText', '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim & Memproses...');
       hideStatus();
 
       fetch(`${baseUrl}/api`, { 
@@ -438,15 +410,16 @@
       .then(res => res.json())
       .then(data => { 
         showStatus(`Berhasil dikirim ke ${currentTab}!`, 'success'); 
-        setTimeout(fetchFormatOnly, 1200); 
+        setTimeout(fetchFormatOnly, 800); 
       })
-      .catch(err => showStatus(`Gagal kirim: ${err.message}`, 'error'))
-      .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
+      .catch(err => {
+        showStatus(`Gagal kirim: ${err.message}`, 'error');
+        setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi');
+      });
     }
 
     function fetchFormatOnly() {
       const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
-      setLoading(true, 'fetchBtn', null, null);
       showStatus(`Memuat format dari ${currentTab}...`, 'info');
 
       fetch(`${baseUrl}/api`, { 
@@ -466,7 +439,7 @@
         }
       })
       .catch(err => showStatus(`Koneksi error: ${err.message}`, 'error'))
-      .finally(() => setLoading(false, 'fetchBtn', null, null));
+      .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
     }
 
     function displayFormatResult(data) {
@@ -490,7 +463,6 @@
     }
 
     function openModal() {
-      // Otomatis mengosongkan textarea "Tempel Data Transaksi" begitu modal terbuka
       document.getElementById('inputText').value = '';
       updateCharCount();
 
@@ -528,7 +500,7 @@
       let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
       let borderColor = type === 'success' ? 'border-emerald-500/30' : (type === 'error' ? 'border-rose-500/30' : 'border-sky-500/30');
       box.classList.add(borderColor);
-      box.innerHTML = `${icon} <span class="text-slate-200">${msg}</span>`;
+      box.innerHTML = `${icon} <span class="text-zinc-200">${msg}</span>`;
     }
 
     function hideStatus() { document.getElementById('statusBox').classList.add('hidden'); }
