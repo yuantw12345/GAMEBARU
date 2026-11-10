@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FORMAT TRANSAKSI ELEGAN</title>
+  
+  <!-- Favicon / Logo di Bar Atas Browser -->
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/PJm0RN95/X-removebg-preview.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Font: Plus Jakarta Sans -->
@@ -67,8 +71,8 @@
       <!-- Header & Fitur Ganti Background -->
       <div class="flex items-center justify-between border-b border-zinc-800 pb-5 mb-6">
         <div class="flex items-center space-x-3.5">
-          <div class="p-3.5 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20 shadow-inner">
-            <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+          <div class="p-2.5 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20 shadow-inner flex items-center justify-center w-12 h-12">
+            <img src="https://i.postimg.cc/PJm0RN95/X-removebg-preview.png" alt="Logo" class="w-7 h-7 object-contain">
           </div>
           <div>
             <h1 class="text-lg md:text-xl font-bold tracking-tight text-white">FORMAT CEK TRANSAKSI</h1>
@@ -137,7 +141,7 @@
       <!-- Status Alert -->
       <div id="statusBox" class="hidden mb-5 p-3.5 rounded-2xl text-xs flex items-center gap-2.5 font-medium border bg-black shadow-lg"></div>
 
-      <!-- ACTION BUTTON (Hanya 1 Tombol Utama Kirim Transaksi) -->
+      <!-- ACTION BUTTON (Tombol Utama Kirim Transaksi) -->
       <div>
         <button id="sendBtn" onclick="sendToSheet()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-semibold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center space-x-2 text-sm tracking-wide">
           <i class="fa-solid fa-paper-plane text-emerald-200 text-base"></i>
