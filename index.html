@@ -715,6 +715,10 @@
     }
 
     function openModal() {
+      // Otomatis mengosongkan textarea "Tempel Data Transaksi" dan mereset counter karakter
+      document.getElementById('inputText').value = '';
+      updateCharCount();
+
       const modal = document.getElementById('resultModal');
       modal.classList.remove('hidden');
       setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('modalContent').classList.remove('scale-95'); }, 10);
