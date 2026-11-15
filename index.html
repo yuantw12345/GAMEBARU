@@ -409,12 +409,7 @@
       fetch(`${baseUrl}/api`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ 
-          action: "appendSheet", 
-          text: text, 
-          sheetName: currentTab,
-          clearRange: "S:Z" // Penanda otomatis hapus kolom S:Z
-        }) 
+        body: JSON.stringify({ action: "appendSheet", text: text, sheetName: currentTab }) 
       })
       .then(res => res.json())
       .then(data => { 
@@ -442,7 +437,8 @@
           document.getElementById('modalTabTitle').textContent = currentTab;
           displayFormatResult(data);
           openModal();
-          // Bersihkan kolom S:Z setelah format diambil
+          
+          // 🔥 EKSEKUSI PENGHAPUSAN KOLOM S:Z SAAT FORMAT MUNCUL
           clearColumnsSToZ();
         } else {
           showStatus(`Gagal memuat format`, 'error');
@@ -455,7 +451,7 @@
       });
     }
 
-    // Fungsi baru untuk menghapus full tulisan di kolom S:Z
+    // Fungsi otomatis penghapusan penuh kolom S:Z
     function clearColumnsSToZ() {
       const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
       fetch(`${baseUrl}/api`, {
@@ -469,10 +465,10 @@
       })
       .then(res => res.json())
       .then(() => {
-        showStatus(`Format ${currentTab} dimuat & kolom S:Z berhasil dikosongkan!`, 'success');
+        showStatus(`Format ${currentTab} dimuat & Kolom S:Z berhasil dikosongkan!`, 'success');
       })
       .catch(err => {
-        console.error("Gagal menghapus kolom S:Z:", err);
+        console.error("Gagal mengosongkan kolom S:Z:", err);
       })
       .finally(() => {
         setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi');
