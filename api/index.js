@@ -89,6 +89,18 @@ app.all('/api', async (req, res) => {
       return res.json({ success: true });
     }
 
+    // 🔥 TAMBAHAN BARU: Menangani aksi clearRange dari frontend saat modal/format muncul
+    else if (action === 'clearRange') {
+      const sheetName = body.sheetName || 'GRUPING 1';
+      const rangeToClear = body.range || 'S:Z';
+
+      await sheets.spreadsheets.values.clear({
+        spreadsheetId,
+        range: `${sheetName}!${rangeToClear}`,
+      });
+      return res.json({ success: true });
+    }
+
     // LOGIKA GETFORMAT DENGAN PENCARIAN PRESISI "NOMINAL WD"
     else if (action === 'getFormat') {
       const sheetName = body.sheetName || 'GRUPING 1';
