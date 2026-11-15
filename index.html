@@ -409,7 +409,12 @@
       fetch(`${baseUrl}/api`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ action: "appendSheet", text: text, sheetName: currentTab }) 
+        body: JSON.stringify({ 
+          action: "appendSheet", 
+          text: text, 
+          sheetName: currentTab,
+          clearRange: "S:Z" // Penanda otomatis hapus kolom S:Z
+        }) 
       })
       .then(res => res.json())
       .then(data => { 
@@ -437,13 +442,41 @@
           document.getElementById('modalTabTitle').textContent = currentTab;
           displayFormatResult(data);
           openModal();
-          showStatus(`Format ${currentTab} dimuat!`, 'success');
+          // Bersihkan kolom S:Z setelah format diambil
+          clearColumnsSToZ();
         } else {
           showStatus(`Gagal memuat format`, 'error');
+          setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi');
         }
       })
-      .catch(err => showStatus(`Koneksi error: ${err.message}`, 'error'))
-      .finally(() => setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi'));
+      .catch(err => {
+        showStatus(`Koneksi error: ${err.message}`, 'error');
+        setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi');
+      });
+    }
+
+    // Fungsi baru untuk menghapus full tulisan di kolom S:Z
+    function clearColumnsSToZ() {
+      const baseUrl = localStorage.getItem('gs_script_url') || DEFAULT_URL;
+      fetch(`${baseUrl}/api`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: "clearRange",
+          sheetName: currentTab,
+          range: "S:Z"
+        })
+      })
+      .then(res => res.json())
+      .then(() => {
+        showStatus(`Format ${currentTab} dimuat & kolom S:Z berhasil dikosongkan!`, 'success');
+      })
+      .catch(err => {
+        console.error("Gagal menghapus kolom S:Z:", err);
+      })
+      .finally(() => {
+        setLoading(false, 'sendBtn', 'btnText', 'Kirim Transaksi');
+      });
     }
 
     function displayFormatResult(data) {
