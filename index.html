@@ -168,7 +168,7 @@
           <div id="boxA1" class="bg-zinc-950 border border-zinc-900 rounded-xl p-4 text-xs md:text-sm font-mono-code text-zinc-200 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed shadow-inner"></div>
         </div>
 
-        <!-- KOTAK FORMAT MENENGAH (50Jt s.d. 99.9Jt) -->
+        <!-- KOTAK FORMAT MENENGAH (50Jt - 99.9Jt) -->
         <div id="wrapperA3" class="hidden bg-black border border-sky-500/30 rounded-2xl p-4 space-y-2.5 shadow-inner">
           <div class="flex justify-between items-center text-xs font-semibold text-sky-400">
             <span class="tracking-wide">Format WD 50Jt - 99.9Jt:</span>
@@ -214,7 +214,6 @@
       loadSavedBackground();
     });
 
-    // --- SINKRONISASI REALTIME & SUPABASE STORAGE ---
     bgChannel.subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         bgChannel.send({ type: 'broadcast', event: 'request_bg', payload: {} });
@@ -228,14 +227,6 @@
         localStorage.setItem('custom_app_bg_type', payload.mediaType);
       } else {
         resetBackgroundLocal();
-      }
-    });
-
-    bgChannel.on('broadcast', { event: 'request_bg' }, () => {
-      const currentBg = localStorage.getItem('custom_app_bg');
-      const currentType = localStorage.getItem('custom_app_bg_type');
-      if (currentBg) {
-        bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { mediaUrl: currentBg, mediaType: currentType } });
       }
     });
 
@@ -266,12 +257,7 @@
       localStorage.setItem('custom_app_bg', publicUrl);
       localStorage.setItem('custom_app_bg_type', mediaType);
 
-      bgChannel.send({
-        type: 'broadcast',
-        event: 'update_bg',
-        payload: { mediaUrl: publicUrl, mediaType: mediaType }
-      });
-
+      bgChannel.send({ type: 'broadcast', event: 'update_bg', payload: { mediaUrl: publicUrl, mediaType: mediaType } });
       showStatus('Background berhasil disinkronkan & dibersihkan otomatis!', 'success');
 
       if (existingFiles && existingFiles.length > 0) {
@@ -326,7 +312,6 @@
       if (savedBg) applyBackground(savedBg, savedType);
     }
 
-    // --- TAB NAVIGASI ---
     function switchTab(tabName) {
       currentTab = tabName;
       document.getElementById('currentTabLabel').textContent = tabName;
@@ -442,8 +427,9 @@
         }
       });
 
-      // 7. Logika Kemenangan Provider (Selisih >= 3.000.000)
-      const providerRegex = /(PG Soft|Pragmatic Play|Cosmo Play|BTI|Evolution Gaming|5G Gaming|No Limit City|Spadegaming|Habanero|saba sports|Jili Gaming|Playtech|Sexy Casino|FastSpin|CMD|Poker Bolt)/i;
+      // 7. Logika Kemenangan Provider (Daftar Lengkap Sesuai List Anda)
+      const providerRegex = /(SV388|Poker Bolt|SBOBET|PG Soft|Evolution Gaming|PokerQ|NetEnt|Lotwin|CMD|Habanero|Cosmo Play|Sexy Casino|BTI|Playtech|Relax Gaming|GamePlay|Spadegaming|SA Gaming|TF Gaming|Playstar|Red Tiger|No Limit City|CQ9 Slot|Big Time Gaming|Jili Gaming|Advant Play|Naga Games|Pragmatic Play|Miki World|568Win|Hacksaw|Evoplay|FastSpin|SABA Sports|5G Gaming|Nex4D|FunTa Gaming|Pragmatic Play POP|CosmoPlay Crash|GGSoft|GA28|King Midas|Tap A Roo|AFB Sports|AFB Gaming)/i;
+      
       const chronologicalLines = [...lines].reverse();
       let modalTerakhirPerProvider = {};
       let providerLolos = new Set();
@@ -513,8 +499,7 @@ LINK KEMENANGAN :
 
 ${penutupA7}`;
 
-      // Aturan Munculnya Kotak Berdasarkan Nominal WD
-      const tampilA1 = true; // Selalu muncul
+      const tampilA1 = true;
       const tampilA3 = nominalWD >= 50000001 && nominalWD <= 99999999;
       const tampilA2 = nominalWD >= 100000000;
 
@@ -533,11 +518,8 @@ ${penutupA7}`;
 
     function displayFormatResult(data) {
       document.getElementById('modalTabTitle').textContent = currentTab;
-      
-      // Kotak A1
       document.getElementById('boxA1').textContent = data.isiA1 || '-';
       
-      // Kotak A3 (50Jt - 99.9Jt)
       const wrapA3 = document.getElementById('wrapperA3');
       if (data.tampilA3) { 
         wrapA3.classList.remove('hidden'); 
@@ -546,7 +528,6 @@ ${penutupA7}`;
         wrapA3.classList.add('hidden'); 
       }
 
-      // Kotak A2 (>= 100Jt)
       const wrapA2 = document.getElementById('wrapperA2');
       if (data.tampilA2) { 
         wrapA2.classList.remove('hidden'); 
@@ -559,7 +540,6 @@ ${penutupA7}`;
     function openModal() {
       document.getElementById('inputText').value = '';
       updateCharCount();
-
       const modal = document.getElementById('resultModal');
       modal.classList.remove('hidden');
       setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('modalContent').classList.remove('scale-95'); }, 10);
@@ -582,7 +562,8 @@ ${penutupA7}`;
 
     function showStatus(msg, type) {
       const box = document.getElementById('statusBox');
-      box.classList.remove('hidden', 'border-emerald-500/30', 'border-rose-500/30', 'border-sky-500/30', 'text-emerald-300', 'text-rose-300', 'text-sky-300');
+      box.classList.0 && box.classList.remove('hidden', 'border-emerald-500/30', 'border-rose-500/30', 'border-sky-500/30', 'text-emerald-300', 'text-rose-300', 'text-sky-300');
+      box.classList.remove('hidden');
       let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
       let borderColor = type === 'success' ? 'border-emerald-500/30' : (type === 'error' ? 'border-rose-500/30' : 'border-sky-500/30');
       box.classList.add(borderColor);
