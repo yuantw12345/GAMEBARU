@@ -338,7 +338,7 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
-    // --- LOGIKA UTAMA PARSER LOKAL DENGAN PENGAMAN ERROR ---
+    // --- LOGIKA UTAMA PARSER LOKAL YANG AMAN & BERSIH ---
     function processAndShowResult() {
       const rawText = document.getElementById('inputText').value;
       if (!rawText.trim()) {
@@ -349,8 +349,8 @@
       try {
         const lines = rawText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
 
-        // 1. Ambil Web
-        let web = "MAHADEWI77";
+        // 1. Ambil Web (Hanya jika ada kata 'Platform')
+        let web = "-";
         const platIdx = lines.findIndex(l => l.toLowerCase() === "platform");
         if (platIdx !== -1 && lines[platIdx + 1]) {
           web = lines[platIdx + 1];
@@ -366,8 +366,8 @@
           if (matchId) userId = matchId[1];
         }
 
-        // 3. Ambil Username (Cari baris setelah kode transaksi FP atau ambil baris sebelum/sesudah Bregel/nama akun)
-        let username = "Bregel11";
+        // 3. Ambil Username (Hanya jika ada kode transaksi FP)
+        let username = "-";
         for (let i = 0; i < lines.length; i++) {
           if (/^FP\d{14}/i.test(lines[i])) {
             if (lines[i+1] && lines[i+1].toLowerCase() !== "copy") {
@@ -375,11 +375,6 @@
               break;
             }
           }
-        }
-        // Jika username masih "-" atau default, cari baris yang terlihat seperti nama akun
-        if (username === "-" || !username) {
-          const userMatch = rawText.match(/([a-zA-Z0-9_-]{4,15})\s*\n\s*(?:Transfer to|Withdraw|Topup)/i);
-          if (userMatch) username = userMatch[1];
         }
 
         // 4. Cari Nominal WD
@@ -433,7 +428,7 @@
           }
         });
 
-        // 7. Logika Kemenangan Provider
+        // 7. Logika Kemenangan Provider (Daftar Lengkap Sesuai List Anda)
         const providerRegex = /(SV388|Poker Bolt|SBOBET|PG Soft|Evolution Gaming|PokerQ|NetEnt|Lotwin|CMD|Habanero|Cosmo Play|Sexy Casino|BTI|Playtech|Relax Gaming|GamePlay|Spadegaming|SA Gaming|TF Gaming|Playstar|Red Tiger|No Limit City|CQ9 Slot|Big Time Gaming|Jili Gaming|Advant Play|Naga Games|Pragmatic Play|Miki World|568Win|Hacksaw|Evoplay|FastSpin|SABA Sports|5G Gaming|Nex4D|FunTa Gaming|Pragmatic Play POP|CosmoPlay Crash|GGSoft|GA28|King Midas|Tap A Roo|AFB Sports|AFB Gaming)/i;
         
         const chronologicalLines = [...lines].reverse();
