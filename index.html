@@ -364,7 +364,7 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
-    // --- LOGIKA UTAMA PARSER LOKAL (TOTAL KEMENANGAN AMBIL DI SAMPING NOMINAL WD) ---
+    // --- LOGIKA UTAMA PARSER LOKAL ---
     function processAndShowResult() {
       const rawText = document.getElementById('inputText').value;
       if (!rawText.trim()) {
@@ -414,8 +414,6 @@
                 if (val > 1000) {
                   nominalWD = val;
                   
-                  // Coba ambil angka di sampingnya (kolom setelah nominal WD di baris yang sama / baris berikutnya)
-                  // Berdasarkan struktur teks, baris setelah Withdraw atau deretan angka setelahnya adalah saldo setelah transaksi
                   const allNumsInBlock = lines[j].match(/([\d]{1,3}(?:,\d{3})+)/g);
                   if (allNumsInBlock && allNumsInBlock.length >= 2) {
                     maxKemenangan = parseInt(allNumsInBlock[1].replace(/,/g, ""), 10);
@@ -433,7 +431,6 @@
           }
         }
 
-        // Fallback jika maxKemenangan belum terset dari baris withdraw
         if (maxKemenangan === 0) {
           lines.forEach(line => {
             if (line.toLowerCase().includes("transfer back")) {
@@ -503,6 +500,7 @@
         const formatRupiah = (angka) => angka.toLocaleString("en-US");
         const penutupA7 = "mohon bantu cek ya pak/bu sah atau tidak🙏";
 
+        // Format Standar (A1) - MENGGUNAKAN PESAN PENUTUP
         const isiA1 = `Web : ${web}
 Username : ${username}
 User ID : ${userId}
@@ -512,6 +510,7 @@ Kemenangan Provider : ${kemenanganProviderText}
 
 ${penutupA7}`;
 
+        // Format Khusus (50Jt - 99.9Jt) - TANPA PESAN PENUTUP
         const isiA3 = `WEB : ${web}
 USERNAME : ${username}
 NOMINAL WD : ${formatRupiah(nominalWD)}
@@ -519,6 +518,7 @@ BANK :
 
 Sudah di check dan sah, boleh di format ka ?`;
 
+        // Format WD Di Atas 100Jt (A2) - TANPA PESAN PENUTUP
         const isiA2 = `FORMAT WD DI ATAS 100JT
 
 ID : ${username}
@@ -529,9 +529,7 @@ TOTAL DEPOSIT SELAMA MAIN :
 NOMINAL WD : ${formatRupiah(nominalWD)}
 KEMENANGAN : ${formatRupiah(maxKemenangan)}
 Kemenangan Provider : ${kemenanganProviderText}
-LINK KEMENANGAN : 
-
-${penutupA7}`;
+LINK KEMENANGAN :`;
 
         const tampilA1 = true;
         const tampilA3 = nominalWD >= 50000001 && nominalWD <= 99999999;
