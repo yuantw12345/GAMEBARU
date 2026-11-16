@@ -212,7 +212,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('inputText').addEventListener('input', updateCharCount);
       loadSavedBackground();
-      fetchLatestBackgroundFromStorage(); // 🔥 Otomatis cek background terbaru dari Supabase Storage saat dibuka
+      fetchLatestBackgroundFromStorage();
     });
 
     bgChannel.subscribe((status) => {
@@ -231,7 +231,6 @@
       }
     });
 
-    // Fungsi otomatis menarik file terbaru dari Supabase Storage saat halaman dimuat
     async function fetchLatestBackgroundFromStorage() {
       try {
         const { data: files, error } = await client.storage.from('backgrounds').list('', {
@@ -239,14 +238,12 @@
         });
         
         if (!error && files && files.length > 0) {
-          // Ambil file yang paling baru diupload
           const latestFile = files[0];
           const { data: publicURLData } = client.storage.from('backgrounds').getPublicUrl(latestFile.name);
           const publicUrl = publicURLData.publicUrl;
           const isVideo = latestFile.name.endsWith('.mp4');
           const mediaType = isVideo ? 'video' : 'image';
 
-          // Cocokkan dengan localStorage, jika berbeda update otomatis
           const savedBg = localStorage.getItem('custom_app_bg');
           if (savedBg !== publicUrl) {
             applyBackground(publicUrl, mediaType);
@@ -367,7 +364,7 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
-    // --- LOGIKA UTAMA PARSER LOKAL YANG AMAN & BERSIH ---
+    // --- LOGIKA PARSER LOKAL DENGAN VALIDASI PROFIT RIIL (ANTI-MINUS) ---
     function processAndShowResult() {
       const rawText = document.getElementById('inputText').value;
       if (!rawText.trim()) {
@@ -476,8 +473,9 @@
               const nominalBack = parseInt(matchesNom[matchesNom.length - 1].replace(/,/g, ""), 10);
               const modalTo = modalTerakhirPerProvider[provName.toLowerCase()] || 0;
 
+              // 🔥 PENGAMAN: Hanya lolos jika benar-benar untung (selisih >= 3.000.000 dan modalTo ada)
               const selisih = nominalBack - modalTo;
-              if (selisih >= 3000000) {
+              if (modalTo > 0 && selisih >= 3000000) {
                 providerLolos.add(provName);
               }
             }
