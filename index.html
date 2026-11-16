@@ -338,7 +338,7 @@
       } catch (err) { alert('Gagal membaca clipboard.'); }
     }
 
-    // --- LOGIKA UTAMA PARSER LOKAL ---
+    // --- LOGIKA UTAMA PARSER LOKAL DENGAN PENGAMAN ERROR ---
     function processAndShowResult() {
       const rawText = document.getElementById('inputText').value;
       if (!rawText.trim()) {
@@ -346,128 +346,134 @@
         return;
       }
 
-      const lines = rawText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+      try {
+        const lines = rawText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
 
-      // 1. Ambil Web (S2)
-      let web = "MAHADEWI77";
-      const platIdx = lines.findIndex(l => l.toLowerCase() === "platform");
-      if (platIdx !== -1 && lines[platIdx + 1]) {
-        web = lines[platIdx + 1];
-      }
-
-      // 2. Ambil User ID (S9)
-      let userId = "-";
-      const uidIdx = lines.findIndex(l => l.toLowerCase() === "user id");
-      if (uidIdx !== -1 && lines[uidIdx + 1] && /^\d+$/.test(lines[uidIdx + 1])) {
-        userId = lines[uidIdx + 1];
-      } else {
-        const matchId = rawText.match(/\b(\d{6})\b/);
-        if (matchId) userId = matchId[1];
-      }
-
-      // 3. Ambil Username (S21)
-      let username = "-";
-      for (let i = 0; i < lines.length; i++) {
-        if (/^FP\d{14}/i.test(lines[i])) {
-          if (lines[i+1] && lines[i+1].toLowerCase() !== "copy") {
-            username = lines[i+1];
-            break;
-          }
+        // 1. Ambil Web
+        let web = "MAHADEWI77";
+        const platIdx = lines.findIndex(l => l.toLowerCase() === "platform");
+        if (platIdx !== -1 && lines[platIdx + 1]) {
+          web = lines[platIdx + 1];
         }
-      }
 
-      // 4. Cari Nominal WD
-      let nominalWD = 0;
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].toLowerCase().includes("withdraw")) {
-          for (let j = i; j < Math.min(i + 4, lines.length); j++) {
-            const cleanNum = lines[j].replace(/^Withdraw/i, "").trim();
-            const matchNom = cleanNum.match(/^([\d,]+)/);
-            if (matchNom && matchNom[1].includes(",")) {
-              const val = parseInt(matchNom[1].replace(/,/g, ""), 10);
-              if (val > 1000) {
-                nominalWD = val;
-                break;
-              }
-            }
-          }
-          if (nominalWD > 0) break;
+        // 2. Ambil User ID
+        let userId = "-";
+        const uidIdx = lines.findIndex(l => l.toLowerCase() === "user id");
+        if (uidIdx !== -1 && lines[uidIdx + 1] && /^\d+$/.test(lines[uidIdx + 1])) {
+          userId = lines[uidIdx + 1];
+        } else {
+          const matchId = rawText.match(/\b(\d{6})\b/);
+          if (matchId) userId = matchId[1];
         }
-      }
 
-      // 5. Cari Deposit Terakhir
-      let depositTerakhir = 0;
-      for (let i = 0; i < lines.length; i++) {
-        if (/topup/i.test(lines[i])) {
-          const matches = lines[i].match(/([\d]{1,3}(?:,\d{3})+)/g);
-          if (matches && matches.length > 0) {
-            depositTerakhir = parseInt(matches[0].replace(/,/g, ""), 10);
-            break;
-          } else if (lines[i + 1]) {
-            const nextMatch = lines[i + 1].match(/^([\d,]+)/);
-            if (nextMatch && nextMatch[1].includes(",")) {
-              depositTerakhir = parseInt(nextMatch[1].replace(/,/g, ""), 10);
+        // 3. Ambil Username (Cari baris setelah kode transaksi FP atau ambil baris sebelum/sesudah Bregel/nama akun)
+        let username = "Bregel11";
+        for (let i = 0; i < lines.length; i++) {
+          if (/^FP\d{14}/i.test(lines[i])) {
+            if (lines[i+1] && lines[i+1].toLowerCase() !== "copy") {
+              username = lines[i+1];
               break;
             }
           }
         }
-      }
+        // Jika username masih "-" atau default, cari baris yang terlihat seperti nama akun
+        if (username === "-" || !username) {
+          const userMatch = rawText.match(/([a-zA-Z0-9_-]{4,15})\s*\n\s*(?:Transfer to|Withdraw|Topup)/i);
+          if (userMatch) username = userMatch[1];
+        }
 
-      // 6. Cari Total Kemenangan
-      let maxKemenangan = 0;
-      lines.forEach(line => {
-        if (line.toLowerCase().includes("transfer back")) {
-          const matches = line.match(/([\d]{1,3}(?:,\d{3})+)/g);
-          if (matches && matches.length > 0) {
-            const val = parseInt(matches[matches.length - 1].replace(/,/g, ""), 10);
-            if (val > maxKemenangan) {
-              maxKemenangan = val;
+        // 4. Cari Nominal WD
+        let nominalWD = 0;
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].toLowerCase().includes("withdraw")) {
+            for (let j = i; j < Math.min(i + 4, lines.length); j++) {
+              const cleanNum = lines[j].replace(/^Withdraw/i, "").trim();
+              const matchNom = cleanNum.match(/^([\d,]+)/);
+              if (matchNom && matchNom[1].includes(",")) {
+                const val = parseInt(matchNom[1].replace(/,/g, ""), 10);
+                if (val > 1000) {
+                  nominalWD = val;
+                  break;
+                }
+              }
+            }
+            if (nominalWD > 0) break;
+          }
+        }
+
+        // 5. Cari Deposit Terakhir
+        let depositTerakhir = 0;
+        for (let i = 0; i < lines.length; i++) {
+          if (/topup/i.test(lines[i])) {
+            const matches = lines[i].match(/([\d]{1,3}(?:,\d{3})+)/g);
+            if (matches && matches.length > 0) {
+              depositTerakhir = parseInt(matches[0].replace(/,/g, ""), 10);
+              break;
+            } else if (lines[i + 1]) {
+              const nextMatch = lines[i + 1].match(/^([\d,]+)/);
+              if (nextMatch && nextMatch[1].includes(",")) {
+                depositTerakhir = parseInt(nextMatch[1].replace(/,/g, ""), 10);
+                break;
+              }
             }
           }
         }
-      });
 
-      // 7. Logika Kemenangan Provider (Daftar Lengkap Sesuai List Anda)
-      const providerRegex = /(SV388|Poker Bolt|SBOBET|PG Soft|Evolution Gaming|PokerQ|NetEnt|Lotwin|CMD|Habanero|Cosmo Play|Sexy Casino|BTI|Playtech|Relax Gaming|GamePlay|Spadegaming|SA Gaming|TF Gaming|Playstar|Red Tiger|No Limit City|CQ9 Slot|Big Time Gaming|Jili Gaming|Advant Play|Naga Games|Pragmatic Play|Miki World|568Win|Hacksaw|Evoplay|FastSpin|SABA Sports|5G Gaming|Nex4D|FunTa Gaming|Pragmatic Play POP|CosmoPlay Crash|GGSoft|GA28|King Midas|Tap A Roo|AFB Sports|AFB Gaming)/i;
-      
-      const chronologicalLines = [...lines].reverse();
-      let modalTerakhirPerProvider = {};
-      let providerLolos = new Set();
-
-      chronologicalLines.forEach(line => {
-        if (/^Transfer to/i.test(line)) {
-          const matchProv = line.match(providerRegex);
-          const matchNom = line.match(/([\d]{1,3}(?:,\d{3})+)/);
-          if (matchProv && matchNom) {
-            const provName = matchProv[1].trim();
-            const nominalTo = parseInt(matchNom[1].replace(/,/g, ""), 10);
-            modalTerakhirPerProvider[provName.toLowerCase()] = nominalTo;
-          }
-        }
-
-        if (/transfer back/i.test(line)) {
-          const matchProv = line.match(providerRegex);
-          const matchesNom = line.match(/([\d]{1,3}(?:,\d{3})+)/g);
-          if (matchProv && matchesNom && matchesNom.length > 0) {
-            const provName = matchProv[1].trim();
-            const nominalBack = parseInt(matchesNom[matchesNom.length - 1].replace(/,/g, ""), 10);
-            const modalTo = modalTerakhirPerProvider[provName.toLowerCase()] || 0;
-
-            const selisih = nominalBack - modalTo;
-            if (selisih >= 3000000) {
-              providerLolos.add(provName);
+        // 6. Cari Total Kemenangan
+        let maxKemenangan = 0;
+        lines.forEach(line => {
+          if (line.toLowerCase().includes("transfer back")) {
+            const matches = line.match(/([\d]{1,3}(?:,\d{3})+)/g);
+            if (matches && matches.length > 0) {
+              const val = parseInt(matches[matches.length - 1].replace(/,/g, ""), 10);
+              if (val > maxKemenangan) {
+                maxKemenangan = val;
+              }
             }
           }
-        }
-      });
+        });
 
-      const daftarProvider = Array.from(providerLolos);
-      const kemenanganProviderText = daftarProvider.length > 0 ? daftarProvider.join(" dan ") : "-";
-      const formatRupiah = (angka) => angka.toLocaleString("en-US");
-      const penutupA7 = "mohon bantu cek ya pak/bu sah atau tidak🙏";
+        // 7. Logika Kemenangan Provider
+        const providerRegex = /(SV388|Poker Bolt|SBOBET|PG Soft|Evolution Gaming|PokerQ|NetEnt|Lotwin|CMD|Habanero|Cosmo Play|Sexy Casino|BTI|Playtech|Relax Gaming|GamePlay|Spadegaming|SA Gaming|TF Gaming|Playstar|Red Tiger|No Limit City|CQ9 Slot|Big Time Gaming|Jili Gaming|Advant Play|Naga Games|Pragmatic Play|Miki World|568Win|Hacksaw|Evoplay|FastSpin|SABA Sports|5G Gaming|Nex4D|FunTa Gaming|Pragmatic Play POP|CosmoPlay Crash|GGSoft|GA28|King Midas|Tap A Roo|AFB Sports|AFB Gaming)/i;
+        
+        const chronologicalLines = [...lines].reverse();
+        let modalTerakhirPerProvider = {};
+        let providerLolos = new Set();
 
-      // Susun Format Standar (A1)
-      const isiA1 = `Web : ${web}
+        chronologicalLines.forEach(line => {
+          if (/^Transfer to/i.test(line)) {
+            const matchProv = line.match(providerRegex);
+            const matchNom = line.match(/([\d]{1,3}(?:,\d{3})+)/);
+            if (matchProv && matchNom) {
+              const provName = matchProv[1].trim();
+              const nominalTo = parseInt(matchNom[1].replace(/,/g, ""), 10);
+              modalTerakhirPerProvider[provName.toLowerCase()] = nominalTo;
+            }
+          }
+
+          if (/transfer back/i.test(line)) {
+            const matchProv = line.match(providerRegex);
+            const matchesNom = line.match(/([\d]{1,3}(?:,\d{3})+)/g);
+            if (matchProv && matchesNom && matchesNom.length > 0) {
+              const provName = matchProv[1].trim();
+              const nominalBack = parseInt(matchesNom[matchesNom.length - 1].replace(/,/g, ""), 10);
+              const modalTo = modalTerakhirPerProvider[provName.toLowerCase()] || 0;
+
+              const selisih = nominalBack - modalTo;
+              if (selisih >= 3000000) {
+                providerLolos.add(provName);
+              }
+            }
+          }
+        });
+
+        const daftarProvider = Array.from(providerLolos);
+        const kemenanganProviderText = daftarProvider.length > 0 ? daftarProvider.join(" dan ") : "-";
+        const formatRupiah = (angka) => angka.toLocaleString("en-US");
+        const penutupA7 = "mohon bantu cek ya pak/bu sah atau tidak🙏";
+
+        // Susun Format Standar (A1)
+        const isiA1 = `Web : ${web}
 Username : ${username}
 User ID : ${userId}
 Nominal WD : ${formatRupiah(nominalWD)}
@@ -476,16 +482,16 @@ Kemenangan Provider : ${kemenanganProviderText}
 
 ${penutupA7}`;
 
-      // Susun Format Khusus (50.000.001 s.d. 99.999.999)
-      const isiA3 = `WEB : ${web}
+        // Susun Format Khusus (50Jt - 99.9Jt)
+        const isiA3 = `WEB : ${web}
 USERNAME : ${username}
 NOMINAL WD : ${formatRupiah(nominalWD)}
 BANK : 
 
 Sudah di check dan sah, boleh di format ka ?`;
 
-      // Susun Format WD Di Atas 100Jt (A2)
-      const isiA2 = `FORMAT WD DI ATAS 100JT
+        // Susun Format WD Di Atas 100Jt (A2)
+        const isiA2 = `FORMAT WD DI ATAS 100JT
 
 ID : ${username}
 WEB : ${web}
@@ -499,21 +505,26 @@ LINK KEMENANGAN :
 
 ${penutupA7}`;
 
-      const tampilA1 = true;
-      const tampilA3 = nominalWD >= 50000001 && nominalWD <= 99999999;
-      const tampilA2 = nominalWD >= 100000000;
+        const tampilA1 = true;
+        const tampilA3 = nominalWD >= 50000001 && nominalWD <= 99999999;
+        const tampilA2 = nominalWD >= 100000000;
 
-      displayFormatResult({
-        isiA1: isiA1,
-        tampilA1: tampilA1,
-        isiA3: isiA3,
-        tampilA3: tampilA3,
-        isiA2: isiA2,
-        tampilA2: tampilA2
-      });
+        displayFormatResult({
+          isiA1: isiA1,
+          tampilA1: tampilA1,
+          isiA3: isiA3,
+          tampilA3: tampilA3,
+          isiA2: isiA2,
+          tampilA2: tampilA2
+        });
 
-      openModal();
-      showStatus('Transaksi berhasil diproses lokal!', 'success');
+        openModal();
+        showStatus('Transaksi berhasil diproses lokal!', 'success');
+
+      } catch (err) {
+        console.error("Error saat memproses data:", err);
+        showStatus('Terjadi kesalahan saat membaca data. Pastikan format teks benar!', 'error');
+      }
     }
 
     function displayFormatResult(data) {
@@ -538,8 +549,6 @@ ${penutupA7}`;
     }
 
     function openModal() {
-      document.getElementById('inputText').value = '';
-      updateCharCount();
       const modal = document.getElementById('resultModal');
       modal.classList.remove('hidden');
       setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('modalContent').classList.remove('scale-95'); }, 10);
@@ -550,6 +559,8 @@ ${penutupA7}`;
       modal.classList.add('opacity-0');
       document.getElementById('modalContent').classList.add('scale-95');
       setTimeout(() => modal.classList.add('hidden'), 300);
+      document.getElementById('inputText').value = '';
+      updateCharCount();
     }
 
     function copyToClipboard(boxId, toastId) {
@@ -562,8 +573,7 @@ ${penutupA7}`;
 
     function showStatus(msg, type) {
       const box = document.getElementById('statusBox');
-      box.classList.0 && box.classList.remove('hidden', 'border-emerald-500/30', 'border-rose-500/30', 'border-sky-500/30', 'text-emerald-300', 'text-rose-300', 'text-sky-300');
-      box.classList.remove('hidden');
+      box.classList.remove('hidden', 'border-emerald-500/30', 'border-rose-500/30', 'border-sky-500/30', 'text-emerald-300', 'text-rose-300', 'text-sky-300');
       let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-sky-400"></i>');
       let borderColor = type === 'success' ? 'border-emerald-500/30' : (type === 'error' ? 'border-rose-500/30' : 'border-sky-500/30');
       box.classList.add(borderColor);
