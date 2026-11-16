@@ -212,6 +212,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('inputText').addEventListener('input', updateCharCount);
       loadSavedBackground();
+      fetchLatestBackgroundFromStorage(); // 🔥 Otomatis cek background terbaru dari Supabase Storage saat dibuka
     });
 
     bgChannel.subscribe((status) => {
@@ -229,6 +230,34 @@
         resetBackgroundLocal();
       }
     });
+
+    // Fungsi otomatis menarik file terbaru dari Supabase Storage saat halaman dimuat
+    async function fetchLatestBackgroundFromStorage() {
+      try {
+        const { data: files, error } = await client.storage.from('backgrounds').list('', {
+          sortBy: { column: 'created_at', order: 'desc' }
+        });
+        
+        if (!error && files && files.length > 0) {
+          // Ambil file yang paling baru diupload
+          const latestFile = files[0];
+          const { data: publicURLData } = client.storage.from('backgrounds').getPublicUrl(latestFile.name);
+          const publicUrl = publicURLData.publicUrl;
+          const isVideo = latestFile.name.endsWith('.mp4');
+          const mediaType = isVideo ? 'video' : 'image';
+
+          // Cocokkan dengan localStorage, jika berbeda update otomatis
+          const savedBg = localStorage.getItem('custom_app_bg');
+          if (savedBg !== publicUrl) {
+            applyBackground(publicUrl, mediaType);
+            localStorage.setItem('custom_app_bg', publicUrl);
+            localStorage.setItem('custom_app_bg_type', mediaType);
+          }
+        }
+      } catch (err) {
+        console.log("Gagal memuat background dari storage:", err);
+      }
+    }
 
     async function uploadAndSyncBackground(event) {
       const file = event.target.files[0];
@@ -349,14 +378,12 @@
       try {
         const lines = rawText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
 
-        // 1. Ambil Web (Hanya jika ada kata 'Platform')
         let web = "-";
         const platIdx = lines.findIndex(l => l.toLowerCase() === "platform");
         if (platIdx !== -1 && lines[platIdx + 1]) {
           web = lines[platIdx + 1];
         }
 
-        // 2. Ambil User ID
         let userId = "-";
         const uidIdx = lines.findIndex(l => l.toLowerCase() === "user id");
         if (uidIdx !== -1 && lines[uidIdx + 1] && /^\d+$/.test(lines[uidIdx + 1])) {
@@ -366,7 +393,6 @@
           if (matchId) userId = matchId[1];
         }
 
-        // 3. Ambil Username (Hanya jika ada kode transaksi FP)
         let username = "-";
         for (let i = 0; i < lines.length; i++) {
           if (/^FP\d{14}/i.test(lines[i])) {
@@ -377,7 +403,6 @@
           }
         }
 
-        // 4. Cari Nominal WD
         let nominalWD = 0;
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].toLowerCase().includes("withdraw")) {
@@ -396,7 +421,6 @@
           }
         }
 
-        // 5. Cari Deposit Terakhir
         let depositTerakhir = 0;
         for (let i = 0; i < lines.length; i++) {
           if (/topup/i.test(lines[i])) {
@@ -414,7 +438,6 @@
           }
         }
 
-        // 6. Cari Total Kemenangan
         let maxKemenangan = 0;
         lines.forEach(line => {
           if (line.toLowerCase().includes("transfer back")) {
@@ -428,7 +451,6 @@
           }
         });
 
-        // 7. Logika Kemenangan Provider (Daftar Lengkap Sesuai List Anda)
         const providerRegex = /(SV388|Poker Bolt|SBOBET|PG Soft|Evolution Gaming|PokerQ|NetEnt|Lotwin|CMD|Habanero|Cosmo Play|Sexy Casino|BTI|Playtech|Relax Gaming|GamePlay|Spadegaming|SA Gaming|TF Gaming|Playstar|Red Tiger|No Limit City|CQ9 Slot|Big Time Gaming|Jili Gaming|Advant Play|Naga Games|Pragmatic Play|Miki World|568Win|Hacksaw|Evoplay|FastSpin|SABA Sports|5G Gaming|Nex4D|FunTa Gaming|Pragmatic Play POP|CosmoPlay Crash|GGSoft|GA28|King Midas|Tap A Roo|AFB Sports|AFB Gaming)/i;
         
         const chronologicalLines = [...lines].reverse();
@@ -467,7 +489,6 @@
         const formatRupiah = (angka) => angka.toLocaleString("en-US");
         const penutupA7 = "mohon bantu cek ya pak/bu sah atau tidak🙏";
 
-        // Susun Format Standar (A1)
         const isiA1 = `Web : ${web}
 Username : ${username}
 User ID : ${userId}
@@ -477,7 +498,6 @@ Kemenangan Provider : ${kemenanganProviderText}
 
 ${penutupA7}`;
 
-        // Susun Format Khusus (50Jt - 99.9Jt)
         const isiA3 = `WEB : ${web}
 USERNAME : ${username}
 NOMINAL WD : ${formatRupiah(nominalWD)}
@@ -485,7 +505,6 @@ BANK :
 
 Sudah di check dan sah, boleh di format ka ?`;
 
-        // Susun Format WD Di Atas 100Jt (A2)
         const isiA2 = `FORMAT WD DI ATAS 100JT
 
 ID : ${username}
