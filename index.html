@@ -400,7 +400,7 @@
           }
         }
 
-        // 1. Cari Nominal WD & Total Kemenangan (Angka tepat di samping Nominal WD)
+        // 1. Cari Nominal WD & Total Kemenangan (Mengambil dari transfer back terakhir sebelum withdraw)
         let nominalWD = 0;
         let maxKemenangan = 0;
 
@@ -500,7 +500,7 @@
         const formatRupiah = (angka) => angka.toLocaleString("en-US");
         const penutupA7 = "mohon bantu cek ya pak/bu sah atau tidak🙏";
 
-        // Format Standar (A1) - MENGGUNAKAN PESAN PENUTUP
+        // Format Standar (A1)
         const isiA1 = `Web : ${web}
 Username : ${username}
 User ID : ${userId}
@@ -510,7 +510,7 @@ Kemenangan Provider : ${kemenanganProviderText}
 
 ${penutupA7}`;
 
-        // Format Khusus (50Jt - 99.9Jt) - TANPA PESAN PENUTUP
+        // Format Khusus (50Jt - 99.9Jt)
         const isiA3 = `WEB : ${web}
 USERNAME : ${username}
 NOMINAL WD : ${formatRupiah(nominalWD)}
@@ -518,7 +518,7 @@ BANK :
 
 Sudah di check dan sah, boleh di format ka ?`;
 
-        // Format WD Di Atas 100Jt (A2) - TANPA PESAN PENUTUP
+        // Format WD Di Atas 100Jt (A2)
         const isiA2 = `FORMAT WD DI ATAS 100JT
 
 ID : ${username}
