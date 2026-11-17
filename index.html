@@ -400,10 +400,13 @@
           }
         }
 
-        // 1. Cari Nominal WD
+        // 1. Cari Baris Withdraw Terbaru (Paling Atas) & Nominal WD
         let nominalWD = 0;
+        let withdrawIndex = -1;
+
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].toLowerCase().includes("withdraw")) {
+            withdrawIndex = i;
             for (let j = i; j < Math.min(i + 4, lines.length); j++) {
               const cleanNum = lines[j].replace(/^Withdraw/i, "").trim();
               const matchNom = cleanNum.match(/^([\d,]+)/);
@@ -419,21 +422,30 @@
           }
         }
 
-        // 2. Cari Total Kemenangan: Mengambil dari transfer back terakhir sebelum withdraw
+        // 2. Cari Total Kemenangan: Ambil transfer back terakhir tepat SEBELUM withdraw teratas
         let maxKemenangan = 0;
-        let transferBackValues = [];
-        lines.forEach(line => {
-          if (line.toLowerCase().includes("transfer back")) {
-            const matches = line.match(/([\d]{1,3}(?:,\d{3})+)/g);
-            if (matches && matches.length > 0) {
-              const val = parseInt(matches[matches.length - 1].replace(/,/g, ""), 10);
-              transferBackValues.push(val);
+        if (withdrawIndex !== -1) {
+          for (let i = withdrawIndex; i < lines.length; i++) {
+            if (lines[i].toLowerCase().includes("transfer back")) {
+              const matches = lines[i].match(/([\d]{1,3}(?:,\d{3})+)/g);
+              if (matches && matches.length > 0) {
+                maxKemenangan = parseInt(matches[matches.length - 1].replace(/,/g, ""), 10);
+                break;
+              }
             }
           }
-        });
+        }
 
-        if (transferBackValues.length > 0) {
-          maxKemenangan = transferBackValues[transferBackValues.length - 1];
+        if (maxKemenangan === 0) {
+          for (let i = 0; i < lines.length; i++) {
+            if (lines[i].toLowerCase().includes("transfer back")) {
+              const matches = lines[i].match(/([\d]{1,3}(?:,\d{3})+)/g);
+              if (matches && matches.length > 0) {
+                maxKemenangan = parseInt(matches[matches.length - 1].replace(/,/g, ""), 10);
+                break;
+              }
+            }
+          }
         }
 
         let depositTerakhir = 0;
@@ -583,7 +595,7 @@ LINK KEMENANGAN :`;
     function copyToClipboard(boxId, toastId) {
       navigator.clipboard.writeText(document.getElementById(boxId).textContent).then(() => {
         const toast = document.getElementById(toastId);
-        toast.classList.remove('hidden');
+        toast.classList.add('hidden');
         setTimeout(() => toast.classList.add('hidden'), 2000);
       });
     }
