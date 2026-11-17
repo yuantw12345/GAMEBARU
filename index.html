@@ -491,7 +491,7 @@
               const modalTo = modalTerakhirPerProvider[provName.toLowerCase()] || 0;
 
               const selisih = nominalBack - modalTo;
-              if (modalTo > 0 && selisih >= 3000000) {
+              if (modalTo > 0 && selisih >= 1000000) { // Diubah dari 3.000.000 menjadi 1.000.000
                 providerLolos.add(provName);
               }
             }
