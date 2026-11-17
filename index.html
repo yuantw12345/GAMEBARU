@@ -422,7 +422,7 @@
           }
         }
 
-        // 2. Cari Total Kemenangan: Ambil transfer back terakhir tepat SEBELUM withdraw teratas
+        // 2. Cari Total Kemenangan: Ambil transfer back pertama dari atas tepat sebelum withdraw teratas
         let maxKemenangan = 0;
         if (withdrawIndex !== -1) {
           for (let i = withdrawIndex; i < lines.length; i++) {
@@ -593,11 +593,41 @@ LINK KEMENANGAN :`;
     }
 
     function copyToClipboard(boxId, toastId) {
-      navigator.clipboard.writeText(document.getElementById(boxId).textContent).then(() => {
-        const toast = document.getElementById(toastId);
-        toast.classList.add('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 2000);
-      });
+      const textToCopy = document.getElementById(boxId).textContent;
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showCopyToast(toastId);
+        }).catch(err => {
+          fallbackCopyText(textToCopy, toastId);
+        });
+      } else {
+        fallbackCopyText(textToCopy, toastId);
+      }
+    }
+
+    function fallbackCopyText(text, toastId) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showCopyToast(toastId);
+      } catch (err) {
+        alert('Gagal menyalin teks.');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function showCopyToast(toastId) {
+      const toast = document.getElementById(toastId);
+      toast.classList.remove('hidden'); // Menampilkan teks "✓ Disalin!"
+      setTimeout(() => {
+        toast.classList.add('hidden'); // Menyembunyikan kembali setelah 2 detik
+      }, 2000);
     }
 
     function showStatus(msg, type) {
