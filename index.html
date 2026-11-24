@@ -448,16 +448,23 @@
           }
         }
 
+        // 3. Cari Deposit Terakhir (Topup / Topup Cepat pertama dari atas, abaikan Auto Give Money)
         let depositTerakhir = 0;
         for (let i = 0; i < lines.length; i++) {
-          if (/topup/i.test(lines[i])) {
-            const matches = lines[i].match(/([\d]{1,3}(?:,\d{3})+)/g);
+          const line = lines[i];
+          const isAutoGiveMoney = /auto\s*give\s*money/i.test(line);
+          const hasTopup = /\btopup\b/i.test(line) || /topup\s*cepat/i.test(line);
+
+          if (!isAutoGiveMoney && hasTopup) {
+            const cleanedLine = line.replace(/TopupID:[a-zA-Z0-9_-]+/gi, "");
+            const matches = cleanedLine.match(/\b(\d{1,3}(?:,\d{3})+)\b/g);
+
             if (matches && matches.length > 0) {
               depositTerakhir = parseInt(matches[0].replace(/,/g, ""), 10);
               break;
-            } else if (lines[i + 1]) {
-              const nextMatch = lines[i + 1].match(/^([\d,]+)/);
-              if (nextMatch && nextMatch[1].includes(",")) {
+            } else if (lines[i + 1] && !/auto\s*give\s*money/i.test(lines[i + 1])) {
+              const nextMatch = lines[i + 1].match(/\b(\d{1,3}(?:,\d{3})+)\b/);
+              if (nextMatch) {
                 depositTerakhir = parseInt(nextMatch[1].replace(/,/g, ""), 10);
                 break;
               }
@@ -491,7 +498,7 @@
               const modalTo = modalTerakhirPerProvider[provName.toLowerCase()] || 0;
 
               const selisih = nominalBack - modalTo;
-              if (modalTo > 0 && selisih >= 1000000) { // Diubah dari 3.000.000 menjadi 1.000.000
+              if (modalTo > 0 && selisih >= 1000000) {
                 providerLolos.add(provName);
               }
             }
@@ -593,7 +600,7 @@ LINK KEMENANGAN :`;
     }
 
     function copyToClipboard(boxId, toastId) {
-      const textToCopy = document.getElementById(boxId).value; // Mengambil isi dari textarea yang mungkin sudah diedit
+      const textToCopy = document.getElementById(boxId).value;
       
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(textToCopy).then(() => {
